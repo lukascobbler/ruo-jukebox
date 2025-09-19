@@ -1,0 +1,50 @@
+@import "colors";
+@import "buttons";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: $background3;
+}
+
+.sidebar-banner {
+  width: 15rem;
+  height: 3rem;
+  margin-top: 2.6rem;
+  margin-left: 2rem;
+  position: absolute;
+}
+
+.large-text {
+  color: $white;
+  font-size: xx-large;
+  margin-bottom: 24px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+mat-form-field {
+  width: 360px;
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+.button:first-of-type {
+  margin-top: 20px;
+}
+
+.button {
+  margin-top: 8px;
+  width: 360px;
+}

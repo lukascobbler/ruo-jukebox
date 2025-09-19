@@ -1,0 +1,56 @@
+<div>
+  <span class="sidebar-banner"
+        role="link"
+        tabindex="0"
+        (click)="goLogin()"
+        (keydown.enter)="goLogin()">
+    <img priority ngSrc="/banner.svg" alt="" fill>
+  </span>
+
+  <div class="container">
+    <p class="large-text">Registration</p>
+
+    <form class="register-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Surname</mat-label>
+        <input matInput formControlName="surname" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date of birth</mat-label>
+        <input matInput [matDatepicker]="pickerNotBeforeCSR" formControlName="dateOfBirth" name="notBeforeCSR">
+        <mat-datepicker-toggle matSuffix [for]="pickerNotBeforeCSR"></mat-datepicker-toggle>
+        <mat-datepicker #pickerNotBeforeCSR></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>E-mail</mat-label>
+        <input matInput formControlName="email" autocomplete="email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" autocomplete="new-password" />
+      </mat-form-field>
+
+      <ul class="hints" *ngIf="submitted && (badPasswordLength || passwordsDontMatch || invalidEmailFormat || someRequiredMissing)">
+        <li *ngIf="badPasswordLength">Password must be between 8 and 64 characters</li>
+        <li *ngIf="invalidEmailFormat">E-mail must be in a valid format</li>
+        <li *ngIf="someRequiredMissing">All fields must be filled</li>
+      </ul>
+
+      <button class="blue-button button" type="submit" [disabled]="loading">Register</button>
+      <button class="gray-button button" type="button" [disabled]="loading" [routerLink]="['/login']">Back to login</button>
+    </form>
+  </div>
+</div>

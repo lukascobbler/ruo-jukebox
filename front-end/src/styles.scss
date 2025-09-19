@@ -1,0 +1,131 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+@import "colors";
+
+$orange-palette: (
+  0: #000000,
+  10: #29180a,
+  20: #533013,
+  25: #673c18,
+  30: #7c481d,
+  35: #915422,
+  40: #a56127,
+  50: #cf7930,
+  60: #d8945a,
+  70: #e2ae83,
+  80: #ecc9ac,
+  90: #f5e4d6,
+  95: #faf2ea,
+  98: #fdfaf7,
+  99: #fefcfb,
+  100: #ffffff,
+  secondary: (
+    0: #000000,
+    10: #2a1809,
+    20: #553011,
+    25: #6a3b16,
+    30: #7f471a,
+    35: #94531f,
+    40: #a95f23,
+    50: #d3772c,
+    60: #dc9256,
+    70: #e5ad80,
+    80: #eec9aa,
+    90: #f6e4d5,
+    95: #fbf1ea,
+    98: #fdfaf7,
+    99: #fefcfb,
+    100: #ffffff,
+  ),
+  neutral: (
+    0: #000000,
+    10: #1b1918,
+    20: #353331,
+    25: #433f3d,
+    30: #504c49,
+    35: #5d5955,
+    40: #6b6661,
+    50: #867f79,
+    60: #9e9994,
+    70: #b6b2af,
+    80: #ceccca,
+    90: #e7e5e4,
+    95: #f3f2f2,
+    98: #fafafa,
+    99: #fdfcfc,
+    100: #ffffff,
+  ),
+  neutral-variant: (
+    0: #000000,
+    10: #1c1917,
+    20: #37332f,
+    25: #453f3b,
+    30: #534c46,
+    35: #605952,
+    40: #6e655e,
+    50: #8a7e75,
+    60: #a19891,
+    70: #b9b2ac,
+    80: #d0ccc8,
+    90: #e8e5e3,
+    95: #f3f2f1,
+    98: #fafaf9,
+    99: #fdfcfc,
+    100: #ffffff,
+  ),
+  error: (
+    0: #000000,
+    10: #2d0606,
+    20: #590d0d,
+    25: #701010,
+    30: #861313,
+    35: #9d1616,
+    40: #b31919,
+    50: #e01f1f,
+    60: #e64c4c,
+    70: #ec7979,
+    80: #f2a6a6,
+    90: #f9d2d2,
+    95: #fce9e9,
+    98: #fef6f6,
+    99: #fefbfb,
+    100: #ffffff,
+  ),
+);
+
+// Define the theme object.
+$orange-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: $orange-palette,
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+:root {
+  @include mat.all-component-themes($orange-theme);
+}
+
+// Comment out the line below if you want to use the pre-defined typography utility classes.
+// For more information: https://material.angular.io/guide/typography#using-typography-styles-in-your-application.
+// @include mat.typography-hierarchy($front-end-theme);
+
+// Comment out the line below if you want to use the deprecated `color` inputs.
+// @include mat.color-variants-backwards-compatibility($front-end-theme);
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

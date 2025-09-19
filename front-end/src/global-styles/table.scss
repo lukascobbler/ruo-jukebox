@@ -1,0 +1,18 @@
+@import "colors";
+
+mat-header-cell {
+  font-size: large;
+  border-bottom: 1px solid $edge;
+}
+
+mat-header-row {
+  position: sticky;
+  top: 0;
+  background-color: $background2;
+  z-index: 10;
+}
+
+mat-cell {
+  font-size: small;
+  border-bottom: 1px solid $edge;
+}
