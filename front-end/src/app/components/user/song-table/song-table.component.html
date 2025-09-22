@@ -29,8 +29,8 @@
     </ng-container>
 
     <ng-container matColumnDef="actions">
-      <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>
-      <mat-cell class="actions" *matCellDef="let song">
+      <mat-header-cell class="actions" [ngClass]="{ 'actions-narrow': showNumber, 'actions-wide': !showNumber }" *matHeaderCellDef></mat-header-cell>
+      <mat-cell class="actions" [ngClass]="{ 'actions-narrow': showNumber, 'actions-wide': !showNumber }" *matCellDef="let song">
         <button mat-icon-button>
           <span class="material-symbols-rounded">download</span>
         </button>

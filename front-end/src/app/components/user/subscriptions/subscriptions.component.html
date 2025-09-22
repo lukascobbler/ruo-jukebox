@@ -1,1 +1,33 @@
-<p>subscriptions works!</p>
+<div class="container">
+  <button class="logout-button yellow-button">Logout</button>
+
+  <div class="new-and-subscriptions">
+    <div class="new-releases">
+      <p class="big-text">New releases</p>
+      <app-song-table class="song-table" [recommendedSongsDataSource]="[]" [showNumber]="false" />
+    </div>
+
+    <div class="subscriptions">
+      <mat-table [dataSource]="subscribedToDataSource">
+        <ng-container matColumnDef="subscriptionName">
+          <mat-header-cell class="subscriptionName" *matHeaderCellDef>Subscribed to</mat-header-cell>
+          <mat-cell class="subscriptionName" *matCellDef="let subscription">
+            {{ subscription.subscriptionName }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>
+          <mat-cell class="actions" *matCellDef="let subscription">
+            <button mat-icon-button>
+              <span class="material-symbols-rounded icon-full">circle_notifications</span>
+            </button>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+    </div>
+  </div>
+</div>

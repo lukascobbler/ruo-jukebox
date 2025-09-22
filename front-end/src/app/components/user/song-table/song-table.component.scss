@@ -24,12 +24,12 @@ mat-cell.no {
 
 mat-header-cell.title,
 mat-cell.title {
-  flex: 0 0 35%;
+  flex: 0 0 30%;
 }
 
 mat-header-cell.album,
 mat-cell.album {
-  flex: 0 0 35%;
+  flex: 0 0 30%;
 }
 
 mat-header-cell.duration,
@@ -37,7 +37,12 @@ mat-cell.duration {
   flex: 0 0 10%;
 }
 
-mat-header-cell.actions,
-mat-cell.actions {
-  flex: 0 0 15%;
+mat-header-cell.actions-narrow,
+mat-cell.actions-narrow {
+  flex: 0 0 25%;
+}
+
+mat-header-cell.actions-wide,
+mat-cell.actions-wide {
+  flex: 0 0 30%;
 }

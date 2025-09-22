@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {NgIf} from '@angular/common';
+import {NgClass, NgIf} from '@angular/common';
 import {
   MatCell, MatCellDef,
   MatColumnDef,
@@ -27,7 +27,8 @@ import {Song} from '../../../models/Song';
     MatRowDef,
     MatCellDef,
     MatIconButton,
-    NgIf
+    NgIf,
+    NgClass
   ],
   templateUrl: './song-table.component.html',
   styleUrl: './song-table.component.scss'
