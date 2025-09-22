@@ -17,32 +17,58 @@
   padding: 0;
 }
 
+/* case 1: both "no" and "album" present */
 mat-header-cell.no,
 mat-cell.no {
   flex: 0 0 5%;
 }
-
 mat-header-cell.title,
 mat-cell.title {
   flex: 0 0 30%;
 }
-
 mat-header-cell.album,
 mat-cell.album {
   flex: 0 0 30%;
 }
-
 mat-header-cell.duration,
 mat-cell.duration {
   flex: 0 0 10%;
 }
-
 mat-header-cell.actions-narrow,
 mat-cell.actions-narrow {
   flex: 0 0 25%;
 }
 
+/* case 2: "no" present, but no album */
+mat-header-cell.title.no-album,
+mat-cell.title.no-album {
+  flex: 0 0 40%;
+}
+mat-header-cell.duration.no-album,
+mat-cell.duration.no-album {
+  flex: 0 0 20%;
+}
+mat-header-cell.actions-no-album-narrow,
+mat-cell.actions-no-album-narrow {
+  flex: 0 0 35%;
+}
+
+/* case 3: no "no", album present → actions-wide already exists */
 mat-header-cell.actions-wide,
 mat-cell.actions-wide {
+  flex: 0 0 30%;
+}
+
+/* case 4: no "no" and no "album" */
+mat-header-cell.title.only-title,
+mat-cell.title.only-title {
+  flex: 0 0 45%;
+}
+mat-header-cell.duration.only-title,
+mat-cell.duration.only-title {
+  flex: 0 0 25%;
+}
+mat-header-cell.actions-only-title,
+mat-cell.actions-only-title {
   flex: 0 0 30%;
 }

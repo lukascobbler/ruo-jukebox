@@ -2,41 +2,78 @@
   <mat-table [dataSource]="recommendedSongsDataSource">
     <ng-container *ngIf="showNumber" matColumnDef="no">
       <mat-header-cell class="no" *matHeaderCellDef>#</mat-header-cell>
-      <mat-cell class="no" *matCellDef="let song">
-        {{ song.no }}
-      </mat-cell>
+      <mat-cell class="no" *matCellDef="let song">{{ song.no }}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="title">
-      <mat-header-cell class="title" *matHeaderCellDef>Title</mat-header-cell>
-      <mat-cell class="title" *matCellDef="let song">
+      <mat-header-cell
+        class="title"
+        [ngClass]="{
+        'no-album': showNumber && !showAlbum,
+        'only-title': !showNumber && !showAlbum
+      }"
+        *matHeaderCellDef>
+        Title
+      </mat-header-cell>
+      <mat-cell
+        class="title"
+        [ngClass]="{
+        'no-album': showNumber && !showAlbum,
+        'only-title': !showNumber && !showAlbum
+      }"
+        *matCellDef="let song">
         {{ song.title }}
       </mat-cell>
     </ng-container>
 
-    <ng-container matColumnDef="album">
+    <ng-container *ngIf="showAlbum" matColumnDef="album">
       <mat-header-cell class="album" *matHeaderCellDef>Album</mat-header-cell>
-      <mat-cell class="album" *matCellDef="let song">
-        {{ song.album }}
-      </mat-cell>
+      <mat-cell class="album" *matCellDef="let song">{{ song.album }}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="duration">
-      <mat-header-cell class="duration" *matHeaderCellDef>Duration</mat-header-cell>
-      <mat-cell class="duration" *matCellDef="let song">
+      <mat-header-cell
+        class="duration"
+        [ngClass]="{
+        'no-album': showNumber && !showAlbum,
+        'only-title': !showNumber && !showAlbum
+      }"
+        *matHeaderCellDef>
+        Duration
+      </mat-header-cell>
+      <mat-cell
+        class="duration"
+        [ngClass]="{
+        'no-album': showNumber && !showAlbum,
+        'only-title': !showNumber && !showAlbum
+      }"
+        *matCellDef="let song">
         {{ song.duration }}
       </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="actions">
-      <mat-header-cell class="actions" [ngClass]="{ 'actions-narrow': showNumber, 'actions-wide': !showNumber }" *matHeaderCellDef></mat-header-cell>
-      <mat-cell class="actions" [ngClass]="{ 'actions-narrow': showNumber, 'actions-wide': !showNumber }" *matCellDef="let song">
-        <button mat-icon-button>
-          <span class="material-symbols-rounded">download</span>
-        </button>
-        <button mat-icon-button>
-          <span class="material-symbols-rounded">download_for_offline</span>
-        </button>
+      <mat-header-cell
+        class="actions"
+        [ngClass]="{
+        'actions-narrow': showNumber && showAlbum,
+        'actions-no-album-narrow': showNumber && !showAlbum,
+        'actions-wide': !showNumber && showAlbum,
+        'actions-only-title': !showNumber && !showAlbum
+      }"
+        *matHeaderCellDef>
+      </mat-header-cell>
+      <mat-cell
+        class="actions"
+        [ngClass]="{
+        'actions-narrow': showNumber && showAlbum,
+        'actions-no-album-narrow': showNumber && !showAlbum,
+        'actions-wide': !showNumber && showAlbum,
+        'actions-only-title': !showNumber && !showAlbum
+      }"
+        *matCellDef="let song">
+        <button mat-icon-button><span class="material-symbols-rounded">download</span></button>
+        <button mat-icon-button><span class="material-symbols-rounded">download_for_offline</span></button>
         <button (click)="addToPlaylist(song)" mat-icon-button>
           <span class="material-symbols-rounded">playlist_add</span>
         </button>

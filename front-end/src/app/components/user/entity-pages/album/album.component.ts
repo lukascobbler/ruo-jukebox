@@ -1,12 +1,20 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {SongTableComponent} from "../../song-table/song-table.component";
+import {Album} from '../../../../models/Album';
+import {
+  BoxMissingIconSmallComponent
+} from '../../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component';
 
 @Component({
   selector: 'app-album',
   standalone: true,
-  imports: [],
+  imports: [
+    SongTableComponent,
+    BoxMissingIconSmallComponent
+  ],
   templateUrl: './album.component.html',
   styleUrl: './album.component.scss'
 })
 export class AlbumComponent {
-
+  album: Album = {id: '', name: 'Awesome album', artist: 'Awesome artist'};
 }

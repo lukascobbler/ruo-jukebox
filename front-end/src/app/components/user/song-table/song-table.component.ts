@@ -38,6 +38,7 @@ import {AddToPlaylistDialogComponent} from '../dialogs/add-to-playlist/add-to-pl
 export class SongTableComponent implements OnInit {
   @Input() recommendedSongsDataSource: Song[] = [];
   @Input() showNumber = true;
+  @Input() showAlbum = true;
 
   displayedColumns: string[] = [];
 
@@ -46,10 +47,16 @@ export class SongTableComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.showNumber) {
-      this.displayedColumns = ['no', 'title', 'album', 'duration', 'actions']
-    } else {
-      this.displayedColumns = ['title', 'album', 'duration', 'actions']
+      this.displayedColumns.push('no');
     }
+    this.displayedColumns.push('title');
+
+    if (this.showAlbum) {
+      this.displayedColumns.push('album');
+    }
+
+    this.displayedColumns.push('duration');
+    this.displayedColumns.push('actions');
 
     this.recommendedSongsDataSource = [
       { id: '', no: 1, title: 'Title', album: 'Album', albumId: '', duration: 420 },
