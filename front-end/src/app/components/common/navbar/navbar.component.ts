@@ -12,6 +12,11 @@ interface NavItem {
   action?: () => void;
 }
 
+interface UserPlaylist {
+  id: string;
+  name: string;
+}
+
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -31,14 +36,21 @@ export class NavbarComponent implements OnInit {
   currentUserRole: Role | null = "User";
 
   sidebarItems: NavItem[] = [
-    {label: 'Signed certificates', icon: 'library_books', link: '/signed-certificates', roles: ['User']},
-    {label: 'Certificate requests', icon: 'stacks', link: '/certificate-requests', roles: ['User']},
-    {label: 'All certificates', icon: 'library_books', link: '/all-certificates', roles: ['User']},
-    {label: 'Issue a certificate', icon: 'add_notes', link: '/issue-certificate', roles: ['User']},
-    {label: 'My certificates', icon: 'library_books', link: '/my-certificates', roles: ['User']},
-    {label: 'Request Certificate', icon: 'add_notes', link: '/request-certificate', roles: ['User']},
-    {label: 'Manage CA users', icon: 'group', link: '/manage-ca-users', roles: ['User']},
+    {label: 'Home', icon: 'home', link: '/home', roles: ['User']},
+    {label: 'Discovery', icon: 'explore', link: '/discovery', roles: ['User']},
+    {label: 'Subscriptions', icon: 'subscriptions', link: '/subscriptions', roles: ['User']},
+    {label: 'Create playlist', icon: 'playlist_add', link: '/create-playlist', roles: ['User']},
+    {label: 'Artists', icon: 'artist', link: '/artists', roles: ['Admin']},
+    {label: 'Albums', icon: 'album', link: '/albums', roles: ['Admin']},
+    {label: 'Singles', icon: 'music_note', link: '/singles', roles: ['Admin']},
     {label: 'Logout', icon: 'logout', roles: ['Admin'], class: 'logout', action: () => this.logout()},
+  ];
+
+  userPlaylists: UserPlaylist[] = [
+    {name: 'Awesome playlist 1', id: 'noid'},
+    {name: 'Awesome playlist 2', id: 'noid'},
+    {name: 'Awesome playlist 3', id: 'noid'},
+    {name: 'Awesome playlist 4', id: 'noid'}
   ];
 
   ngOnInit() {

@@ -1,1 +1,42 @@
-<p>home works!</p>
+<div class="container">
+  <button class="logout-button yellow-button">Logout</button>
+  <div class="search-container">
+    <div class="search">
+      <mat-form-field class="search" appearance="outline">
+        <span matSuffix class="material-symbols-rounded search-icon">search</span>
+        <input type="text" autocomplete="false" placeholder="Search items..." matInput [(ngModel)]="searchTerm">
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="recommended-entities">
+    <div>
+      <p class="big-text">Recommended albums</p>
+      <div class="recommended-albums horizontal-scroller">
+        <div *ngFor="let i of [1, 2, 3, 4, 5, 6]" class="single-album">
+          <app-box-missing-icon-x-large [icon_name]="'album'" />
+          <p class="album-name">Awesome album</p>
+          <p class="artist-name">Awesome Artist 1 Albert Einstein</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="big-text">Recommended artists</p>
+      <div class="recommended-artists horizontal-scroller">
+        <div *ngFor="let i of [1, 2, 3, 4, 5, 6]" class="single-artist">
+          <app-round-missing-icon-x-large [icon_name]="'artist'" />
+          <p class="artist-name">Awesome artist</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="recommended-songs">
+    <p class="big-text center-text">Recommended songs</p>
+    <app-song-table
+      class="song-table"
+      [recommendedSongsDataSource]="[]"
+      [showNumber]="true"
+    ></app-song-table>
+  </div>
+</div>

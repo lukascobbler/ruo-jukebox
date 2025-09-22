@@ -14,4 +14,14 @@
       <span class="material-symbols-rounded">{{ item.icon }}</span> {{ item.label }}
     </a>
   </ng-container>
+
+  <hr *ngIf="currentUserRole === 'User'" class="sidebar-line-no-margin">
+
+  <ng-container *ngFor="let item of userPlaylists">
+    <a *ngIf="currentUserRole === 'User'"
+       routerLinkActive="active-link"
+       [routerLink]="'/my-playlist/' + item.id">
+      <span class="material-symbols-rounded">queue_music</span> {{ item.name }}
+    </a>
+  </ng-container>
 </div>

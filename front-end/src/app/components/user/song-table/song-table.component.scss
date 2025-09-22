@@ -1,0 +1,43 @@
+@import "table";
+
+.play {
+  font-variation-settings: "FILL" 1;
+}
+
+.container {
+  background-color: $background2;
+  padding: 24px 24px 40px 24px;
+  border-radius: 24px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 0;
+}
+
+mat-header-cell.no,
+mat-cell.no {
+  flex: 0 0 5%;
+}
+
+mat-header-cell.title,
+mat-cell.title {
+  flex: 0 0 35%;
+}
+
+mat-header-cell.album,
+mat-cell.album {
+  flex: 0 0 35%;
+}
+
+mat-header-cell.duration,
+mat-cell.duration {
+  flex: 0 0 10%;
+}
+
+mat-header-cell.actions,
+mat-cell.actions {
+  flex: 0 0 15%;
+}

@@ -2,7 +2,13 @@
 
 .container {
   display: flex;
-  height: 100%;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.sub-container {
+  display: flex;
+  height: 90%;
 }
 
 .content {
@@ -10,6 +16,18 @@
   overflow: auto;
   background-color: $background;
   scrollbar-color: $edge2 transparent;
+}
+
+.player {
+  height: 10%;
+}
+
+::ng-deep .logout-button {
+  border-radius: 24px !important;
+  width: 130px;
+  position: absolute;
+  top: 3rem;
+  right: 6rem;
 }
 
 ::ng-deep .loading {

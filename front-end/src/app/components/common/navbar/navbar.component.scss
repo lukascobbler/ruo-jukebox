@@ -24,7 +24,16 @@
   border: 1px solid $edge;
   border-radius: 1rem;
   margin-top: 8rem;
-  margin-bottom: 2.2rem;
+  margin-bottom: 1.5rem;
+  opacity: 50%;
+}
+
+.sidebar-line-no-margin {
+  width: 100%;
+  border: 1px solid $edge;
+  border-radius: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
   opacity: 50%;
 }
 
@@ -40,7 +49,7 @@
 a {
   display: flex;
   align-items: center;
-  margin: 0.66rem 0;
+  margin: 0.4rem 0;
   font-size: 1.4rem;
   font-weight: 500;
   padding-left: 1rem;
