@@ -20,7 +20,7 @@
   margin-right: 16px;
 }
 
-::ng-deep {
+:host ::ng-deep {
   .mdc-line-ripple {
     display: none;
   }
