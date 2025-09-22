@@ -1,1 +1,33 @@
-<p>music-content works!</p>
+<div class="container">
+  <button class="logout-button yellow-button">Logout</button>
+  <div class="search-container">
+    <div class="search">
+      <mat-form-field class="search" appearance="outline">
+        <span matSuffix class="material-symbols-rounded search-icon">search</span>
+        <input type="text" autocomplete="false" placeholder="Search items..." matInput [(ngModel)]="searchTerm">
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="discover-entities">
+    <div>
+      <p class="big-text">Discover albums</p>
+      <div class="discover-albums horizontal-scroller">
+        <div *ngFor="let album of albums" class="single-album">
+          <app-box-missing-icon-x-large [icon_name]="'album'" />
+          <p class="album-name">{{ album.name }}</p>
+          <p class="artist-name">{{ album.artist }}</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="big-text">Discover artists</p>
+      <div class="discover-artists horizontal-scroller">
+        <div *ngFor="let artist of artists" class="single-artist">
+          <app-round-missing-icon-x-large [icon_name]="'artist'" />
+          <p class="artist-name">{{ artist.name }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

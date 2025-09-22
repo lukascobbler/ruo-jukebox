@@ -13,19 +13,19 @@
     <div>
       <p class="big-text">Recommended albums</p>
       <div class="recommended-albums horizontal-scroller">
-        <div *ngFor="let i of [1, 2, 3, 4, 5, 6]" class="single-album">
+        <div *ngFor="let album of albums" class="single-album">
           <app-box-missing-icon-x-large [icon_name]="'album'" />
-          <p class="album-name">Awesome album</p>
-          <p class="artist-name">Awesome Artist 1 Albert Einstein</p>
+          <p class="album-name">{{ album.name }}</p>
+          <p class="artist-name">{{ album.artist }}</p>
         </div>
       </div>
     </div>
     <div>
       <p class="big-text">Recommended artists</p>
       <div class="recommended-artists horizontal-scroller">
-        <div *ngFor="let i of [1, 2, 3, 4, 5, 6]" class="single-artist">
+        <div *ngFor="let artist of artists" class="single-artist">
           <app-round-missing-icon-x-large [icon_name]="'artist'" />
-          <p class="artist-name">Awesome artist</p>
+          <p class="artist-name">{{ artist.name }}</p>
         </div>
       </div>
     </div>

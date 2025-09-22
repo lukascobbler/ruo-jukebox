@@ -10,6 +10,8 @@ import {
 import {
   RoundMissingIconXLargeComponent
 } from '../../common/missing-icons/round/round-missing-icon-x-large/round-missing-icon-x-large.component';
+import {Album} from '../../../models/Album';
+import {Artist} from '../../../models/Artist';
 
 @Component({
   selector: 'app-home',
@@ -31,6 +33,27 @@ import {
 })
 export class HomeComponent implements OnInit {
   searchTerm: string = "";
+  albums: Album[] = [
+    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+  ];
+
+  artists: Artist[] = [
+    {id: '', name: 'Awesome artist'},
+    {id: '', name: 'Awesome artist'},
+    {id: '', name: 'Awesome artist'},
+    {id: '', name: 'Awesome artist'},
+    {id: '', name: 'Awesome artist'},
+    {id: '', name: 'Awesome artist'},
+    {id: '', name: 'Awesome artist'},
+    {id: '', name: 'Awesome artist'},
+  ];
 
   ngOnInit() {
     const containers = document.querySelectorAll('.horizontal-scroller');

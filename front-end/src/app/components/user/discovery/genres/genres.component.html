@@ -11,7 +11,7 @@
 
   <div class="center-container">
     <div class="genres">
-      <div class="genre" *ngFor="let genre of genres">
+      <div (click)="goToGenre(genre)" class="genre" *ngFor="let genre of genres">
         <div class="genre-name">
           <p class="genre-name"><b>{{ genre.name }}</b></p>
         </div>

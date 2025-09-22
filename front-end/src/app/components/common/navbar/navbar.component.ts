@@ -50,6 +50,14 @@ export class NavbarComponent implements OnInit {
     {name: 'Awesome playlist 1', id: 'noid'},
     {name: 'Awesome playlist 2', id: 'noid'},
     {name: 'Awesome playlist 3', id: 'noid'},
+    {name: 'Awesome playlist 4', id: 'noid'},
+    {name: 'Awesome playlist 1', id: 'noid'},
+    {name: 'Awesome playlist 2', id: 'noid'},
+    {name: 'Awesome playlist 3', id: 'noid'},
+    {name: 'Awesome playlist 4', id: 'noid'},
+    {name: 'Awesome playlist 1', id: 'noid'},
+    {name: 'Awesome playlist 2', id: 'noid'},
+    {name: 'Awesome playlist 3', id: 'noid'},
     {name: 'Awesome playlist 4', id: 'noid'}
   ];
 

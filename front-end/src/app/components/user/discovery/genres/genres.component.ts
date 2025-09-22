@@ -1,17 +1,10 @@
-import { Component } from '@angular/core';
-import {
-    BoxMissingIconXLargeComponent
-} from "../../../common/missing-icons/box/missing-icon-x-large/box-missing-icon-x-large.component";
+import {Component, inject} from '@angular/core';
 import {MatFormField, MatSuffix} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {NgClass, NgForOf} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {
-    RoundMissingIconXLargeComponent
-} from "../../../common/missing-icons/round/round-missing-icon-x-large/round-missing-icon-x-large.component";
-import {SongTableComponent} from "../../song-table/song-table.component";
 import {Genre} from '../../../../models/Genre';
-import {MatButton, MatIconButton} from '@angular/material/button';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-genres',
@@ -29,6 +22,8 @@ import {MatButton, MatIconButton} from '@angular/material/button';
   styleUrl: './genres.component.scss'
 })
 export class GenresComponent {
+  private router = inject(Router);
+
   searchTerm: string = "";
   genres: Genre[] = [
     { name: 'Rock', isSubscribed: true, id: '' },
@@ -43,5 +38,9 @@ export class GenresComponent {
     { name: 'Latin', isSubscribed: false, id: '' },
     { name: 'Funk', isSubscribed: true, id: '' },
     { name: 'Electronic', isSubscribed: false, id: '' },
-  ]
+  ];
+
+  goToGenre(genre: Genre) {
+    this.router.navigate(['genre', genre.id]);
+  }
 }
