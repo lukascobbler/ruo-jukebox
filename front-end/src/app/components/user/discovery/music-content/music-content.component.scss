@@ -80,6 +80,9 @@ p {
   .album-name {
     color: $white;
     font-size: larger;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .artist-name {

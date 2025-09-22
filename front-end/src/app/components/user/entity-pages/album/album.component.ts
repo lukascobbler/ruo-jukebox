@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {SongTableComponent} from "../../song-table/song-table.component";
 import {Album} from '../../../../models/Album';
 import {

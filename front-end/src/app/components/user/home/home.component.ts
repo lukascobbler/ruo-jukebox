@@ -45,14 +45,14 @@ export class HomeComponent implements OnInit {
   ];
 
   artists: Artist[] = [
-    {id: '', name: 'Awesome artist'},
-    {id: '', name: 'Awesome artist'},
-    {id: '', name: 'Awesome artist'},
-    {id: '', name: 'Awesome artist'},
-    {id: '', name: 'Awesome artist'},
-    {id: '', name: 'Awesome artist'},
-    {id: '', name: 'Awesome artist'},
-    {id: '', name: 'Awesome artist'},
+    {id: '', name: 'Awesome artist', isSubscribed: false},
+    {id: '', name: 'Awesome artist', isSubscribed: false},
+    {id: '', name: 'Awesome artist', isSubscribed: false},
+    {id: '', name: 'Awesome artist', isSubscribed: false},
+    {id: '', name: 'Awesome artist', isSubscribed: false},
+    {id: '', name: 'Awesome artist', isSubscribed: false},
+    {id: '', name: 'Awesome artist', isSubscribed: false},
+    {id: '', name: 'Awesome artist', isSubscribed: false},
   ];
 
   ngOnInit() {
