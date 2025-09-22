@@ -1,1 +1,26 @@
-<p>genres works!</p>
+<div class="container">
+  <button class="logout-button yellow-button">Logout</button>
+  <div class="search-container">
+    <div class="search">
+      <mat-form-field class="search" appearance="outline">
+        <span matSuffix class="material-symbols-rounded search-icon">search</span>
+        <input type="text" autocomplete="false" placeholder="Search items..." matInput [(ngModel)]="searchTerm">
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="center-container">
+    <div class="genres">
+      <div class="genre" *ngFor="let genre of genres">
+        <div class="genre-name">
+          <p class="genre-name"><b>{{ genre.name }}</b></p>
+        </div>
+        <div class="is-subscribed">
+          <button (click)="genre.isSubscribed = !genre.isSubscribed" class="subscribe-button">
+            <span class="material-symbols-rounded icon" [ngClass]="{ 'full': genre.isSubscribed }">circle_notifications</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
