@@ -4,6 +4,7 @@ import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {Role} from '../../../models/Role';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {CreatePlaylistDialogComponent} from '../../user/dialogs/create-playlist/create-playlist-dialog.component';
+import {Playlist} from '../../../models/Playlist';
 
 interface NavItem {
   label: string;
@@ -12,11 +13,6 @@ interface NavItem {
   roles: Role[];
   class?: string;
   action?: () => void;
-}
-
-interface UserPlaylist {
-  id: string;
-  name: string;
 }
 
 @Component({
@@ -51,19 +47,19 @@ export class NavbarComponent implements OnInit {
     {label: 'Logout', icon: 'logout', roles: ['Admin'], class: 'logout', action: () => this.logout()},
   ];
 
-  userPlaylists: UserPlaylist[] = [
-    {name: 'Awesome playlist 1', id: ''},
-    {name: 'Awesome playlist 2', id: ''},
-    {name: 'Awesome playlist 3', id: ''},
-    {name: 'Awesome playlist 4', id: ''},
-    {name: 'Awesome playlist 5', id: ''},
-    {name: 'Awesome playlist 6', id: ''},
-    {name: 'Awesome playlist 7', id: ''},
-    {name: 'Awesome playlist 8', id: ''},
-    {name: 'Awesome playlist 9', id: ''},
-    {name: 'Awesome playlist 10', id: ''},
-    {name: 'Awesome playlist 11', id: ''},
-    {name: 'Awesome playlist 12', id: ''}
+  userPlaylists: Playlist[] = [
+    {name: 'Awesome playlist 1', id: '1'},
+    {name: 'Awesome playlist 2', id: '2'},
+    {name: 'Awesome playlist 3', id: '3'},
+    {name: 'Awesome playlist 4', id: '4'},
+    {name: 'Awesome playlist 5', id: '5'},
+    {name: 'Awesome playlist 6', id: '6'},
+    {name: 'Awesome playlist 7', id: '7'},
+    {name: 'Awesome playlist 8', id: '8'},
+    {name: 'Awesome playlist 9', id: '9'},
+    {name: 'Awesome playlist 10', id: '10'},
+    {name: 'Awesome playlist 11', id: '11'},
+    {name: 'Awesome playlist 12', id: '12'}
   ];
 
   ngOnInit() {

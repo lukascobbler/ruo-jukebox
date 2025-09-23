@@ -20,7 +20,7 @@
   <div *ngIf="currentUserRole === 'User'" class="user-playlists">
     <ng-container *ngFor="let item of userPlaylists">
       <a routerLinkActive="active-link"
-         [routerLink]="'/my-playlist/' + item.id">
+         [routerLink]="['playlist', item.id]">
         <span class="material-symbols-rounded">queue_music</span> {{ item.name }}
       </a>
     </ng-container>

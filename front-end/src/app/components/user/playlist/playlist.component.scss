@@ -1,0 +1,27 @@
+@import "colors";
+@import "buttons";
+
+.container {
+  padding: 3rem 6rem;
+  position: relative;
+}
+
+.big-text {
+  color: $white;
+  font-size: xx-large;
+}
+
+.playlist {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.song-table {
+  width: 70%;
+}
+
+.text {
+  display: flex;
+  align-items: center;
+}

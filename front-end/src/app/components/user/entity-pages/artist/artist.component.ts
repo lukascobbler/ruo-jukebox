@@ -2,18 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {
     BoxMissingIconXLargeComponent
 } from "../../../common/missing-icons/box/missing-icon-x-large/box-missing-icon-x-large.component";
-import {MatFormField, MatSuffix} from "@angular/material/form-field";
-import {MatInput} from "@angular/material/input";
 import {NgClass, NgForOf} from "@angular/common";
 import {ReactiveFormsModule} from "@angular/forms";
-import {
-    RoundMissingIconXLargeComponent
-} from "../../../common/missing-icons/round/round-missing-icon-x-large/round-missing-icon-x-large.component";
 import {Album} from '../../../../models/Album';
 import {Artist} from '../../../../models/Artist';
-import {
-  BoxMissingIconSmallComponent
-} from '../../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component';
 import {
   RoundMissingIconSmallComponent
 } from '../../../common/missing-icons/round/round-missing-icon-small/round-missing-icon-small.component';
