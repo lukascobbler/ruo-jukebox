@@ -1,6 +1,4 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {MatFormField, MatSuffix} from "@angular/material/form-field";
-import {MatInput} from "@angular/material/input";
 import {NgForOf} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {
@@ -12,19 +10,18 @@ import {
 import {Album} from '../../../../models/Album';
 import {Artist} from '../../../../models/Artist';
 import {Router} from '@angular/router';
+import {SearchComponent} from '../../search/search.component';
 
 @Component({
   selector: 'app-music-content',
   standalone: true,
   imports: [
-    MatFormField,
-    MatInput,
-    MatSuffix,
     NgForOf,
     ReactiveFormsModule,
     FormsModule,
     BoxMissingIconXLargeComponent,
-    RoundMissingIconXLargeComponent
+    RoundMissingIconXLargeComponent,
+    SearchComponent
   ],
   templateUrl: './music-content.component.html',
   styleUrl: './music-content.component.scss'

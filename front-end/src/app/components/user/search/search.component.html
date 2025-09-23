@@ -1,0 +1,15 @@
+<mat-form-field class="search" appearance="outline">
+  <span
+    matSuffix
+    class="material-symbols-rounded search-icon"
+    (click)="search()"
+  >search</span>
+  <input
+    type="text"
+    autocomplete="false"
+    placeholder="Search items..."
+    matInput
+    [(ngModel)]="searchTerm"
+    (keyup.enter)="search()"
+  >
+</mat-form-field>

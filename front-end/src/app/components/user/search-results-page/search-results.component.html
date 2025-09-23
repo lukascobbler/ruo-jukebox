@@ -1,0 +1,44 @@
+<div class="container">
+  <button class="logout-button yellow-button">Logout</button>
+  <div class="search-container">
+    <div class="search">
+      <app-search [searchTerm]="searchTerm" />
+    </div>
+  </div>
+
+  <div class="discover-entities">
+    <div>
+      <p class="big-text">Matching songs</p>
+      <div class="found-songs horizontal-scroller">
+        <div *ngFor="let song of foundSongs" class="single-song">
+          <app-box-missing-icon-large [icon_name]="'music_note'" />
+          <p class="song-name">{{ song.title }}</p>
+          <p class="artist-name">{{ song.artist }}</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="big-text">Matching albums</p>
+      <div class="found-albums horizontal-scroller">
+        <div *ngFor="let album of foundAlbums" class="single-album">
+          <button class="icon-button" (click)="router.navigate(['album', album.id])">
+            <app-box-missing-icon-large [icon_name]="'album'" />
+          </button>
+          <p class="album-name">{{ album.name }}</p>
+          <p class="artist-name">{{ album.artist }}</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="big-text">Matching artists</p>
+      <div class="found-artists horizontal-scroller">
+        <div *ngFor="let artist of foundArtists" class="single-artist">
+          <button class="icon-button" (click)="router.navigate(['artist', artist.id])">
+            <app-round-missing-icon-large [icon_name]="'artist'" />
+          </button>
+          <p class="artist-name">{{ artist.name }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,8 +2,8 @@
 
 .picture-wrapper {
   display: inline-block;
-  width: calc(35px * 3);
-  height: calc(35px * 3);
+  width: calc(35px * 4);
+  height: calc(35px * 4);
 }
 
 .missing-picture-large {
@@ -16,5 +16,5 @@
   align-items: center;
   justify-content: center;
   display: flex;
-  transform: scale(3);
+  transform: scale(4);
 }

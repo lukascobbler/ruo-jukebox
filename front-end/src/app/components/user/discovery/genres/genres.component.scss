@@ -13,35 +13,7 @@
 }
 
 .search {
-  width: 70%
-}
-
-.search-icon {
-  margin-right: 16px;
-}
-
-:host ::ng-deep {
-  .mdc-line-ripple {
-    display: none;
-  }
-
-  .mdc-text-field {
-    background-color: $background2 !important;
-    border-radius: 48px !important;
-  }
-
-  .mat-mdc-form-field-subscript-wrapper {
-    display: none !important;
-  }
-
-  .mat-form-field-appearance-outline .mat-form-field-outline {
-    color: $edge !important;
-    border-radius: 48px !important;
-  }
-
-  .mat-mdc-form-field-flex {
-    border-radius: 48px !important;
-  }
+  width: 50%
 }
 
 .center-container {

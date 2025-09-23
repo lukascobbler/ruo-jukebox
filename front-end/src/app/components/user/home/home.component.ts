@@ -1,8 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {NgForOf} from '@angular/common';
 import {SongTableComponent} from '../song-table/song-table.component';
-import {MatFormField, MatSuffix} from '@angular/material/form-field';
-import {MatInput} from '@angular/material/input';
 import {FormsModule} from '@angular/forms';
 import {
   BoxMissingIconXLargeComponent
@@ -13,21 +11,20 @@ import {
 import {Album} from '../../../models/Album';
 import {Artist} from '../../../models/Artist';
 import {Router} from '@angular/router';
+import {SearchComponent} from '../search/search.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
     SongTableComponent,
-    MatFormField,
-    MatInput,
     FormsModule,
-    MatSuffix,
     NgForOf,
     RoundMissingIconXLargeComponent,
     RoundMissingIconXLargeComponent,
     BoxMissingIconXLargeComponent,
-    RoundMissingIconXLargeComponent
+    RoundMissingIconXLargeComponent,
+    SearchComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
@@ -35,7 +32,6 @@ import {Router} from '@angular/router';
 export class HomeComponent implements OnInit {
   router = inject(Router);
 
-  searchTerm: string = "";
   albums: Album[] = [
     {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
     {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},

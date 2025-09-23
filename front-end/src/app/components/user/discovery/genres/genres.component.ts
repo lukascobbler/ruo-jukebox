@@ -1,22 +1,19 @@
 import {Component, inject} from '@angular/core';
-import {MatFormField, MatSuffix} from "@angular/material/form-field";
-import {MatInput} from "@angular/material/input";
 import {NgClass, NgForOf} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {Genre} from '../../../../models/Genre';
 import {Router} from '@angular/router';
+import {SearchComponent} from '../../search/search.component';
 
 @Component({
   selector: 'app-genres',
   standalone: true,
   imports: [
-    MatFormField,
-    MatInput,
-    MatSuffix,
     NgForOf,
     ReactiveFormsModule,
     FormsModule,
     NgClass,
+    SearchComponent,
   ],
   templateUrl: './genres.component.html',
   styleUrl: './genres.component.scss'

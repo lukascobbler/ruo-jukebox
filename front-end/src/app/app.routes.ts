@@ -6,6 +6,7 @@ import {SubscriptionsComponent} from './components/user/subscriptions/subscripti
 import {AlbumComponent} from './components/user/entity-pages/album/album.component';
 import {ArtistComponent} from './components/user/entity-pages/artist/artist.component';
 import {PlaylistComponent} from './components/user/playlist/playlist.component';
+import {SearchResultsComponent} from './components/user/search-results-page/search-results.component';
 
 export const routes: Routes = [
   {path: "home", component: HomeComponent},
@@ -15,5 +16,6 @@ export const routes: Routes = [
   {path: "single/:id", component: AlbumComponent},
   {path: "artist/:id", component: ArtistComponent},
   {path: "playlist/:id", component: PlaylistComponent},
+  {path: "search/:query", component: SearchResultsComponent},
   {path: "subscriptions", component: SubscriptionsComponent}
 ];
