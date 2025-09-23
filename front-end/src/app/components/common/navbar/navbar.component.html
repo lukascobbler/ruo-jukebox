@@ -11,7 +11,7 @@
        routerLinkActive="active-link"
        [routerLink]="item.link"
        [ngClass]="item.class">
-      <span class="material-symbols-rounded">{{ item.icon }}</span> {{ item.label }}
+      <span class="material-symbols-rounded" [ngClass]="{ 'full-icon': item.isFullIcon }">{{ item.icon }}</span> {{ item.label }}
     </a>
   </ng-container>
 

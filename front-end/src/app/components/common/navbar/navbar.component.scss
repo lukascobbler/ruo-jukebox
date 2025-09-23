@@ -101,7 +101,11 @@ a:hover {
   color: $white;
 }
 
+.full-icon {
+  font-variation-settings: "FILL" 1;
+}
+
 .logout {
   margin-top: auto;
-  margin-bottom: 3.2rem;
+  margin-bottom: 1.6rem;
 }
