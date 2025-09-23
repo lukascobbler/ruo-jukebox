@@ -21,7 +21,6 @@ import {SearchComponent} from '../../search/search.component';
 export class GenresComponent {
   private router = inject(Router);
 
-  searchTerm: string = "";
   genres: Genre[] = [
     { name: 'Rock', isSubscribed: true, id: '1' },
     { name: 'Jazz', isSubscribed: false, id: '2' },

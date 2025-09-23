@@ -7,7 +7,7 @@ import {
 import {
   RoundMissingIconXLargeComponent
 } from '../../../common/missing-icons/round/round-missing-icon-x-large/round-missing-icon-x-large.component';
-import {Album} from '../../../../models/Album';
+import {AlbumUserView} from '../../../../models/AlbumUserView';
 import {ArtistUserView} from '../../../../models/ArtistUserView';
 import {Router} from '@angular/router';
 import {SearchComponent} from '../../search/search.component';
@@ -29,16 +29,15 @@ import {SearchComponent} from '../../search/search.component';
 export class MusicContentComponent implements OnInit {
   router = inject(Router);
 
-  searchTerm: string = "";
-  albums: Album[] = [
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '2', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '3', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '4', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '5', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '6', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '7', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '8', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+  albums: AlbumUserView[] = [
+    { id: '1', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '1' },
+    { id: '2', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '2' },
+    { id: '3', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '3' },
+    { id: '4', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '4' },
+    { id: '5', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '5' },
+    { id: '6', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '6' },
+    { id: '7', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '7' },
+    { id: '8', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '8' },
   ];
 
   artists: ArtistUserView[] = [

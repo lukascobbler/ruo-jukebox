@@ -30,7 +30,7 @@
     </ng-container>
 
     <ng-container *ngIf="showAlbum" matColumnDef="album">
-      <mat-header-cell class="album" *matHeaderCellDef>Album</mat-header-cell>
+      <mat-header-cell class="album" *matHeaderCellDef>AlbumUserView</mat-header-cell>
       <mat-cell class="album" *matCellDef="let song">
         <p class="clickable-text" (click)="router.navigate(['album', song.albumId])"><u>{{ song.album }}</u></p>
       </mat-cell>

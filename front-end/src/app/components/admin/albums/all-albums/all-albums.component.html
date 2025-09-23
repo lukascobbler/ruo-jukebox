@@ -1,1 +1,41 @@
-<p>all-albums works!</p>
+<div class="container">
+  <button class="bottom-right-button yellow-button">
+    <span class="material-symbols-rounded">add</span> Create new album
+  </button>
+  <div class="table-container">
+    <mat-table [dataSource]="albumsDataSource">
+      <ng-container matColumnDef="cover">
+        <mat-header-cell class="cover" *matHeaderCellDef></mat-header-cell>
+        <mat-cell class="cover" *matCellDef="let album">
+          <app-box-missing-icon-small class="cover-picture" [icon_name]="'album'"/>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <mat-header-cell class="name" *matHeaderCellDef>Name</mat-header-cell>
+        <mat-cell class="name" *matCellDef="let album"><p class="nowrap-text">{{ album.name }}</p></mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="artist">
+        <mat-header-cell class="artist" *matHeaderCellDef>Artist</mat-header-cell>
+        <mat-cell class="artist" *matCellDef="let album"><p class="nowrap-text">{{ album.artist }}</p></mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>
+        <mat-cell class="actions" *matCellDef="let album">
+          <button mat-icon-button>
+            <span class="material-symbols-rounded">edit</span>
+          </button>
+          <button mat-icon-button>
+            <span class="material-symbols-rounded">delete</span>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </div>
+</div>
+
