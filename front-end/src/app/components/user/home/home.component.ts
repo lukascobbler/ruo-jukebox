@@ -12,7 +12,7 @@ import {
 } from '../../common/missing-icons/round/round-missing-icon-x-large/round-missing-icon-x-large.component';
 import {Album} from '../../../models/Album';
 import {Artist} from '../../../models/Artist';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-home',

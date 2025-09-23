@@ -7,4 +7,5 @@ export interface Song {
   artist: string;
   artistId: string;
   duration: number;
+  lyrics: string;
 }
