@@ -9,10 +9,10 @@ import {
   MatRow, MatRowDef, MatTable
 } from '@angular/material/table';
 import {MatIconButton} from '@angular/material/button';
-import {AlbumAdminView} from '../../../../models/AlbumAdminView';
 import {
   BoxMissingIconSmallComponent
 } from '../../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component';
+import {Album} from '../../../../models/Album';
 
 @Component({
   selector: 'app-all-albums',
@@ -36,7 +36,7 @@ import {
 })
 export class AllAlbumsComponent {
   displayedColumns = ['cover', 'name', 'artist', 'actions'];
-  albumsDataSource: AlbumAdminView[] = [
+  albumsDataSource: Album[] = [
     {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
     {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
     {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},

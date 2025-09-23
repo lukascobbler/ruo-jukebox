@@ -39,4 +39,10 @@ export class GenresComponent {
   goToGenre(genre: Genre) {
     this.router.navigate(['genre', genre.id]);
   }
+
+  unsubscribeFromGenre(event: Event, genre: Genre) {
+    event.stopPropagation();
+
+    genre.isSubscribed = !genre.isSubscribed;
+  }
 }

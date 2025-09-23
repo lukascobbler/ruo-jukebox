@@ -11,7 +11,7 @@
 
       <ng-container matColumnDef="genres">
         <mat-header-cell class="genres" *matHeaderCellDef>Genres</mat-header-cell>
-        <mat-cell class="genres" *matCellDef="let artist"><p class="nowrap-text">{{ artist.genres.join(', ') }}</p></mat-cell>
+        <mat-cell class="genres" *matCellDef="let artist"><p class="nowrap-text">{{ getArtistGenres(artist) }}</p></mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="biography">

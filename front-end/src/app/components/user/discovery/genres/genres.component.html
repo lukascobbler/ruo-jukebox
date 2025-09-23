@@ -13,7 +13,7 @@
           <p class="genre-name"><b>{{ genre.name }}</b></p>
         </div>
         <div class="is-subscribed">
-          <button (click)="genre.isSubscribed = !genre.isSubscribed" class="subscribe-button">
+          <button (click)="unsubscribeFromGenre($event, genre)" class="subscribe-button">
             <span class="material-symbols-rounded icon" [ngClass]="{ 'full': genre.isSubscribed }">circle_notifications</span>
           </button>
         </div>

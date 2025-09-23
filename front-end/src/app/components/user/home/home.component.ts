@@ -8,8 +8,8 @@ import {
 import {
   RoundMissingIconXLargeComponent
 } from '../../common/missing-icons/round/round-missing-icon-x-large/round-missing-icon-x-large.component';
-import {AlbumUserView} from '../../../models/AlbumUserView';
-import {ArtistUserView} from '../../../models/ArtistUserView';
+import {Album} from '../../../models/Album';
+import {Artist} from '../../../models/Artist';
 import {Router} from '@angular/router';
 import {SearchComponent} from '../search/search.component';
 
@@ -32,7 +32,7 @@ import {SearchComponent} from '../search/search.component';
 export class HomeComponent implements OnInit {
   router = inject(Router);
 
-  albums: AlbumUserView[] = [
+  albums: Album[] = [
     { id: '1', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '1' },
     { id: '2', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '2' },
     { id: '3', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '3' },
@@ -43,15 +43,15 @@ export class HomeComponent implements OnInit {
     { id: '8', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '8' },
   ];
 
-  artists: ArtistUserView[] = [
-    { id: '', name: 'Awesome artist', isSubscribed: false },
-    { id: '', name: 'Awesome artist', isSubscribed: false },
-    { id: '', name: 'Awesome artist', isSubscribed: false },
-    { id: '', name: 'Awesome artist', isSubscribed: false },
-    { id: '', name: 'Awesome artist', isSubscribed: false },
-    { id: '', name: 'Awesome artist', isSubscribed: false },
-    { id: '', name: 'Awesome artist', isSubscribed: false },
-    { id: '', name: 'Awesome artist', isSubscribed: false },
+  artists: Artist[] = [
+    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
   ];
 
   ngOnInit() {

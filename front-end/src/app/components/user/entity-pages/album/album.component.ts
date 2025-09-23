@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {SongTableComponent} from "../../song-table/song-table.component";
-import {AlbumUserView} from '../../../../models/AlbumUserView';
+import {Album} from '../../../../models/Album';
 import {
   BoxMissingIconSmallComponent
 } from '../../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component';
@@ -16,5 +16,5 @@ import {
   styleUrl: './album.component.scss'
 })
 export class AlbumComponent {
-  album: AlbumUserView = { id: '1', name: 'Awesome album', artist: 'Awesome artist', artistId: '1' };
+  album: Album = { id: '1', name: 'Awesome album', artist: 'Awesome artist', artistId: '1' };
 }
