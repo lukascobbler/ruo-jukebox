@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {NgForOf} from '@angular/common';
 import {SongTableComponent} from '../song-table/song-table.component';
 import {MatFormField, MatSuffix} from '@angular/material/form-field';
@@ -12,6 +12,7 @@ import {
 } from '../../common/missing-icons/round/round-missing-icon-x-large/round-missing-icon-x-large.component';
 import {Album} from '../../../models/Album';
 import {Artist} from '../../../models/Artist';
+import {Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -32,6 +33,8 @@ import {Artist} from '../../../models/Artist';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
+  router = inject(Router);
+
   searchTerm: string = "";
   albums: Album[] = [
     {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},

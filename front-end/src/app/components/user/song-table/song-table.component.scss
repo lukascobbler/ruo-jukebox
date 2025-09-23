@@ -17,6 +17,29 @@
   padding: 0;
 }
 
+.title-and-artist {
+  display: flex;
+  flex-direction: column;
+}
+
+.clickable-text {
+  cursor: pointer;
+}
+
+.song-title {
+  color: $white;
+  font-size: larger;
+  margin-bottom: 1px;
+  margin-top: 6px;
+}
+
+.song-artist {
+  font-size: 12px;
+  color: $white2;
+  margin-bottom: 6px;
+  margin-top: 0;
+}
+
 /* case 1: both "no" and "album" present */
 mat-header-cell.no,
 mat-cell.no {

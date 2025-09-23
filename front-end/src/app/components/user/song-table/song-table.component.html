@@ -22,13 +22,18 @@
         'only-title': !showNumber && !showAlbum
       }"
         *matCellDef="let song">
-        {{ song.title }}
+        <div class="title-and-artist">
+          <p class="song-title">{{ song.title }}</p>
+          <p class="clickable-text song-artist" (click)="router.navigate(['artist', song.artistId])"><u>{{ song.artist }}</u></p>
+        </div>
       </mat-cell>
     </ng-container>
 
     <ng-container *ngIf="showAlbum" matColumnDef="album">
       <mat-header-cell class="album" *matHeaderCellDef>Album</mat-header-cell>
-      <mat-cell class="album" *matCellDef="let song">{{ song.album }}</mat-cell>
+      <mat-cell class="album" *matCellDef="let song">
+        <p class="clickable-text" (click)="router.navigate(['album', song.albumId])"><u>{{ song.album }}</u></p>
+      </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="duration">

@@ -14,7 +14,9 @@
       <p class="big-text">Discover albums</p>
       <div class="discover-albums horizontal-scroller">
         <div *ngFor="let album of albums" class="single-album">
-          <app-box-missing-icon-x-large [icon_name]="'album'" />
+          <button class="icon-button" (click)="router.navigate(['album', album.id])">
+            <app-box-missing-icon-x-large [icon_name]="'album'" />
+          </button>
           <p class="album-name">{{ album.name }}</p>
           <p class="artist-name">{{ album.artist }}</p>
         </div>
@@ -24,7 +26,9 @@
       <p class="big-text">Discover artists</p>
       <div class="discover-artists horizontal-scroller">
         <div *ngFor="let artist of artists" class="single-artist">
-          <app-round-missing-icon-x-large [icon_name]="'artist'" />
+          <button class="icon-button" (click)="router.navigate(['artist', artist.id])">
+            <app-round-missing-icon-x-large [icon_name]="'artist'" />
+          </button>
           <p class="artist-name">{{ artist.name }}</p>
         </div>
       </div>

@@ -1,7 +1,4 @@
 import { Component } from '@angular/core';
-import {
-    BoxMissingIconSmallComponent
-} from "../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component";
 import {SongTableComponent} from "../song-table/song-table.component";
 import {Playlist} from '../../../models/Playlist';
 

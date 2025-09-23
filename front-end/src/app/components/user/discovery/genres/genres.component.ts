@@ -26,18 +26,18 @@ export class GenresComponent {
 
   searchTerm: string = "";
   genres: Genre[] = [
-    { name: 'Rock', isSubscribed: true, id: '' },
-    { name: 'Jazz', isSubscribed: false, id: '' },
-    { name: 'Classical', isSubscribed: false, id: '' },
-    { name: 'Country', isSubscribed: false, id: '' },
-    { name: 'Soul', isSubscribed: true, id: '' },
-    { name: 'Pop', isSubscribed: false, id: '' },
-    { name: 'Blues', isSubscribed: true, id: '' },
-    { name: 'Hip-Hop', isSubscribed: false, id: '' },
-    { name: 'Reggae', isSubscribed: false, id: '' },
-    { name: 'Latin', isSubscribed: false, id: '' },
-    { name: 'Funk', isSubscribed: true, id: '' },
-    { name: 'Electronic', isSubscribed: false, id: '' },
+    { name: 'Rock', isSubscribed: true, id: '1' },
+    { name: 'Jazz', isSubscribed: false, id: '2' },
+    { name: 'Classical', isSubscribed: false, id: '3' },
+    { name: 'Country', isSubscribed: false, id: '4' },
+    { name: 'Soul', isSubscribed: true, id: '5' },
+    { name: 'Pop', isSubscribed: false, id: '6' },
+    { name: 'Blues', isSubscribed: true, id: '7' },
+    { name: 'Hip-Hop', isSubscribed: false, id: '8' },
+    { name: 'Reggae', isSubscribed: false, id: '9' },
+    { name: 'Latin', isSubscribed: false, id: '10' },
+    { name: 'Funk', isSubscribed: true, id: '11' },
+    { name: 'Electronic', isSubscribed: false, id: '12' },
   ];
 
   goToGenre(genre: Genre) {

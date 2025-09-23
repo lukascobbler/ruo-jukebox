@@ -25,7 +25,9 @@
       <p class="big-text">Albums</p>
       <div class="albums horizontal-scroller">
         <div *ngFor="let album of albums" class="single-album">
-          <app-box-missing-icon-x-large [icon_name]="'album'" />
+          <button class="icon-button" (click)="router.navigate(['album', album.id])">
+            <app-box-missing-icon-x-large [icon_name]="'album'" />
+          </button>
           <p class="album-name">{{ album.name }}</p>
         </div>
       </div>

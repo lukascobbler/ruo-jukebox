@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {MatFormField, MatSuffix} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {NgForOf} from "@angular/common";
@@ -11,6 +11,7 @@ import {
 } from '../../../common/missing-icons/round/round-missing-icon-x-large/round-missing-icon-x-large.component';
 import {Album} from '../../../../models/Album';
 import {Artist} from '../../../../models/Artist';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-music-content',
@@ -29,27 +30,29 @@ import {Artist} from '../../../../models/Artist';
   styleUrl: './music-content.component.scss'
 })
 export class MusicContentComponent implements OnInit {
+  router = inject(Router);
+
   searchTerm: string = "";
   albums: Album[] = [
-    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
-    {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '2', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '3', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '4', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '5', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '6', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '7', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
+    {id: '8', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
   ];
 
   artists: Artist[] = [
-    {id: '', name: 'Awesome artist', isSubscribed: false},
-    {id: '', name: 'Awesome artist', isSubscribed: false},
-    {id: '', name: 'Awesome artist', isSubscribed: false},
-    {id: '', name: 'Awesome artist', isSubscribed: false},
-    {id: '', name: 'Awesome artist', isSubscribed: false},
-    {id: '', name: 'Awesome artist', isSubscribed: false},
-    {id: '', name: 'Awesome artist', isSubscribed: false},
-    {id: '', name: 'Awesome artist', isSubscribed: false},
+    {id: '1', name: 'Awesome artist', isSubscribed: false},
+    {id: '2', name: 'Awesome artist', isSubscribed: false},
+    {id: '3', name: 'Awesome artist', isSubscribed: false},
+    {id: '4', name: 'Awesome artist', isSubscribed: false},
+    {id: '5', name: 'Awesome artist', isSubscribed: false},
+    {id: '6', name: 'Awesome artist', isSubscribed: false},
+    {id: '7', name: 'Awesome artist', isSubscribed: false},
+    {id: '8', name: 'Awesome artist', isSubscribed: false},
   ];
 
   ngOnInit() {
