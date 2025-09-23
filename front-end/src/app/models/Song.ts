@@ -1,3 +1,5 @@
+import {Genre} from './Genre';
+
 export interface Song {
   id: string;
   no?: number;
@@ -8,4 +10,5 @@ export interface Song {
   artistId: string;
   duration: number;
   lyrics: string;
+  genres: Genre[];
 }

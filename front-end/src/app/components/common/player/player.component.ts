@@ -25,7 +25,7 @@ export class PlayerComponent {
   ratings = [1, 2, 3];
   starRating = 2;
   hoverRating = 0;
-  currentlyPlayingSong: Song = { id: '1', no: 1, title: 'Awesome song', album: 'Album', albumId: '1', duration: 420, artist: 'Awesome Artist', artistId: '1', lyrics: 'No lyrics found' }
+  currentlyPlayingSong: Song = { id: '1', no: 1, title: 'Awesome song', album: 'Album', albumId: '1', duration: 420, artist: 'Awesome Artist', artistId: '1', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] }
 
   updateProgress(event: Event) {
     const input = event.target as HTMLInputElement;

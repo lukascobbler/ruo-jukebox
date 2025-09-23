@@ -31,7 +31,7 @@ interface NavItem {
 })
 export class NavbarComponent implements OnInit {
   private router = inject(Router);
-  currentUserRole: Role | null = "User";
+  currentUserRole: Role | null = "Admin";
 
   constructor(private dialog: MatDialog) {
   }

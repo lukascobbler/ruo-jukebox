@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -13,6 +13,7 @@ import {
   BoxMissingIconSmallComponent
 } from '../../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component';
 import {Album} from '../../../../models/Album';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-all-albums',
@@ -35,6 +36,8 @@ import {Album} from '../../../../models/Album';
   styleUrl: './all-albums.component.scss'
 })
 export class AllAlbumsComponent {
+  router = inject(Router);
+
   displayedColumns = ['cover', 'name', 'artist', 'actions'];
   albumsDataSource: Album[] = [
     {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},

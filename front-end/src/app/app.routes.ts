@@ -10,6 +10,7 @@ import {SearchResultsComponent} from './components/user/search-results-page/sear
 import {AllArtistsComponent} from './components/admin/artists/all-artists.component';
 import {AllAlbumsComponent} from './components/admin/albums/all-albums/all-albums.component';
 import {AllSinglesComponent} from './components/admin/singles/all-singles.component';
+import {AlbumDetailsComponent} from './components/admin/albums/album-details/album-details.component';
 
 export const routes: Routes = [
   {path: "home", component: HomeComponent},
@@ -23,5 +24,6 @@ export const routes: Routes = [
   {path: "subscriptions", component: SubscriptionsComponent},
   {path: "all-artists", component: AllArtistsComponent},
   {path: "all-albums", component: AllAlbumsComponent},
+  {path: "edit-album/:id", component: AlbumDetailsComponent},
   {path: "all-singles", component: AllSinglesComponent}
 ];

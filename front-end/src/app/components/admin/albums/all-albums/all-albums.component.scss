@@ -32,6 +32,10 @@
   text-overflow: ellipsis;
 }
 
+.clickable-text {
+  cursor: pointer;
+}
+
 mat-header-cell.cover,
 mat-cell.cover {
   flex: 0 0 15%;

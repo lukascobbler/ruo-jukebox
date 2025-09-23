@@ -13,7 +13,12 @@
 
       <ng-container matColumnDef="name">
         <mat-header-cell class="name" *matHeaderCellDef>Name</mat-header-cell>
-        <mat-cell class="name" *matCellDef="let album"><p class="nowrap-text">{{ album.name }}</p></mat-cell>
+        <mat-cell
+          class="name"
+          *matCellDef="let album"
+          (click)="router.navigate(['edit-album', album.id])"
+        ><p class="nowrap-text clickable-text"><u>{{ album.name }}</u></p>
+        </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="artist">
