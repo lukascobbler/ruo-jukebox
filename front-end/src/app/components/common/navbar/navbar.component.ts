@@ -31,7 +31,7 @@ interface NavItem {
 })
 export class NavbarComponent implements OnInit {
   private router = inject(Router);
-  currentUserRole: Role | null = "User";
+  currentUserRole: Role | null = "Admin";
 
   constructor(private dialog: MatDialog) {
   }
@@ -41,9 +41,9 @@ export class NavbarComponent implements OnInit {
     {label: 'Discovery', icon: 'explore', link: '/discovery', roles: ['User']},
     {label: 'Subscriptions', icon: 'subscriptions', link: '/subscriptions', roles: ['User']},
     {label: 'Create playlist', icon: 'playlist_add', action: () => this.createPlaylist(), roles: ['User']},
-    {label: 'Artists', icon: 'artist', link: '/artists', roles: ['Admin']},
-    {label: 'Albums', icon: 'album', link: '/albums', roles: ['Admin']},
-    {label: 'Singles', icon: 'music_note', link: '/singles', roles: ['Admin']},
+    {label: 'Artists', icon: 'artist', link: '/all-artists', roles: ['Admin']},
+    {label: 'Albums', icon: 'album', link: '/all-albums', roles: ['Admin']},
+    {label: 'Singles', icon: 'music_note', link: '/all-singles', roles: ['Admin']},
     {label: 'Logout', icon: 'logout', roles: ['Admin'], class: 'logout', action: () => this.logout()},
   ];
 

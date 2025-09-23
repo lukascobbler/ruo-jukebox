@@ -2,17 +2,12 @@
 
 mat-header-cell {
   font-size: large;
+  color: $white;
   border-bottom: 1px solid $edge;
-}
-
-mat-header-row {
-  position: sticky;
-  top: 0;
-  background-color: $background2;
-  z-index: 10;
 }
 
 mat-cell {
   font-size: small;
+  color: $white2;
   border-bottom: 1px solid $edge;
 }

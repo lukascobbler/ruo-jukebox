@@ -30,6 +30,21 @@
   right: 6rem;
 }
 
+::ng-deep .bottom-right-button {
+  border-radius: 48px !important;
+  box-shadow: 2px 2px 2px $edge2 !important;
+  width: 210px;
+  min-height: 65px;
+  position: absolute;
+  bottom: 8rem;
+  right: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  z-index: 1000;
+}
+
 ::ng-deep .loading {
   display: flex;
   justify-content: center;

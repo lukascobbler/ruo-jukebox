@@ -1,4 +1,4 @@
-export interface Artist {
+export interface ArtistUserView {
   id: string;
   name: string;
   picture?: Blob;

@@ -3,7 +3,7 @@ import {NgForOf} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ActivatedRoute, Router} from '@angular/router';
 import {Album} from '../../../models/Album';
-import {Artist} from '../../../models/Artist';
+import {ArtistUserView} from '../../../models/ArtistUserView';
 import {Song} from '../../../models/Song';
 import {
   BoxMissingIconLargeComponent
@@ -58,7 +58,7 @@ export class SearchResultsComponent implements OnInit {
     {id: '10', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
   ];
 
-  foundArtists: Artist[] = [
+  foundArtists: ArtistUserView[] = [
     {id: '1', name: 'Awesome artist', isSubscribed: false},
     {id: '2', name: 'Awesome artist', isSubscribed: false},
     {id: '3', name: 'Awesome artist', isSubscribed: false},

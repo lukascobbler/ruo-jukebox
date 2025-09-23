@@ -5,7 +5,7 @@ import {
 import {NgClass, NgForOf} from "@angular/common";
 import {ReactiveFormsModule} from "@angular/forms";
 import {Album} from '../../../../models/Album';
-import {Artist} from '../../../../models/Artist';
+import {ArtistUserView} from '../../../../models/ArtistUserView';
 import {
   RoundMissingIconSmallComponent
 } from '../../../common/missing-icons/round/round-missing-icon-small/round-missing-icon-small.component';
@@ -28,7 +28,7 @@ import {Router} from '@angular/router';
 export class ArtistComponent implements OnInit {
   router = inject(Router);
 
-  artist: Artist = {id: '', name: 'Awesome artist', isSubscribed: true};
+  artist: ArtistUserView = {id: '', name: 'Awesome artist', isSubscribed: true};
 
   singles: Song[] = [
     { id: '1', no: 1, title: 'Title', album: 'Album', albumId: '1', duration: 420, artist: 'Awesome Artist 123', artistId: '1', lyrics: 'No lyrics found' },

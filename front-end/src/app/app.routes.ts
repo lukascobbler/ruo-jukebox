@@ -7,6 +7,9 @@ import {AlbumComponent} from './components/user/entity-pages/album/album.compone
 import {ArtistComponent} from './components/user/entity-pages/artist/artist.component';
 import {PlaylistComponent} from './components/user/playlist/playlist.component';
 import {SearchResultsComponent} from './components/user/search-results-page/search-results.component';
+import {AllArtistsComponent} from './components/admin/artists/all-artists.component';
+import {AllAlbumsComponent} from './components/admin/albums/all-albums/all-albums.component';
+import {AllSinglesComponent} from './components/admin/singles/all-singles.component';
 
 export const routes: Routes = [
   {path: "home", component: HomeComponent},
@@ -17,5 +20,8 @@ export const routes: Routes = [
   {path: "artist/:id", component: ArtistComponent},
   {path: "playlist/:id", component: PlaylistComponent},
   {path: "search/:query", component: SearchResultsComponent},
-  {path: "subscriptions", component: SubscriptionsComponent}
+  {path: "subscriptions", component: SubscriptionsComponent},
+  {path: "all-artists", component: AllArtistsComponent},
+  {path: "all-albums", component: AllAlbumsComponent},
+  {path: "all-singles", component: AllSinglesComponent}
 ];

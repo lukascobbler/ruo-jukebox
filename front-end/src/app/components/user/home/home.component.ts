@@ -9,7 +9,7 @@ import {
   RoundMissingIconXLargeComponent
 } from '../../common/missing-icons/round/round-missing-icon-x-large/round-missing-icon-x-large.component';
 import {Album} from '../../../models/Album';
-import {Artist} from '../../../models/Artist';
+import {ArtistUserView} from '../../../models/ArtistUserView';
 import {Router} from '@angular/router';
 import {SearchComponent} from '../search/search.component';
 
@@ -43,7 +43,7 @@ export class HomeComponent implements OnInit {
     {id: '', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein'},
   ];
 
-  artists: Artist[] = [
+  artists: ArtistUserView[] = [
     {id: '', name: 'Awesome artist', isSubscribed: false},
     {id: '', name: 'Awesome artist', isSubscribed: false},
     {id: '', name: 'Awesome artist', isSubscribed: false},

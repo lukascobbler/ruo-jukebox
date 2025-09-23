@@ -2,8 +2,8 @@
   <div class="song-info">
     <app-box-missing-icon-small [icon_name]="'music_note'" />
     <div class="song-details">
-      <div class="song-title">Awesome song</div>
-      <div class="song-artist">Awesome Artist</div>
+      <div class="song-title">{{ currentlyPlayingSong.title }}</div>
+      <div class="song-artist">{{ currentlyPlayingSong.artist }}</div>
     </div>
   </div>
 
@@ -29,26 +29,28 @@
       class="progress">
   </div>
 
-  <div class="rating">
-    <span
-      (click)="setStarRating(0)"
-      class="material-symbols-rounded clear-rating"
-    >
+  <div class="rating-and-lyrics">
+    <div class="rating" *ngIf="userRole === 'User'">
+      <span
+        (click)="setStarRating(0)"
+        class="material-symbols-rounded clear-rating"
+      >
       do_not_disturb_on
     </span>
-    <span
-      *ngFor="let i of ratings"
-      class="material-symbols-rounded"
-      [ngClass]="{
+      <span
+        *ngFor="let i of ratings"
+        class="material-symbols-rounded"
+        [ngClass]="{
         'star-full': i <= (hoverRating || starRating),
         'star-empty': i > (hoverRating || starRating)
       }"
-      (click)="setStarRating(i)"
-      (mouseenter)="setHoverRating(i)"
-      (mouseleave)="resetHoverRating()"
-    >
+        (click)="setStarRating(i)"
+        (mouseenter)="setHoverRating(i)"
+        (mouseleave)="resetHoverRating()"
+      >
     star
     </span>
+    </div>
     <button class="icon-button" (click)="openLyrics()">
       <span class="material-symbols-rounded lyrics">lyrics</span>
     </button>
