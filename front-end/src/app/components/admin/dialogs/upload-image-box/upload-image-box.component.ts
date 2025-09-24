@@ -3,17 +3,17 @@ import {MatIconButton} from '@angular/material/button';
 import {NgIf, NgStyle} from '@angular/common';
 
 @Component({
-  selector: 'app-upload-box',
+  selector: 'app-upload-image-box',
   standalone: true,
   imports: [
     MatIconButton,
     NgIf,
     NgStyle,
   ],
-  templateUrl: './upload-box.component.html',
-  styleUrl: './upload-box.component.scss'
+  templateUrl: './upload-image-box.component.html',
+  styleUrl: './upload-image-box.component.scss'
 })
-export class UploadBoxComponent {
+export class UploadImageBoxComponent {
   cd = inject(ChangeDetectorRef);
 
   image: { file: File; url: string } | null = null;

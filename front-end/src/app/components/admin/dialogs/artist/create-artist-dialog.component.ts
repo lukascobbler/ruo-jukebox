@@ -3,7 +3,7 @@ import {MatDialogRef} from '@angular/material/dialog';
 import {MatFormField, MatLabel, MatOption, MatSelect} from '@angular/material/select';
 import {MatInput} from '@angular/material/input';
 import {MatIconButton} from '@angular/material/button';
-import {UploadBoxComponent} from '../upload-box/upload-box.component';
+import {UploadImageBoxComponent} from '../upload-image-box/upload-image-box.component';
 
 @Component({
   selector: 'app-create-artist',
@@ -15,7 +15,7 @@ import {UploadBoxComponent} from '../upload-box/upload-box.component';
     MatInput,
     MatIconButton,
     MatLabel,
-    UploadBoxComponent
+    UploadImageBoxComponent
   ],
   templateUrl: './create-artist-dialog.component.html',
   styleUrl: './create-artist-dialog.component.scss'

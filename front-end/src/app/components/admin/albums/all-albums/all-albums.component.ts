@@ -14,6 +14,8 @@ import {
 } from '../../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component';
 import {Album} from '../../../../models/Album';
 import {Router} from '@angular/router';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {CreateAlbumDialogComponent} from '../../dialogs/album/create-album-dialog.component';
 
 @Component({
   selector: 'app-all-albums',
@@ -36,6 +38,7 @@ import {Router} from '@angular/router';
   styleUrl: './all-albums.component.scss'
 })
 export class AllAlbumsComponent {
+  dialog = inject(MatDialog);
   router = inject(Router);
 
   displayedColumns = ['cover', 'name', 'artist', 'actions'];
@@ -59,4 +62,11 @@ export class AllAlbumsComponent {
     {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
     {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
   ];
+
+  createNewAlbum() {
+    const dialogRef: MatDialogRef<CreateAlbumDialogComponent, null> = this.dialog.open(CreateAlbumDialogComponent, {
+      width: '250px',
+      minWidth: '22vw'
+    });
+  }
 }

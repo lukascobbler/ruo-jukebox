@@ -1,0 +1,74 @@
+@import "colors";
+@import "buttons";
+
+.container {
+  background-color: $background;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  padding: 80px 80px 40px;
+  color: $white;
+}
+
+.textarea {
+  resize: none;
+  font-weight: 400;
+  padding-right: 8px;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $edge2;
+    border-radius: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: lighten($edge2, 10%);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  @-moz-document url-prefix() {
+    scrollbar-width: thin;
+    scrollbar-color: $edge2 transparent;
+  }
+}
+
+.info-and-picture {
+  width: 100%;
+  gap: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.info {
+  flex: 0 0 50%;
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+}
+
+.picture {
+  height: 250px;
+  border: 3px solid $edge;
+  border-radius: 8px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.finish {
+  width: 9rem;
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
