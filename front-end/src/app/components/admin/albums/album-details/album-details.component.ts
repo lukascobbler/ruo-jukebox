@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {
     BoxMissingIconSmallComponent
 } from "../../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component";
@@ -14,6 +14,9 @@ import {
 import {MatIconButton} from "@angular/material/button";
 import {Album} from '../../../../models/Album';
 import {Song} from '../../../../models/Song';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {CreateAlbumDialogComponent} from '../../dialogs/album/create-album-dialog.component';
+import {CreateSongDialogComponent} from '../../dialogs/song/create-song-dialog.component';
 
 @Component({
   selector: 'app-album-details',
@@ -36,6 +39,8 @@ import {Song} from '../../../../models/Song';
   styleUrl: './album-details.component.scss'
 })
 export class AlbumDetailsComponent {
+  dialog = inject(MatDialog);
+
   displayedColumns = ['name', 'artist', 'genres', 'actions'];
 
   album: Album = {
@@ -68,5 +73,12 @@ export class AlbumDetailsComponent {
 
   getSongGenres(song: Song) {
     return song.genres.map(g => g['name']).join(', ');
+  }
+
+  createNewSong() {
+    const dialogRef: MatDialogRef<CreateAlbumDialogComponent, null> = this.dialog.open(CreateSongDialogComponent, {
+      width: '250px',
+      minWidth: '22vw'
+    });
   }
 }
