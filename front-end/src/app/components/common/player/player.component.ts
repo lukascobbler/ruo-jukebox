@@ -1,12 +1,55 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
+import {NgClass, NgForOf, NgIf} from '@angular/common';
+import {BoxMissingIconSmallComponent} from '../missing-icons/box/missing-icon-small/box-missing-icon-small.component';
+import {MatDialog} from '@angular/material/dialog';
+import {LyricsDialogComponent} from '../dialogs/lyrics/lyrics-dialog.component';
+import {Song} from '../../../models/Song';
+import {Role} from '../../../models/Role';
 
 @Component({
   selector: 'app-player',
   standalone: true,
-  imports: [],
+  imports: [
+    NgForOf,
+    NgClass,
+    BoxMissingIconSmallComponent,
+    NgIf
+  ],
   templateUrl: './player.component.html',
   styleUrl: './player.component.scss'
 })
 export class PlayerComponent {
+  dialog = inject(MatDialog);
+  userRole: Role = 'Admin';
 
+  ratings = [1, 2, 3];
+  starRating = 2;
+  hoverRating = 0;
+  currentlyPlayingSong: Song = { id: '1', no: 1, title: 'Awesome song', album: 'Album', albumId: '1', duration: 420, artist: 'Awesome Artist', artistId: '1', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] }
+
+  updateProgress(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+    input.style.setProperty('--value', value + '%');
+  }
+
+  setStarRating(starRating: number) {
+    this.starRating = starRating;
+  }
+
+  setHoverRating(rating: number) {
+    this.hoverRating = rating;
+  }
+
+  resetHoverRating() {
+    this.hoverRating = 0;
+  }
+
+  openLyrics() {
+    this.dialog.open(LyricsDialogComponent, {
+      width: '600px',
+      maxWidth: '70vw',
+      data: { lyrics: this.currentlyPlayingSong.lyrics }
+    });
+  }
 }

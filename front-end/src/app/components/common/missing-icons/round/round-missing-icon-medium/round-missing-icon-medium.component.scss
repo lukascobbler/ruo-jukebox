@@ -1,0 +1,20 @@
+@import "colors";
+
+.picture-wrapper {
+  display: inline-block;
+  width: calc(35px * 3);
+  height: calc(35px * 3);
+}
+
+.missing-picture-medium {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: $white2 none;
+  color: $white4;
+  transform-origin: top left;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  transform: scale(3);
+}

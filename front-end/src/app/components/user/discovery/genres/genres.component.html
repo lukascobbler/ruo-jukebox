@@ -1,1 +1,23 @@
-<p>genres works!</p>
+<div class="container">
+  <button class="logout-button yellow-button">Logout</button>
+  <div class="search-container">
+    <div class="search">
+      <app-search />
+    </div>
+  </div>
+
+  <div class="center-container">
+    <div class="genres">
+      <div (click)="goToGenre(genre)" class="genre" *ngFor="let genre of genres">
+        <div class="genre-name">
+          <p class="genre-name"><b>{{ genre.name }}</b></p>
+        </div>
+        <div class="is-subscribed">
+          <button (click)="unsubscribeFromGenre($event, genre)" class="subscribe-button">
+            <span class="material-symbols-rounded icon" [ngClass]="{ 'full': genre.isSubscribed }">circle_notifications</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

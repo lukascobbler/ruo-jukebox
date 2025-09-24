@@ -1,1 +1,58 @@
-<p>player works!</p>
+<div class="player-container">
+  <div class="song-info">
+    <app-box-missing-icon-small [icon_name]="'music_note'" />
+    <div class="song-details">
+      <div class="song-title">{{ currentlyPlayingSong.title }}</div>
+      <div class="song-artist">{{ currentlyPlayingSong.artist }}</div>
+    </div>
+  </div>
+
+  <div class="controls-and-progress">
+    <div class="controls">
+      <button class="control-btn">
+        <span class="material-symbols-rounded">skip_previous</span>
+      </button>
+      <button class="control-btn play">
+        <span class="material-symbols-rounded">play_arrow</span>
+      </button>
+      <button class="control-btn">
+        <span class="material-symbols-rounded">skip_next</span>
+      </button>
+    </div>
+
+    <input
+      type="range"
+      min="0"
+      max="100"
+      value="20"
+      (input)="updateProgress($event)"
+      class="progress">
+  </div>
+
+  <div class="rating-and-lyrics">
+    <div class="rating" *ngIf="userRole === 'User'">
+      <span
+        (click)="setStarRating(0)"
+        class="material-symbols-rounded clear-rating"
+      >
+      do_not_disturb_on
+    </span>
+      <span
+        *ngFor="let i of ratings"
+        class="material-symbols-rounded"
+        [ngClass]="{
+        'star-full': i <= (hoverRating || starRating),
+        'star-empty': i > (hoverRating || starRating)
+      }"
+        (click)="setStarRating(i)"
+        (mouseenter)="setHoverRating(i)"
+        (mouseleave)="resetHoverRating()"
+      >
+    star
+    </span>
+    </div>
+    <button class="icon-button" (click)="openLyrics()">
+      <span class="material-symbols-rounded lyrics">lyrics</span>
+    </button>
+  </div>
+</div>

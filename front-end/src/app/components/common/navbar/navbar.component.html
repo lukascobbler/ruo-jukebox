@@ -11,7 +11,18 @@
        routerLinkActive="active-link"
        [routerLink]="item.link"
        [ngClass]="item.class">
-      <span class="material-symbols-rounded">{{ item.icon }}</span> {{ item.label }}
+      <span class="material-symbols-rounded" [ngClass]="{ 'full-icon': item.isFullIcon }">{{ item.icon }}</span> {{ item.label }}
     </a>
   </ng-container>
+
+  <hr *ngIf="currentUserRole === 'User'" class="sidebar-line-no-margin">
+
+  <div *ngIf="currentUserRole === 'User'" class="user-playlists">
+    <ng-container *ngFor="let item of userPlaylists">
+      <a routerLinkActive="active-link"
+         [routerLink]="['playlist', item.id]">
+        <span class="material-symbols-rounded">queue_music</span> {{ item.name }}
+      </a>
+    </ng-container>
+  </div>
 </div>

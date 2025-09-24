@@ -1,0 +1,104 @@
+@import "buttons";
+@import "colors";
+
+.container {
+  padding: 3rem 6rem;
+  position: relative;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 50px;
+}
+
+.search {
+  width: 50%
+}
+
+p {
+  margin: 0;
+}
+
+.big-text {
+  color: $white;
+  font-size: xx-large;
+  margin-bottom: 15px;
+}
+
+.recommended-entities {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.recommended-albums {
+  display: flex;
+  gap: 30px;
+  max-width: 590px;
+  overflow-x: auto;
+  height: 260px;
+
+  .single-album {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 175px;
+  }
+
+  .album-name {
+    color: $white;
+    font-size: larger;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .artist-name {
+    color: $white2;
+    font-size: medium;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.recommended-artists {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  max-width: 590px;
+  overflow-x: auto;
+  height: 260px;
+
+  .single-artist {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 175px;
+  }
+
+  .artist-name {
+    color: $white;
+    font-size: larger;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.recommended-songs {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  .song-table {
+    width: 100%;
+  }
+}
+

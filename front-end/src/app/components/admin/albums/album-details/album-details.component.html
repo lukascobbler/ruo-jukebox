@@ -1,1 +1,52 @@
-<p>album-details works!</p>
+<div class="container">
+  <button (click)="createNewSong()" class="bottom-right-button yellow-button">
+    <span class="material-symbols-rounded">add</span> Add song to the album
+  </button>
+  <div class="album-header">
+    <div class="album-info">
+      <app-box-missing-icon-small [icon_name]="'album'" />
+      <p class="album-name">{{ album.name }}</p>
+    </div>
+    <div class="album-control">
+      <button class="gray-button control-button">Release</button>
+      <button class="yellow-button control-button">Edit</button>
+    </div>
+  </div>
+  <div class="table-container">
+    <mat-table [dataSource]="album.songs!">
+      <ng-container matColumnDef="name">
+        <mat-header-cell class="name" *matHeaderCellDef>Name</mat-header-cell>
+        <mat-cell class="name" *matCellDef="let song"><p class="nowrap-text">{{ song.title }}</p></mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="artist">
+        <mat-header-cell class="artist" *matHeaderCellDef>Artist</mat-header-cell>
+        <mat-cell class="artist" *matCellDef="let song"><p class="nowrap-text">{{ song.artist }}</p></mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="genres">
+        <mat-header-cell class="genres" *matHeaderCellDef>Genres</mat-header-cell>
+        <mat-cell class="genres" *matCellDef="let artist"><p class="nowrap-text">{{ getSongGenres(artist) }}</p></mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>
+        <mat-cell class="actions" *matCellDef="let album">
+          <button mat-icon-button>
+            <span class="material-symbols-rounded">edit</span>
+          </button>
+          <button mat-icon-button>
+            <span class="material-symbols-rounded">delete</span>
+          </button>
+          <button mat-icon-button>
+            <span class="material-symbols-rounded play">play_arrow</span>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </div>
+</div>
+

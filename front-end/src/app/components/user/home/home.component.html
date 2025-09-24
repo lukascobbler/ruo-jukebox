@@ -1,1 +1,42 @@
-<p>home works!</p>
+<div class="container">
+  <button class="logout-button yellow-button">Logout</button>
+  <div class="search-container">
+    <div class="search">
+      <app-search />
+    </div>
+  </div>
+
+  <div class="recommended-entities">
+    <div>
+      <p class="big-text">Recommended albums</p>
+      <div class="recommended-albums horizontal-scroller">
+        <div *ngFor="let album of albums" class="single-album">
+          <button class="icon-button" (click)="router.navigate(['album', album.id])">
+            <app-box-missing-icon-x-large [icon_name]="'album'" />
+          </button>
+          <p class="album-name">{{ album.name }}</p>
+          <p class="artist-name">{{ album.artist }}</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="big-text">Recommended artists</p>
+      <div class="recommended-artists horizontal-scroller">
+        <div *ngFor="let artist of artists" class="single-artist">
+          <button class="icon-button" (click)="router.navigate(['artist', artist.id])">
+            <app-round-missing-icon-x-large [icon_name]="'artist'" />
+          </button>
+          <p class="artist-name">{{ artist.name }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="recommended-songs">
+    <p class="big-text center-text">Recommended songs</p>
+    <app-song-table
+      class="song-table"
+      [recommendedSongsDataSource]="[]"
+    ></app-song-table>
+  </div>
+</div>

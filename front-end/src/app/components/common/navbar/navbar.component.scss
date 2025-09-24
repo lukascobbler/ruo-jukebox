@@ -9,6 +9,40 @@
   padding-inline: 1.6rem;
   flex-direction: column;
   align-items: flex-start;
+  position: relative;
+}
+
+.user-playlists {
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-bottom: 1.5rem;
+
+  a {
+    margin: 0.8rem 0;
+  }
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $edge2;
+    border-radius: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: lighten($edge2, 10%);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  @-moz-document url-prefix() {
+    scrollbar-width: thin;
+    scrollbar-color: $edge2 transparent;
+  }
 }
 
 .sidebar-banner {
@@ -24,7 +58,16 @@
   border: 1px solid $edge;
   border-radius: 1rem;
   margin-top: 8rem;
-  margin-bottom: 2.2rem;
+  margin-bottom: 1.5rem;
+  opacity: 50%;
+}
+
+.sidebar-line-no-margin {
+  width: 100%;
+  border: 1px solid $edge;
+  border-radius: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
   opacity: 50%;
 }
 
@@ -40,7 +83,7 @@
 a {
   display: flex;
   align-items: center;
-  margin: 0.66rem 0;
+  margin: 0.4rem 0;
   font-size: 1.4rem;
   font-weight: 500;
   padding-left: 1rem;
@@ -58,7 +101,11 @@ a:hover {
   color: $white;
 }
 
+.full-icon {
+  font-variation-settings: "FILL" 1;
+}
+
 .logout {
   margin-top: auto;
-  margin-bottom: 3.2rem;
+  margin-bottom: 1.6rem;
 }

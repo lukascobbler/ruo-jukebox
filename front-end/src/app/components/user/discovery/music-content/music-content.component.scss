@@ -1,0 +1,90 @@
+@import "buttons";
+@import "colors";
+
+.container {
+  padding: 3rem 6rem;
+  position: relative;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 45px;
+}
+
+.search {
+  width: 50%
+}
+
+p {
+  margin: 0;
+}
+
+.big-text {
+  color: $white;
+  font-size: xx-large;
+  margin-bottom: 15px;
+  margin-top: 0;
+}
+
+.discover-entities {
+  margin-top: 10px;
+  display: flex;
+  gap: 40px;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.discover-albums {
+  display: flex;
+  gap: 30px;
+  overflow-x: auto;
+  height: 260px;
+
+  .single-album {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 175px;
+  }
+
+  .album-name {
+    color: $white;
+    font-size: larger;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .artist-name {
+    color: $white2;
+    font-size: medium;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.discover-artists {
+  display: flex;
+  gap: 30px;
+  overflow-x: auto;
+  height: 230px;
+
+  .single-artist {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 175px;
+  }
+
+  .artist-name {
+    color: $white;
+    font-size: larger;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

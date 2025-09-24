@@ -1,1 +1,36 @@
-<p>artist works!</p>
+<div class="container">
+  <button class="logout-button yellow-button">Logout</button>
+
+  <div class="centering">
+    <div class="text-and-image">
+      <app-round-missing-icon-small [icon_name]="'artist'" />
+      <p class="big-text-artist">{{ artist.name }}</p>
+      <button (click)="artist.isSubscribed = !artist.isSubscribed" class="subscribe-button">
+        <span class="material-symbols-rounded icon" [ngClass]="{ 'full': artist.isSubscribed }">circle_notifications</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="entities">
+    <div>
+      <p class="big-text">Singles</p>
+      <div class="singles horizontal-scroller">
+        <div *ngFor="let song of singles" class="single-song">
+          <app-box-missing-icon-x-large [icon_name]="'music_note'" />
+          <p class="song-name">{{ song.title }}</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="big-text">Albums</p>
+      <div class="albums horizontal-scroller">
+        <div *ngFor="let album of albums" class="single-album">
+          <button class="icon-button" (click)="router.navigate(['album', album.id])">
+            <app-box-missing-icon-x-large [icon_name]="'album'" />
+          </button>
+          <p class="album-name">{{ album.name }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

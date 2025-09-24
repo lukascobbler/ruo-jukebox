@@ -2,6 +2,9 @@ import {Component, inject, OnInit} from '@angular/core';
 import {NgClass, NgFor, NgIf, NgOptimizedImage} from '@angular/common';
 import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {Role} from '../../../models/Role';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {CreatePlaylistDialogComponent} from '../../user/dialogs/create-playlist/create-playlist-dialog.component';
+import {Playlist} from '../../../models/Playlist';
 
 interface NavItem {
   label: string;
@@ -10,6 +13,7 @@ interface NavItem {
   roles: Role[];
   class?: string;
   action?: () => void;
+  isFullIcon?: boolean;
 }
 
 @Component({
@@ -28,17 +32,35 @@ interface NavItem {
 })
 export class NavbarComponent implements OnInit {
   private router = inject(Router);
-  currentUserRole: Role | null = "User";
+  currentUserRole: Role | null = "Admin";
+
+  constructor(private dialog: MatDialog) {
+  }
 
   sidebarItems: NavItem[] = [
-    {label: 'Signed certificates', icon: 'library_books', link: '/signed-certificates', roles: ['User']},
-    {label: 'Certificate requests', icon: 'stacks', link: '/certificate-requests', roles: ['User']},
-    {label: 'All certificates', icon: 'library_books', link: '/all-certificates', roles: ['User']},
-    {label: 'Issue a certificate', icon: 'add_notes', link: '/issue-certificate', roles: ['User']},
-    {label: 'My certificates', icon: 'library_books', link: '/my-certificates', roles: ['User']},
-    {label: 'Request Certificate', icon: 'add_notes', link: '/request-certificate', roles: ['User']},
-    {label: 'Manage CA users', icon: 'group', link: '/manage-ca-users', roles: ['User']},
+    {label: 'Home', icon: 'home', link: '/home', roles: ['User']},
+    {label: 'Discovery', icon: 'explore', link: '/discovery', roles: ['User']},
+    {label: 'Subscriptions', icon: 'subscriptions', link: '/subscriptions', roles: ['User']},
+    {label: 'Create playlist', icon: 'playlist_add', action: () => this.createPlaylist(), roles: ['User']},
+    {label: 'Artists', icon: 'artist', link: '/all-artists', roles: ['Admin']},
+    {label: 'Albums', icon: 'album', isFullIcon: true, link: '/all-albums', roles: ['Admin']},
+    {label: 'Singles', icon: 'music_note', link: '/all-singles', roles: ['Admin']},
     {label: 'Logout', icon: 'logout', roles: ['Admin'], class: 'logout', action: () => this.logout()},
+  ];
+
+  userPlaylists: Playlist[] = [
+    {name: 'Awesome playlist 1', id: '1'},
+    {name: 'Awesome playlist 2', id: '2'},
+    {name: 'Awesome playlist 3', id: '3'},
+    {name: 'Awesome playlist 4', id: '4'},
+    {name: 'Awesome playlist 5', id: '5'},
+    {name: 'Awesome playlist 6', id: '6'},
+    {name: 'Awesome playlist 7', id: '7'},
+    {name: 'Awesome playlist 8', id: '8'},
+    {name: 'Awesome playlist 9', id: '9'},
+    {name: 'Awesome playlist 10', id: '10'},
+    {name: 'Awesome playlist 11', id: '11'},
+    {name: 'Awesome playlist 12', id: '12'}
   ];
 
   ngOnInit() {
@@ -47,5 +69,11 @@ export class NavbarComponent implements OnInit {
 
   logout() {
     // logout
+  }
+
+  createPlaylist() {
+    const dialogRef: MatDialogRef<CreatePlaylistDialogComponent, null> = this.dialog.open(CreatePlaylistDialogComponent, {
+      width: '30rem'
+    });
   }
 }

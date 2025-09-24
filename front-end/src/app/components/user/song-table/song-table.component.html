@@ -1,0 +1,94 @@
+<div class="container">
+  <mat-table [dataSource]="recommendedSongsDataSource">
+    <ng-container *ngIf="showNumber" matColumnDef="no">
+      <mat-header-cell class="no" *matHeaderCellDef>#</mat-header-cell>
+      <mat-cell class="no" *matCellDef="let song">{{ song.no }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="title">
+      <mat-header-cell
+        class="title"
+        [ngClass]="{
+        'no-album': showNumber && !showAlbum,
+        'only-title': !showNumber && !showAlbum
+      }"
+        *matHeaderCellDef>
+        Title
+      </mat-header-cell>
+      <mat-cell
+        class="title"
+        [ngClass]="{
+        'no-album': showNumber && !showAlbum,
+        'only-title': !showNumber && !showAlbum
+      }"
+        *matCellDef="let song">
+        <div class="title-and-artist">
+          <p class="song-title">{{ song.title }}</p>
+          <p class="clickable-text song-artist" (click)="router.navigate(['artist', song.artistId])"><u>{{ song.artist }}</u></p>
+        </div>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container *ngIf="showAlbum" matColumnDef="album">
+      <mat-header-cell class="album" *matHeaderCellDef>Album</mat-header-cell>
+      <mat-cell class="album" *matCellDef="let song">
+        <p class="clickable-text" (click)="router.navigate(['album', song.albumId])"><u>{{ song.album }}</u></p>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="duration">
+      <mat-header-cell
+        class="duration"
+        [ngClass]="{
+        'no-album': showNumber && !showAlbum,
+        'only-title': !showNumber && !showAlbum
+      }"
+        *matHeaderCellDef>
+        Duration
+      </mat-header-cell>
+      <mat-cell
+        class="duration"
+        [ngClass]="{
+        'no-album': showNumber && !showAlbum,
+        'only-title': !showNumber && !showAlbum
+      }"
+        *matCellDef="let song">
+        {{ song.duration }}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <mat-header-cell
+        class="actions"
+        [ngClass]="{
+        'actions-narrow': showNumber && showAlbum,
+        'actions-no-album-narrow': showNumber && !showAlbum,
+        'actions-wide': !showNumber && showAlbum,
+        'actions-only-title': !showNumber && !showAlbum
+      }"
+        *matHeaderCellDef>
+      </mat-header-cell>
+      <mat-cell
+        class="actions"
+        [ngClass]="{
+        'actions-narrow': showNumber && showAlbum,
+        'actions-no-album-narrow': showNumber && !showAlbum,
+        'actions-wide': !showNumber && showAlbum,
+        'actions-only-title': !showNumber && !showAlbum
+      }"
+        *matCellDef="let song">
+        <button mat-icon-button><span class="material-symbols-rounded">download</span></button>
+        <button mat-icon-button><span class="material-symbols-rounded">download_for_offline</span></button>
+        <button (click)="addToPlaylist(song)" mat-icon-button>
+          <span class="material-symbols-rounded">playlist_add</span>
+        </button>
+        <button mat-icon-button>
+          <span class="material-symbols-rounded play">play_arrow</span>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</div>

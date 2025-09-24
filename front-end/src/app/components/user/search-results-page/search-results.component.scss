@@ -1,0 +1,121 @@
+@import "buttons";
+@import "colors";
+
+.container {
+  padding: 3rem 6rem;
+  position: relative;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 45px;
+}
+
+.search {
+  width: 50%
+}
+
+p {
+  margin: 0;
+}
+
+.big-text {
+  color: $white;
+  font-size: xx-large;
+  margin-bottom: 15px;
+  margin-top: 0;
+}
+
+.discover-entities {
+  margin-top: 10px;
+  display: flex;
+  gap: 40px;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.found-songs {
+  display: flex;
+  gap: 30px;
+  overflow-x: auto;
+  height: 230px;
+
+  .single-song {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 140px;
+  }
+
+  .song-name {
+    color: $white;
+    font-size: larger;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .artist-name {
+    color: $white2;
+    font-size: medium;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.found-albums {
+  display: flex;
+  gap: 30px;
+  overflow-x: auto;
+  height: 230px;
+
+  .single-album {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 140px;
+  }
+
+  .album-name {
+    color: $white;
+    font-size: larger;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .artist-name {
+    color: $white2;
+    font-size: medium;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.found-artists {
+  display: flex;
+  gap: 30px;
+  overflow-x: auto;
+  height: 200px;
+
+  .single-artist {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 140px;
+  }
+
+  .artist-name {
+    color: $white;
+    font-size: larger;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

@@ -1,0 +1,39 @@
+<div class="container">
+  <button class="bottom-right-button yellow-button" (click)="createNewArtist()">
+    <span class="material-symbols-rounded">add</span> Create new artist
+  </button>
+  <div class="table-container">
+    <mat-table [dataSource]="artistsDataSource">
+      <ng-container matColumnDef="name">
+        <mat-header-cell class="name" *matHeaderCellDef>Name</mat-header-cell>
+        <mat-cell class="name" *matCellDef="let artist"><p class="nowrap-text">{{ artist.name }}</p></mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="genres">
+        <mat-header-cell class="genres" *matHeaderCellDef>Genres</mat-header-cell>
+        <mat-cell class="genres" *matCellDef="let artist"><p class="nowrap-text">{{ getArtistGenres(artist) }}</p></mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="biography">
+        <mat-header-cell class="biography" *matHeaderCellDef>Biography</mat-header-cell>
+        <mat-cell class="biography" *matCellDef="let artist"><p class="nowrap-text">{{ artist.biography }}</p></mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>
+        <mat-cell class="actions" *matCellDef="let artist">
+          <button mat-icon-button>
+            <span class="material-symbols-rounded">person_edit</span>
+          </button>
+          <button mat-icon-button>
+            <span class="material-symbols-rounded">delete</span>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </div>
+</div>
+

@@ -1,1 +1,10 @@
-<p>playlist works!</p>
+<div class="container">
+  <button class="logout-button yellow-button">Logout</button>
+
+  <div class="playlist">
+    <div class="text">
+      <p class="big-text">{{ playlist.name }}</p>
+    </div>
+    <app-song-table class="song-table" [recommendedSongsDataSource]="[]" />
+  </div>
+</div>

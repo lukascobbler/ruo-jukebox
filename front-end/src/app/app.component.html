@@ -1,7 +1,9 @@
 <div class="container">
-  <app-navbar *ngIf="true"></app-navbar> <!-- todo when auth is added -->
-  <div class="content">
-    <router-outlet></router-outlet>
+  <div class="sub-container">
+    <app-navbar *ngIf="true"></app-navbar> <!-- todo when auth is added -->
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
   </div>
-  <app-player></app-player>
+  <app-player class="player" *ngIf="true"></app-player> <!-- todo when auth is added -->
 </div>
