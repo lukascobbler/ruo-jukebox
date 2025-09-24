@@ -1,0 +1,51 @@
+@import "colors";
+@import "buttons";
+
+.container {
+  background-color: $background;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  padding: 80px 80px 40px;
+  color: $white;
+}
+
+.info-and-picture {
+  width: 100%;
+  gap: 20px;
+  display: flex;
+}
+
+.info {
+  flex: 0 0 50%;
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+}
+
+.picture {
+  flex: 0 0 50%;
+  border: 3px solid $edge;
+  border-radius: 8px;
+}
+
+.file {
+  height: 125px;
+  border: 3px solid $edge;
+  border-radius: 8px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.finish {
+  width: 9rem;
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}

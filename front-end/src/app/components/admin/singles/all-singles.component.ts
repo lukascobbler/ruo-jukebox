@@ -14,6 +14,8 @@ import {
 import {MatIconButton} from '@angular/material/button';
 import {Router} from '@angular/router';
 import {Song} from '../../../models/Song';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {CreateSingleDialogComponent} from '../dialogs/single/create-single-dialog.component';
 
 @Component({
   selector: 'app-all-singles',
@@ -36,6 +38,8 @@ import {Song} from '../../../models/Song';
   styleUrl: './all-singles.component.scss'
 })
 export class AllSinglesComponent {
+  dialog = inject(MatDialog);
+
   router = inject(Router);
 
   displayedColumns = ['cover', 'name', 'artist', 'genres', 'actions'];
@@ -61,4 +65,11 @@ export class AllSinglesComponent {
     { id: '18', no: 1, title: 'Title', album: 'Album', albumId: '18', duration: 420, artist: 'Awesome Artist 123', artistId: '18', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
     { id: '19', no: 1, title: 'Title', album: 'Album', albumId: '19', duration: 420, artist: 'Awesome Artist 123', artistId: '19', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
   ];
+
+  createNewSingle() {
+    const dialogRef: MatDialogRef<CreateSingleDialogComponent, null> = this.dialog.open(CreateSingleDialogComponent, {
+      width: '500px',
+      minWidth: '50vw'
+    });
+  }
 }
