@@ -1,0 +1,33 @@
+<div class="container">
+  <button (click)="onNoClick()" class="close-button" mat-icon-button tabindex="-1">
+    <span class="material-symbols-rounded">close</span>
+  </button>
+
+  <div class="info-and-picture">
+    <div class="info">
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-select placeholder="Genres">
+          <mat-option [value]="'rock'">Rock</mat-option>
+          <mat-option [value]="'jazz'">Jazz</mat-option>
+          <mat-option [value]="'classical'">Classical</mat-option>
+          <mat-option [value]="'pop'">Pop</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Biography</mat-label>
+        <textarea [scrollTop]="0" rows="5" class="textarea" matInput></textarea>
+      </mat-form-field>
+    </div>
+    <div class="picture">
+      <app-upload-box></app-upload-box>
+    </div>
+  </div>
+
+  <button (click)="closeDialog()" [disabled]="false" class="yellow-button finish">
+    Create
+  </button>
+</div>
