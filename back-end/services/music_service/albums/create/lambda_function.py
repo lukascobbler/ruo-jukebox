@@ -1,6 +1,8 @@
 import os, json, time, uuid, boto3
 from decimal import Decimal
 
+sqs = boto3.client("sqs")
+NOTIFY_QUEUE_URL = os.environ["NOTIFY_QUEUE_URL"]
 dynamodb = boto3.resource("dynamodb")
 ALBUMS  = dynamodb.Table(os.environ["ALBUMS_TABLE"])
 ARTISTS = dynamodb.Table(os.environ["ARTISTS_TABLE"])
@@ -55,4 +57,8 @@ def lambda_handler(event, context):
         "created_at": int(time.time()*1000)
     }
     ALBUMS.put_item(Item=item)
+    sqs.send_message(
+        QueueUrl=NOTIFY_QUEUE_URL,
+        MessageBody=json.dumps({"type":"ALBUM_CREATED","album_id": item["album_id"]})
+    )
     return _resp(201, item)

@@ -1,6 +1,7 @@
 import os, json, boto3
 from decimal import Decimal
 from boto3.dynamodb.conditions import Key
+from botocore.exceptions import ClientError
 
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client("s3")
@@ -11,6 +12,8 @@ TRACKS = dynamodb.Table(os.environ["TRACKS_TABLE"])
 TA = dynamodb.Table(os.environ["TRACK_ARTISTS_TABLE"])
 TG = dynamodb.Table(os.environ["TRACK_GENRES_TABLE"])
 QUEUE_URL = os.environ["QUEUE_URL"]
+NOTIFY_QUEUE_URL = os.environ.get("NOTIFY_QUEUE_URL")
+
 def _claims(event):
     return (event.get("requestContext") or {}).get("authorizer", {}).get("claims", {}) or {}
 
@@ -76,4 +79,29 @@ def lambda_handler(event, context):
         TG.put_item(Item={"genre": g, "track_id": track_id})
 
     sqs.send_message(QueueUrl=QUEUE_URL, MessageBody=json.dumps({"type":"TRACK_UPLOADED","track_id":track_id}))
+
+    first_time = False
+    try:
+        TRACKS.update_item(
+            Key={"track_id": track_id},
+            UpdateExpression="SET notify_emitted = :one",
+            ExpressionAttributeValues={":one": 1},
+            ConditionExpression="attribute_not_exists(notify_emitted)"
+        )
+        first_time = True
+    except ClientError as e:
+        if e.response.get("Error", {}).get("Code") != "ConditionalCheckFailedException":
+            # unexpected error – surface it
+            return _resp(500, {"message":"failed to set notify flag", "details": str(e)})
+
+    if first_time and NOTIFY_QUEUE_URL:
+        try:
+            sqs.send_message(
+                QueueUrl=NOTIFY_QUEUE_URL,
+                MessageBody=json.dumps({"type":"TRACK_CREATED","track_id": track_id})
+            )
+        except Exception:
+            # Swallow email notify errors – main operation already succeeded
+            pass
+
     return _resp(200, {"message":"completed", "track_id": track_id})

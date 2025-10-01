@@ -17,7 +17,11 @@ class BackendStack(Stack):
 
         # SQS Queue
         queue = sqs.Queue(self, "MusicQueue", visibility_timeout=Duration.seconds(60), retention_period=Duration.days(1))
-
+        notify_queue = sqs.Queue(
+            self, "NotificationsQueue",
+            visibility_timeout=Duration.seconds(60),
+            retention_period=Duration.days(1),
+        )
 
         # Cognito (email/password sign-in)
         user_pool = cognito.UserPool(
@@ -43,7 +47,7 @@ class BackendStack(Stack):
         cognito.CfnUserPoolGroup(self, "UsersGroup",  group_name="user",  user_pool_id=user_pool.user_pool_id)
 
         authorizer = apigw.CognitoUserPoolsAuthorizer(self, "UserAuthorizer", cognito_user_pools=[user_pool])
-        auth_opts = apigw.MethodOptions(
+        auth_kwargs = dict(
             authorizer=authorizer,
             authorization_type=apigw.AuthorizationType.COGNITO
         )
@@ -73,6 +77,10 @@ class BackendStack(Stack):
             "PLAYLIST_ITEMS_TABLE": db.playlist_items.table_name,
             "RATINGS_TABLE": db.ratings.table_name,
             "QUEUE_URL": queue.queue_url,
+            "SUBSCRIPTIONS_TABLE": db.subscriptions.table_name,
+            "NOTIFY_QUEUE_URL": notify_queue.queue_url,
+            "USER_POOL_ID": user_pool.user_pool_id,
+            "FROM_EMAIL": "no-reply@jukebox.moma.rs", # verified in SES
         }
 
         # artists
@@ -130,6 +138,29 @@ class BackendStack(Stack):
             env=env
         )
 
+        # subscriptions and notifications
+        subs_create = mk_lambda("SubsCreate", "services/music_service/subscriptions/create", env)
+        subs_list   = mk_lambda("SubsList",   "services/music_service/subscriptions/list_mine", env)
+        subs_delete = mk_lambda("SubsDelete", "services/music_service/subscriptions/delete", env)
+
+        notifier = LambdaWithSqs(
+            self, "NotificationsProcessor",
+            queue=notify_queue,
+            handler_path="services/music_service/notifications/processor",
+            env=env
+        )
+
+                # IAM for notifier: lookup users + send email
+        pool_arn = f"arn:aws:cognito-idp:{self.region}:{self.account}:userpool/{user_pool.user_pool_id}"
+        notifier.lambda_function.add_to_role_policy(iam.PolicyStatement(
+            actions=["cognito-idp:AdminGetUser"],
+            resources=[pool_arn]
+        ))
+        notifier.lambda_function.add_to_role_policy(iam.PolicyStatement(
+            actions=["ses:SendEmail"],   # using SESv2 Simple email
+            resources=["*"]
+        ))
+
 
         # Permissions
         all_fns = [
@@ -141,8 +172,11 @@ class BackendStack(Stack):
             playlists_create, playlists_list_mine, playlists_get, playlists_update, playlists_delete,
             playlists_add_track, playlists_remove_track,
             ratings_put, ratings_delete,
-            ratings_processor.lambda_function
+            ratings_processor.lambda_function,
+            subs_create, subs_list, subs_delete,
+            notifier.lambda_function
         ]
+
 
         for fn in all_fns:
             db.artists.grant_read_write_data(fn)
@@ -155,12 +189,16 @@ class BackendStack(Stack):
             db.playlists.grant_read_write_data(fn)
             db.playlist_items.grant_read_write_data(fn)
             db.ratings.grant_read_write_data(fn)
+            db.subscriptions.grant_read_write_data(fn)
             db.content_bucket.grant_read_write(fn)
 
         queue.grant_send_messages(ratings_put)
         queue.grant_send_messages(ratings_delete)
         queue.grant_consume_messages(ratings_processor.lambda_function)
 
+        notify_queue.grant_send_messages(albums_create)
+        notify_queue.grant_send_messages(content_done)
+        notify_queue.grant_consume_messages(notifier.lambda_function)
 
         # može i ovako, ne mora se koristiti construct ako je nešto jednostavno
         # processor_lambda = _lambda.Function(
@@ -193,70 +231,77 @@ class BackendStack(Stack):
         
         # artists
         artists = api.root.add_resource("artists")
-        artists.add_method("POST",  apigw.LambdaIntegration(artists_create), options=auth_opts)
-        artists.add_method("GET",   apigw.LambdaIntegration(artists_list),   options=auth_opts)
+        artists.add_method("POST",  apigw.LambdaIntegration(artists_create), **auth_kwargs)
+        artists.add_method("GET",   apigw.LambdaIntegration(artists_list),   **auth_kwargs)
         artist_id = artists.add_resource("{id}")
-        artist_id.add_method("GET",    apigw.LambdaIntegration(artists_get),    options=auth_opts)
-        artist_id.add_method("PATCH",  apigw.LambdaIntegration(artists_update), options=auth_opts)
-        artist_id.add_method("DELETE", apigw.LambdaIntegration(artists_delete), options=auth_opts)
+        artist_id.add_method("GET",    apigw.LambdaIntegration(artists_get),    **auth_kwargs)
+        artist_id.add_method("PATCH",  apigw.LambdaIntegration(artists_update), **auth_kwargs)
+        artist_id.add_method("DELETE", apigw.LambdaIntegration(artists_delete), **auth_kwargs)
 
         # albums
         albums = api.root.add_resource("albums")
-        albums.add_method("POST", apigw.LambdaIntegration(albums_create), options=auth_opts)
-        albums.add_method("GET",  apigw.LambdaIntegration(albums_list),   options=auth_opts)
+        albums.add_method("POST", apigw.LambdaIntegration(albums_create), **auth_kwargs)
+        albums.add_method("GET",  apigw.LambdaIntegration(albums_list),   **auth_kwargs)
         album_id = albums.add_resource("{id}")
-        album_id.add_method("GET",    apigw.LambdaIntegration(albums_get),    options=auth_opts)
-        album_id.add_method("PATCH",  apigw.LambdaIntegration(albums_update), options=auth_opts)
-        album_id.add_method("DELETE", apigw.LambdaIntegration(albums_delete), options=auth_opts)
+        album_id.add_method("GET",    apigw.LambdaIntegration(albums_get),    **auth_kwargs)
+        album_id.add_method("PATCH",  apigw.LambdaIntegration(albums_update), **auth_kwargs)
+        album_id.add_method("DELETE", apigw.LambdaIntegration(albums_delete), **auth_kwargs)
         albums_cov = albums.add_resource("init-cover-upload")
-        albums_cov.add_method("POST", apigw.LambdaIntegration(albums_cov_init_fn), options=auth_opts)
+        albums_cov.add_method("POST", apigw.LambdaIntegration(albums_cov_init_fn), **auth_kwargs)
         albums_cov_done = albums.add_resource("complete-cover")
-        albums_cov_done.add_method("POST", apigw.LambdaIntegration(albums_cov_done_fn), options=auth_opts)
+        albums_cov_done.add_method("POST", apigw.LambdaIntegration(albums_cov_done_fn), **auth_kwargs)
 
 
         # content (tracks)
         content = api.root.add_resource("content")
         init     = content.add_resource("init-upload")
         complete = content.add_resource("complete-upload")
-        init.add_method("POST",     apigw.LambdaIntegration(content_init), options=auth_opts)
-        complete.add_method("POST", apigw.LambdaIntegration(content_done), options=auth_opts)
-        content.add_method("GET",   apigw.LambdaIntegration(content_list), options=auth_opts)
+        init.add_method("POST",     apigw.LambdaIntegration(content_init), **auth_kwargs)
+        complete.add_method("POST", apigw.LambdaIntegration(content_done), **auth_kwargs)
+        content.add_method("GET",   apigw.LambdaIntegration(content_list), **auth_kwargs)
         content_id = content.add_resource("{id}")
-        content_id.add_method("GET",    apigw.LambdaIntegration(content_get),    options=auth_opts)
-        content_id.add_method("PATCH",  apigw.LambdaIntegration(content_update), options=auth_opts)
-        content_id.add_method("DELETE", apigw.LambdaIntegration(content_delete), options=auth_opts)
+        content_id.add_method("GET",    apigw.LambdaIntegration(content_get),    **auth_kwargs)
+        content_id.add_method("PATCH",  apigw.LambdaIntegration(content_update), **auth_kwargs)
+        content_id.add_method("DELETE", apigw.LambdaIntegration(content_delete), **auth_kwargs)
         track_cov = content.add_resource("init-cover-upload")
-        track_cov.add_method("POST", apigw.LambdaIntegration(track_cov_init_fn), options=auth_opts)
+        track_cov.add_method("POST", apigw.LambdaIntegration(track_cov_init_fn), **auth_kwargs)
         track_cov_done_res = content.add_resource("complete-cover")
-        track_cov_done_res.add_method("POST", apigw.LambdaIntegration(track_cov_done_fn), options=auth_opts)
+        track_cov_done_res.add_method("POST", apigw.LambdaIntegration(track_cov_done_fn), **auth_kwargs)
 
         # genres
         genres = api.root.add_resource("genres")
-        genres.add_method("POST", apigw.LambdaIntegration(genres_create), options=auth_opts)
-        genres.add_method("GET",  apigw.LambdaIntegration(genres_list),   options=auth_opts)
+        genres.add_method("POST", apigw.LambdaIntegration(genres_create), **auth_kwargs)
+        genres.add_method("GET",  apigw.LambdaIntegration(genres_list),   **auth_kwargs)
         genre_id = genres.add_resource("{id}")
-        genre_id.add_method("GET",    apigw.LambdaIntegration(genres_get),    options=auth_opts)
-        genre_id.add_method("PATCH",  apigw.LambdaIntegration(genres_update), options=auth_opts)
-        genre_id.add_method("DELETE", apigw.LambdaIntegration(genres_delete), options=auth_opts)
+        genre_id.add_method("GET",    apigw.LambdaIntegration(genres_get),    **auth_kwargs)
+        genre_id.add_method("PATCH",  apigw.LambdaIntegration(genres_update), **auth_kwargs)
+        genre_id.add_method("DELETE", apigw.LambdaIntegration(genres_delete), **auth_kwargs)
         
         # playlists
         playlists = api.root.add_resource("playlists")
-        playlists.add_method("POST", apigw.LambdaIntegration(playlists_create), options=auth_opts)
-        playlists.add_method("GET",  apigw.LambdaIntegration(playlists_list_mine), options=auth_opts)
+        playlists.add_method("POST", apigw.LambdaIntegration(playlists_create), **auth_kwargs)
+        playlists.add_method("GET",  apigw.LambdaIntegration(playlists_list_mine), **auth_kwargs)
         pl_id = playlists.add_resource("{id}")
-        pl_id.add_method("GET",    apigw.LambdaIntegration(playlists_get),    options=auth_opts)
-        pl_id.add_method("PATCH",  apigw.LambdaIntegration(playlists_update), options=auth_opts)
-        pl_id.add_method("DELETE", apigw.LambdaIntegration(playlists_delete), options=auth_opts)
+        pl_id.add_method("GET",    apigw.LambdaIntegration(playlists_get),    **auth_kwargs)
+        pl_id.add_method("PATCH",  apigw.LambdaIntegration(playlists_update), **auth_kwargs)
+        pl_id.add_method("DELETE", apigw.LambdaIntegration(playlists_delete), **auth_kwargs)
         pl_tracks = pl_id.add_resource("tracks")
-        pl_tracks.add_method("POST", apigw.LambdaIntegration(playlists_add_track), options=auth_opts)
+        pl_tracks.add_method("POST", apigw.LambdaIntegration(playlists_add_track), **auth_kwargs)
         pl_trk_id = pl_tracks.add_resource("{trackId}")
-        pl_trk_id.add_method("DELETE", apigw.LambdaIntegration(playlists_remove_track), options=auth_opts)
+        pl_trk_id.add_method("DELETE", apigw.LambdaIntegration(playlists_remove_track), **auth_kwargs)
 
         # ratings
         rating = content_id.add_resource("rating")
-        rating.add_method("PUT",    apigw.LambdaIntegration(ratings_put),    options=auth_opts)
-        rating.add_method("DELETE", apigw.LambdaIntegration(ratings_delete), options=auth_opts)
+        rating.add_method("PUT",    apigw.LambdaIntegration(ratings_put),    **auth_kwargs)
+        rating.add_method("DELETE", apigw.LambdaIntegration(ratings_delete), **auth_kwargs)
 
+
+        # subscriptions
+        subs = api.root.add_resource("subscriptions")
+        subs.add_method("POST", apigw.LambdaIntegration(subs_create), **auth_kwargs)
+        subs.add_method("GET",  apigw.LambdaIntegration(subs_list),   **auth_kwargs)
+        subs_id = subs.add_resource("{artistId}")
+        subs_id.add_method("DELETE", apigw.LambdaIntegration(subs_delete), **auth_kwargs)
 
 
         # Settings for custom domain

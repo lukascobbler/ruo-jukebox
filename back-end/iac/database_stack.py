@@ -113,3 +113,14 @@ class DatabaseStack(Stack):
             partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING)
         )
+        self.subscriptions = ddb.Table(
+            self, "Subscriptions",
+            partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
+            removal_policy=RemovalPolicy.DESTROY
+        )
+        self.subscriptions.add_global_secondary_index(
+            index_name="byUser",
+            partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING)
+        )
