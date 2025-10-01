@@ -8,7 +8,7 @@ db_stack = DatabaseStack(app, "DemoDatabaseStack",
                          env={'region': 'eu-central-1'})
 
 backend_stack = BackendStack(app, "DemoBackendStack",
-                             table=db_stack.table,
+                             db=db_stack,
                              env={'region': 'eu-central-1'})
 
 app.synth()
