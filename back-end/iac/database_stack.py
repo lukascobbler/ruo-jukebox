@@ -20,20 +20,30 @@ class DatabaseStack(Stack):
         self.artists = ddb.Table(
             self, "Artists",
             partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY
+            removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
 
         self.albums = ddb.Table(
             self, "Albums",
             partition_key=ddb.Attribute(name="album_id", type=ddb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY
+            removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
 
         self.tracks = ddb.Table(
             self, "Tracks",
             partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY
-        )
+            removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
+        )   
+             
         self.tracks.add_global_secondary_index(
             index_name="GSI1",
             partition_key=ddb.Attribute(name="album_id", type=ddb.AttributeType.STRING),
@@ -44,8 +54,12 @@ class DatabaseStack(Stack):
             self, "TrackArtists",
             partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY
-        )
+            removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
+        )    
+            
         self.track_artists.add_global_secondary_index(
             index_name="byArtist",
             partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
@@ -56,12 +70,19 @@ class DatabaseStack(Stack):
             self, "TrackGenres",
             partition_key=ddb.Attribute(name="genre", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY
+            removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
+        
         self.genres = ddb.Table(
             self, "Genres",
             partition_key=ddb.Attribute(name="genre_id", type=ddb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY
+            removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
 
         self.albums.add_global_secondary_index(
@@ -69,24 +90,33 @@ class DatabaseStack(Stack):
             partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="created_at", type=ddb.AttributeType.NUMBER)
         )
+        
         self.track_genres.add_global_secondary_index(
             index_name="byTrack",
             partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="genre", type=ddb.AttributeType.STRING)
         )
+        
         # Users profile (optional mirror of Cognito attrs; handy for FE)
         self.users = ddb.Table(
             self, "Users",
             partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY
+            removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
         
         # Playlists
         self.playlists = ddb.Table(
             self, "Playlists",
             partition_key=ddb.Attribute(name="playlist_id", type=ddb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY
+            removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
+        
         self.playlists.add_global_secondary_index(
             index_name="byOwner",
             partition_key=ddb.Attribute(name="owner_user_id", type=ddb.AttributeType.STRING),
@@ -98,27 +128,40 @@ class DatabaseStack(Stack):
             self, "PlaylistItems",
             partition_key=ddb.Attribute(name="playlist_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY
+            removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
+        
         # ratings (1..3)
         self.ratings = ddb.Table(
             self, "Ratings",
             partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY
+            removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
+        
         # GSI to list my ratings quickly (optional)
         self.ratings.add_global_secondary_index(
             index_name="byUser",
             partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING)
         )
+        
         self.subscriptions = ddb.Table(
             self, "Subscriptions",
             partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY
+            removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
+        
         self.subscriptions.add_global_secondary_index(
             index_name="byUser",
             partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),

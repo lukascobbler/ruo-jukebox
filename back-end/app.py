@@ -4,10 +4,10 @@ from iac.database_stack import DatabaseStack
 
 app = App()
 
-db_stack = DatabaseStack(app, "DemoDatabaseStack",
+db_stack = DatabaseStack(app, "DatabaseStack",
                          env={'region': 'eu-central-1'})
 
-backend_stack = BackendStack(app, "DemoBackendStack",
+backend_stack = BackendStack(app, "BackendStack",
                              db=db_stack,
                              env={'region': 'eu-central-1'})
 
