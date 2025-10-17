@@ -56,9 +56,11 @@ class DatabaseStack(Stack):
         self.artists = ddb.Table(
             self, "Artists",
             partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES, # maybe we dont need this?
             removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
 
         # fast lookup by name
@@ -66,14 +68,17 @@ class DatabaseStack(Stack):
             index_name="byName",
             partition_key=ddb.Attribute(name="name_lc", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="created_at", type=ddb.AttributeType.NUMBER),
+            removal_policy=RemovalPolicy.DESTROY
         )
 
         self.albums = ddb.Table(
             self, "Albums",
             partition_key=ddb.Attribute(name="album_id", type=ddb.AttributeType.STRING),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES,   # subscribed notifications and feed update
             removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
 
         # fast lookup by artist
@@ -81,38 +86,44 @@ class DatabaseStack(Stack):
             index_name="byArtist",
             partition_key=ddb.Attribute(name="primary_artist_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="created_at", type=ddb.AttributeType.NUMBER),
+            removal_policy=RemovalPolicy.DESTROY
         )
 
         self.tracks = ddb.Table(
             self, "Tracks",
             partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES,   # notify subscribers and start transcription
             removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
 
         # fast lookup for album and track order
         self.tracks.add_global_secondary_index(
             index_name="byAlbum",
             partition_key=ddb.Attribute(name="album_id", type=ddb.AttributeType.STRING),
-            sort_key=ddb.Attribute(name="track_no", type=ddb.AttributeType.NUMBER),
+            sort_key=ddb.Attribute(name="track_no", type=ddb.AttributeType.NUMBER)
         )
 
         self.genres = ddb.Table(
             self, "Genres",
             partition_key=ddb.Attribute(name="genre_id", type=ddb.AttributeType.STRING),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
 
         # many to many artists on tracks
-
         self.track_artists = ddb.Table(
             self, "TrackArtists",
             partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
 
         # getting all tracks for an artist
@@ -120,6 +131,7 @@ class DatabaseStack(Stack):
             index_name="byArtist",
             partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
+            removal_policy=RemovalPolicy.DESTROY
         )
 
         # keeps track of genres for tracks/albums/artists
@@ -127,10 +139,12 @@ class DatabaseStack(Stack):
             self, "ContentGenres",
             partition_key=ddb.Attribute(name="genre", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="entity", type=ddb.AttributeType.STRING),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
-
+        
         # fast lookup for all entities for a genre
         self.content_genres.add_global_secondary_index(
             index_name="byEntity",
@@ -142,15 +156,19 @@ class DatabaseStack(Stack):
         self.users = ddb.Table(
             self, "Users",
             partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
 
         self.playlists = ddb.Table(
             self, "Playlists",
             partition_key=ddb.Attribute(name="playlist_id", type=ddb.AttributeType.STRING),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
 
         # fast lookup of playlists by owner
@@ -165,8 +183,10 @@ class DatabaseStack(Stack):
             self, "PlaylistItems",
             partition_key=ddb.Attribute(name="playlist_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="position", type=ddb.AttributeType.NUMBER),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
         
         # fast lookup of playlists containing a track (maybe not needed?)
@@ -181,9 +201,11 @@ class DatabaseStack(Stack):
             self, "Ratings",
             partition_key=ddb.Attribute(name="content_key", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES, # update rating sum for content
             removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
 
         # fast lookup of users ratings
@@ -198,10 +220,12 @@ class DatabaseStack(Stack):
             self, "Subscriptions",
             partition_key=ddb.Attribute(name="topic", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             stream=ddb.StreamViewType.NEW_IMAGE, # refresh feed
-            removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
+        
         self.subscriptions.add_global_secondary_index(
             index_name="byUser",
             partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
@@ -212,25 +236,31 @@ class DatabaseStack(Stack):
             self, "Interactions",
             partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="ts", type=ddb.AttributeType.NUMBER),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             stream=ddb.StreamViewType.NEW_IMAGE, # refresh feed
             time_to_live_attribute="ttl",         # enable ttl to keep only recent interactions
             removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
 
         self.feed = ddb.Table(
             self, "Feed",
             partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="item_id", type=ddb.AttributeType.STRING),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             time_to_live_attribute="ttl",         # enable ttl to keep feed fresh
             removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )
 
         # TODO
         self.transcriptions = ddb.Table(
             self, "Transcriptions",
             partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
-            billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
         )

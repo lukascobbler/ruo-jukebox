@@ -307,7 +307,7 @@ class BackendStack(Stack):
 
         # API gateway
         api = apigw.RestApi(
-            self, "DemoApi",
+            self, "ApiGateway",
             default_cors_preflight_options=apigw.CorsOptions(
                 allow_origins=apigw.Cors.ALL_ORIGINS,  # TODO change
                 allow_methods=["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
@@ -394,16 +394,15 @@ class BackendStack(Stack):
         # processor_lambda.add_event_source(lambda_event_sources.SqsEventSource(queue))
 
 
-
         # Settings for custom domain
         certificate = acm.Certificate.from_certificate_arn(
             self, "ApiCert",
-            "arn:aws:acm:eu-central-1:779156816822:certificate/875c9c89-5b45-4b0e-8074-80685d61308a"
+            "arn:aws:acm:eu-central-1:172132042466:certificate/779aabb6-2c06-4075-b2a4-31fac8a4cb2c"
         )
 
         domain_name = apigw.DomainName(
             self, "CustomDomain",
-            domain_name="api.jukebox.moma.rs",
+            domain_name="api.jb.moma.rs",
             certificate=certificate,
         )
 
