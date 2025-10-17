@@ -32,9 +32,6 @@ class BackendStack(Stack):
 
 
         # Subscriptions
-        subs_create = self.mk_lambda("SubsCreate",    "services/music_service/subscriptions/create", env)
-        subs_list   = self.mk_lambda("SubsListMine",  "services/music_service/subscriptions/list_mine", env)
-        subs_delete = self.mk_lambda("SubsDelete",    "services/music_service/subscriptions/delete", env)
 
         
         # TODO setup deletion sqs and setup
