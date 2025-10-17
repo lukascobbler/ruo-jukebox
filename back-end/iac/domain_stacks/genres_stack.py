@@ -22,11 +22,11 @@ class RatingsStack(Stack):
         auth_kwargs = cognito.auth_kwargs
         authorizer = cognito.authorizer
 
-        genres_create = mk_lambda("GenresCreate", "services/music_service/genres/create", env, dynamo_db, s3)
-        genres_list   = mk_lambda("GenresList",   "services/music_service/genres/list", env, dynamo_db, s3)
-        genres_get    = mk_lambda("GenresGet",    "services/music_service/genres/get", env, dynamo_db, s3)
-        genres_update = mk_lambda("GenresUpdate", "services/music_service/genres/update", env, dynamo_db, s3)
-        genres_delete = mk_lambda("GenresDelete", "services/music_service/genres/delete", env, dynamo_db, s3)
+        genres_create = mk_lambda("GenresCreate", "genres/create", env, dynamo_db, s3)
+        genres_list   = mk_lambda("GenresList",   "genres/list", env, dynamo_db, s3)
+        genres_get    = mk_lambda("GenresGet",    "genres/get", env, dynamo_db, s3)
+        genres_update = mk_lambda("GenresUpdate", "genres/update", env, dynamo_db, s3)
+        genres_delete = mk_lambda("GenresDelete", "genres/delete", env, dynamo_db, s3)
 
         genres = api_gateway.api.root.add_resource("genres")
         genre_id = genres.add_resource("{id}")

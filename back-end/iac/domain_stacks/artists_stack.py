@@ -22,11 +22,11 @@ class ArtistsStack(Stack):
         auth_kwargs = cognito.auth_kwargs
         authorizer = cognito.authorizer
 
-        artists_create = mk_lambda("ArtistsCreate", "services/music_service/artists/create", env, dynamo_db, s3)
-        artists_list   = mk_lambda("ArtistsList",   "services/music_service/artists/list", env, dynamo_db, s3)
-        artists_get    = mk_lambda("ArtistsGet",    "services/music_service/artists/get", env, dynamo_db, s3)
-        artists_update = mk_lambda("ArtistsUpdate", "services/music_service/artists/update", env, dynamo_db, s3)
-        artists_delete = mk_lambda("ArtistsDelete", "services/music_service/artists/delete", env, dynamo_db, s3)
+        artists_create = mk_lambda("ArtistsCreate", "artists/create", env, dynamo_db, s3)
+        artists_list   = mk_lambda("ArtistsList",   "artists/list", env, dynamo_db, s3)
+        artists_get    = mk_lambda("ArtistsGet",    "artists/get", env, dynamo_db, s3)
+        artists_update = mk_lambda("ArtistsUpdate", "artists/update", env, dynamo_db, s3)
+        artists_delete = mk_lambda("ArtistsDelete", "artists/delete", env, dynamo_db, s3)
 
         artists = api_gateway.api.root.add_resource("artists")
         artist_id = artists.add_resource("{id}")
