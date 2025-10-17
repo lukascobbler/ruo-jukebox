@@ -35,7 +35,6 @@ transcriptions
   "biography": "…",
   "photo_key": "images/artists/ART_9c42.jpg",
   "created_at": 1760701200,
-  "stats": { "rating_sum": 7, "rating_cnt": 3 }   // poseban worker koji belezi agregaciju
 }
 ```
 
@@ -48,7 +47,6 @@ transcriptions
   "primary_artist_id": "ART_9c42",
   "photo_key": "images/albums/ALB_8b11.jpg",
   "created_at": 1760703600,
-  "stats": { "rating_sum": 2, "rating_cnt": 1 }
 }
 ```
 
@@ -63,7 +61,7 @@ transcriptions
   "duration_sec": 241,
   "audio_key": "audio/TRK_a1f0.mp3",
   "created_at": 1760704200,
-  "stats": { "rating_sum": 9, "rating_cnt": 4 }
+  "stats": { "rating_sum": 9, "rating_cnt": 4 } // agregator workeri sredjuju
 }
 ```
 
@@ -71,7 +69,7 @@ transcriptions
 
 ```json
 {
-  "genre_id": "rock",
+  "genre_id": "GNR_1b17",
   "display": "Rock",
   "description": "Guitars, drums…",
   "created_at": 1760690000
@@ -84,16 +82,15 @@ transcriptions
 {
   "track_id": "TRK_a1f0",
   "artist_id": "ART_9c42",
-  "role": "primary"    // ili "featured" ili nesto
 }
 ```
 
 ### contentGenre (generic):
 
 ```json
-{ "genre": "rock", "entity": "ARTIST#ART_9c42", "created_at": 1760701200 }
-{ "genre": "rock", "entity": "ALBUM#ALB_8b11",  "created_at": 1760703600 }
-{ "genre": "rock", "entity": "TRACK#TRK_a1f0",  "created_at": 1760704200 }
+{ "genre": "GNR_1b17", "entity": "ARTIST#ART_9c42", "created_at": 1760701200 }
+{ "genre": "GNR_1b17", "entity": "ALBUM#ALB_8b11",  "created_at": 1760703600 }
+{ "genre": "GNR_1b17", "entity": "TRACK#TRK_a1f0",  "created_at": 1760704200 }
 ```
 
 ### user: (cognito za autorizaciju, ovo sluzi za biznis logiku)
@@ -160,11 +157,7 @@ transcriptions
 {
   "user_id": "SUB_3c0f1a",
   "item_id": "ALB_8b11#1760707900",
-  "kind": "ALBUM_RELEASE",
-  "album_id": "ALB_8b11",
-  "primary_artist_id": "ART_9c42",
-  "title": "Midnight Sessions",
-  "ts": 1760707900
+  "ts": 1760707900,
   "ttl": 1763319900
 }
 ```

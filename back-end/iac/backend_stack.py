@@ -27,7 +27,7 @@ class BackendStack(Stack):
                 birthdate=cognito.StandardAttribute(required=True, mutable=True),
                 email=cognito.StandardAttribute(required=True, mutable=True),
             ),
-            password_policy=cognito.PasswordPolicy(min_length=8),
+            password_policy=cognito.PasswordPolicy(min_length=3),
             removal_policy=RemovalPolicy.DESTROY,
         )
         user_pool_client = user_pool.add_client(
