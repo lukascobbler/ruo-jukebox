@@ -19,13 +19,7 @@ class BackendStack(Stack):
         # Artists
 
         # Albums
-        albums_create   = self.mk_lambda("AlbumsCreate",  "services/music_service/albums/create", env)
-        albums_list     = self.mk_lambda("AlbumsList",    "services/music_service/albums/list", env)
-        albums_get      = self.mk_lambda("AlbumsGet",     "services/music_service/albums/get", env)
-        albums_update   = self.mk_lambda("AlbumsUpdate",  "services/music_service/albums/update", env)
-        albums_delete   = self.mk_lambda("AlbumsDelete",  "services/music_service/albums/delete", env)
-        albums_cov_init = self.mk_lambda("AlbumsCoverInit", "services/music_service/albums/init_cover_upload", env)
-        albums_cov_done = self.mk_lambda("AlbumsCoverDone", "services/music_service/albums/complete_cover", env)
+
 
         # Tracks / content
         content_init   = self.mk_lambda("ContentInitUpload",    "services/music_service/content/init_upload", env)
@@ -200,15 +194,7 @@ class BackendStack(Stack):
         # Artists
 
         # Albums
-        albums = api.root.add_resource("albums")
-        albums.add_method("POST", apigw.LambdaIntegration(albums_create), **auth_kwargs)
-        albums.add_method("GET",  apigw.LambdaIntegration(albums_list),   **auth_kwargs)
-        album_id = albums.add_resource("{id}")
-        album_id.add_method("GET",    apigw.LambdaIntegration(albums_get),    **auth_kwargs)
-        album_id.add_method("PATCH",  apigw.LambdaIntegration(albums_update), **auth_kwargs)
-        album_id.add_method("DELETE", apigw.LambdaIntegration(albums_delete), **auth_kwargs)
-        albums.add_resource("init-cover-upload").add_method("POST", apigw.LambdaIntegration(albums_cov_init), **auth_kwargs)
-        albums.add_resource("complete-cover").add_method("POST",    apigw.LambdaIntegration(albums_cov_done), **auth_kwargs)
+
 
         # Content (tracks & singles)
         content = api.root.add_resource("content")

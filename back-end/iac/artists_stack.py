@@ -1,11 +1,8 @@
-from aws_cdk.aws_apigateway import AuthorizationType
 from constructs import Construct
+from aws_cdk.aws_apigateway import AuthorizationType
 from aws_cdk import (
-    Stack, Duration, RemovalPolicy,
-    aws_lambda as _lambda,
+    Stack,
     aws_apigateway as apigw,
-    aws_cognito as cognito,
-    aws_iam as iam, CfnOutput
 )
 
 from iac.api_gateway_stack import ApiGatewayStack
