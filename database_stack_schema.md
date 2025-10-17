@@ -1,0 +1,185 @@
+## Bucketi:
+
+```
+audio_bucket, images_bucket, transcripts_bucket (jedini blobovi)
+```
+
+## tabele:
+
+```
+artists (byName)
+albums (byArtist)
+tracks (byAlbum - za album trazi pesme u odgovarajucem redosledu)
+genres
+trackArtists(byArtist)
+contentGenres(genericno da se veze za artist/track/album) (byEntity)
+users(cognito useri)
+playlists(byOwner)
+playlistsItems(byTrack - mozda visak)
+ratings(byUser)
+subscriptions(byUser)
+interactions
+feed
+transcriptions
+```
+
+## primeri podataka u tabelama:
+
+### artist:
+
+```json
+{
+  "artist_id": "ART_9c42",
+  "name": "Alicia Keys",
+  "name_lc": "alicia keys",
+  "biography": "…",
+  "photo_key": "images/artists/ART_9c42.jpg",
+  "created_at": 1760701200,
+  "stats": { "rating_sum": 7, "rating_cnt": 3 }   // poseban worker koji belezi agregaciju
+}
+```
+
+### album:
+
+```json
+{
+  "album_id": "ALB_8b11",
+  "title": "Midnight Sessions",
+  "primary_artist_id": "ART_9c42",
+  "photo_key": "images/albums/ALB_8b11.jpg",
+  "created_at": 1760703600,
+  "stats": { "rating_sum": 2, "rating_cnt": 1 }
+}
+```
+
+### track:
+
+```json
+{
+  "track_id": "TRK_a1f0",
+  "title": "Starlight",
+  "album_id": "ALB_8b11",             // ako nema album_id znaci da je singl
+  "track_no": 2,                      // redosled unutar albuma, isto preskociti ako je singl
+  "duration_sec": 241,
+  "audio_key": "audio/TRK_a1f0.mp3",
+  "created_at": 1760704200,
+  "stats": { "rating_sum": 9, "rating_cnt": 4 }
+}
+```
+
+### genre:
+
+```json
+{
+  "genre_id": "rock",
+  "display": "Rock",
+  "description": "Guitars, drums…",
+  "created_at": 1760690000
+}
+```
+
+### trackArtist:
+
+```json
+{
+  "track_id": "TRK_a1f0",
+  "artist_id": "ART_9c42",
+  "role": "primary"    // ili "featured" ili nesto
+}
+```
+
+### contentGenre (generic):
+
+```json
+{ "genre": "rock", "entity": "ARTIST#ART_9c42", "created_at": 1760701200 }
+{ "genre": "rock", "entity": "ALBUM#ALB_8b11",  "created_at": 1760703600 }
+{ "genre": "rock", "entity": "TRACK#TRK_a1f0",  "created_at": 1760704200 }
+```
+
+### user: (cognito za autorizaciju, ovo sluzi za biznis logiku)
+
+```json
+{
+  "user_id": "SUB_3c0f1a",
+  "username": "name",
+  "email": "user@example.com",
+  "given_name": "FirstName",
+  "family_name": "LastName",
+  "birthdate": "2003-05-17",
+  "created_at": 1760700000
+}
+```
+
+### playlistItem:
+
+```json
+{
+  "playlist_id": "PL_7d44",
+  "position": 10,               
+  "track_id": "TRK_a1f0",
+  "added_at": 1760707300
+}
+```
+
+### rating (genericno):
+
+```json
+{
+  "content_key": "TRACK#TRK_a1f0",   // takodje ALBUM#/ARTIST#/PLAYLIST# (plejlista mozda visak)
+  "user_id": "SUB_3c0f1a",
+  "value": 3,                        // 1..3
+  "rated_at": 1760707400
+}
+```
+
+### subscription (genericno fleksibilno):
+
+```json
+{
+  "topic": "ARTIST#ART_9c42",      // moze i na GENRE#, mozda visak
+  "user_id": "SUB_3c0f1a",
+  "since": 1760707500
+}
+```
+
+### interaction:
+
+```json
+{
+  "user_id": "SUB_3c0f1a",
+  "ts": 1760707601,
+  "type": "PLAY",                   // PLAY | RATE | ADD_TO_PLAYLIST | ...
+  "track_id": "TRK_a1f0",
+  "ms_listened": 241000
+}
+```
+
+### feed:
+
+```json
+{
+  "user_id": "SUB_3c0f1a",
+  "item_id": "ALB_8b11#1760707900",
+  "kind": "ALBUM_RELEASE",
+  "album_id": "ALB_8b11",
+  "primary_artist_id": "ART_9c42",
+  "title": "Midnight Sessions",
+  "ts": 1760707900
+  "ttl": 1763319900
+}
+```
+
+### transkripcije:
+
+```json
+{
+  "track_id": "TRK_a1f0",
+  "status": "READY",          // PENDING | READY | FAILED ovo jos videti jer ima ona fora retry nesto pise na specifikaciji TODO
+  "transcript_key": "transcripts/TRK_a1f0.json",
+  "updated_at": 1760708000
+}
+```
+
+---
+
+kod pozicioniranja za albume i plejliste preporucuje se da se koriste gapovi tipa 10, 20, 30 ili 100, 200, 300, pa ako se ubaci u medjuvremenu nesto da bude novi id 15 ili 25 i tako, da ne bi morali svi da se izmestaju redom za jedan, ovo jos pogledati TODO
