@@ -1,7 +1,7 @@
 import aws_cdk
 
 from iac.api_gateway_stack import ApiGatewayStack
-from iac.artists_stack import ArtistsStack
+from iac.domain_stacks.artists_stack import ArtistsStack
 from iac.backend_stack import BackendStack
 from iac.cognito_stack import CognitoStack
 from iac.dynamo_db_stack import DynamoDbStack

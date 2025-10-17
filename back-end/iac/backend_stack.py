@@ -22,14 +22,7 @@ class BackendStack(Stack):
 
 
         # Tracks / content
-        content_init   = self.mk_lambda("ContentInitUpload",    "services/music_service/content/init_upload", env)
-        content_done   = self.mk_lambda("ContentCompleteUpload","services/music_service/content/complete_upload", env)
-        content_list   = self.mk_lambda("ContentList",          "services/music_service/content/list", env)
-        content_get    = self.mk_lambda("ContentGet",           "services/music_service/content/get", env)
-        content_update = self.mk_lambda("ContentUpdate",        "services/music_service/content/update", env)
-        content_delete = self.mk_lambda("ContentDelete",        "services/music_service/content/delete", env)
-        track_cov_init = self.mk_lambda("TrackCoverInit",       "services/music_service/content/init_cover_upload", env)
-        track_cov_done = self.mk_lambda("TrackCoverDone",       "services/music_service/content/complete_cover", env)
+
 
         # Genres
         genres_create = self.mk_lambda("GenresCreate", "services/music_service/genres/create", env)
@@ -197,16 +190,6 @@ class BackendStack(Stack):
 
 
         # Content (tracks & singles)
-        content = api.root.add_resource("content")
-        content.add_resource("init-upload").add_method("POST",     apigw.LambdaIntegration(content_init), **auth_kwargs)
-        content.add_resource("complete-upload").add_method("POST", apigw.LambdaIntegration(content_done), **auth_kwargs)
-        content.add_method("GET", apigw.LambdaIntegration(content_list), **auth_kwargs)
-        content_id = content.add_resource("{id}")
-        content_id.add_method("GET",    apigw.LambdaIntegration(content_get),    **auth_kwargs)
-        content_id.add_method("PATCH",  apigw.LambdaIntegration(content_update), **auth_kwargs)
-        content_id.add_method("DELETE", apigw.LambdaIntegration(content_delete), **auth_kwargs)
-        content.add_resource("init-cover-upload").add_method("POST", apigw.LambdaIntegration(track_cov_init), **auth_kwargs)
-        content.add_resource("complete-cover").add_method("POST",    apigw.LambdaIntegration(track_cov_done), **auth_kwargs)
 
         # Ratings (generic key built inside lambda)
         rating = content_id.add_resource("rating")
