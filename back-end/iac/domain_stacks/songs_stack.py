@@ -29,9 +29,12 @@ class SongsStack(Stack):
         song_delete = mk_lambda("SongDelete", "services/music_service/song/delete", env, dynamo_db, s3)
         song_cov_init = mk_lambda("SongCoverInit", "services/music_service/song/init_cover_upload", env, dynamo_db, s3)
         song_cov_done = mk_lambda("SongCoverDone", "services/music_service/song/complete_cover", env, dynamo_db, s3)
+        ratings_put = mk_lambda("SongRatingPut", "services/music_service/ratings/put", env, dynamo_db, s3)
+        ratings_delete = mk_lambda("SongRatingDelete", "services/music_service/ratings/delete", env, dynamo_db, s3)
         
         song = api_gateway.api.root.add_resource("song")
         song_id = song.add_resource("{id}")
+        rating = song_id.add_resource("rating")
 
         song.add_resource("init-upload").add_method(
             "POST",     
@@ -86,6 +89,21 @@ class SongsStack(Stack):
         song_id.add_method(
             "DELETE", 
             apigw.LambdaIntegration(song_delete), 
+            **auth_kwargs,
+            authorization_type=AuthorizationType.COGNITO,
+            authorizer=authorizer
+        )
+
+        rating.add_method(
+            "PUT",
+            apigw.LambdaIntegration(ratings_put),
+            **auth_kwargs,
+            authorization_type=AuthorizationType.COGNITO,
+            authorizer=authorizer
+        )
+        rating.add_method(
+            "DELETE",
+            apigw.LambdaIntegration(ratings_delete),
             **auth_kwargs,
             authorization_type=AuthorizationType.COGNITO,
             authorizer=authorizer

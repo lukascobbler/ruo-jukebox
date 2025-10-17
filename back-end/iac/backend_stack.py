@@ -25,11 +25,6 @@ class BackendStack(Stack):
 
 
         # Genres
-        genres_create = self.mk_lambda("GenresCreate", "services/music_service/genres/create", env)
-        genres_list   = self.mk_lambda("GenresList",   "services/music_service/genres/list", env)
-        genres_get    = self.mk_lambda("GenresGet",    "services/music_service/genres/get", env)
-        genres_update = self.mk_lambda("GenresUpdate", "services/music_service/genres/update", env)
-        genres_delete = self.mk_lambda("GenresDelete", "services/music_service/genres/delete", env)
 
         # Playlists
         playlists_create       = self.mk_lambda("PlaylistsCreate",     "services/music_service/playlists/create", env)
@@ -41,8 +36,7 @@ class BackendStack(Stack):
         playlists_remove_track = self.mk_lambda("PlaylistsRemoveTrack", "services/music_service/playlists/remove_track", env)
 
         # Ratings API (stream takes care of aggregation)
-        ratings_put    = self.mk_lambda("RatingsPut",    "services/music_service/ratings/put", env)
-        ratings_delete = self.mk_lambda("RatingsDelete", "services/music_service/ratings/delete", env)
+
 
         # Subscriptions
         subs_create = self.mk_lambda("SubsCreate",    "services/music_service/subscriptions/create", env)
@@ -192,18 +186,9 @@ class BackendStack(Stack):
         # Content (tracks & singles)
 
         # Ratings (generic key built inside lambda)
-        rating = content_id.add_resource("rating")
-        rating.add_method("PUT",    apigw.LambdaIntegration(ratings_put),    **auth_kwargs)
-        rating.add_method("DELETE", apigw.LambdaIntegration(ratings_delete), **auth_kwargs)
+
 
         # Genres
-        genres = api.root.add_resource("genres")
-        genres.add_method("POST", apigw.LambdaIntegration(genres_create), **auth_kwargs)
-        genres.add_method("GET",  apigw.LambdaIntegration(genres_list),   **auth_kwargs)
-        genre_id = genres.add_resource("{id}")
-        genre_id.add_method("GET",    apigw.LambdaIntegration(genres_get),    **auth_kwargs)
-        genre_id.add_method("PATCH",  apigw.LambdaIntegration(genres_update), **auth_kwargs)
-        genre_id.add_method("DELETE", apigw.LambdaIntegration(genres_delete), **auth_kwargs)
 
         # Playlists
         playlists = api.root.add_resource("playlists")
