@@ -12,7 +12,7 @@ from iac.dynamo_db_stack import DynamoDbStack
 from iac.s3_stack import S3Stack
 
 
-class ArtistsStack(Stack):
+class AlbumsStack(Stack):
     def __init__(self, scope: Construct, id: str,
                  cognito: CognitoStack, dynamo_db: DynamoDbStack,
                  s3: S3Stack, api_gateway: ApiGatewayStack,

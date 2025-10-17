@@ -1,9 +1,14 @@
 import aws_cdk
 
 from iac.api_gateway_stack import ApiGatewayStack
-from iac.domain_stacks.artists_stack import ArtistsStack
-from iac.backend_stack import BackendStack
 from iac.cognito_stack import CognitoStack
+from iac.domain_stacks.albums_stack import AlbumsStack
+from iac.domain_stacks.artists_stack import ArtistsStack
+from iac.domain_stacks.genres_stack import GenresStack
+from iac.domain_stacks.interactions_stack import InteractionsStack
+from iac.domain_stacks.playlists_stack import PlaylistsStack
+from iac.domain_stacks.songs_stack import SongsStack
+from iac.domain_stacks.subscriptions_stack import SubscriptionsStack
 from iac.dynamo_db_stack import DynamoDbStack
 from iac.s3_stack import S3Stack
 
@@ -43,5 +48,32 @@ s3_stack = S3Stack(app, "S3Stack")
 api_gateway = ApiGatewayStack(app, "ApiGatewayStack")
 env = generate_environment(cognito_stack, dynamo_db_stack, s3_stack)
 
-artists_stack = ArtistsStack(app, "ArtistsStack", cognito_stack, dynamo_db_stack, api_gateway, env)
-backend_stack = BackendStack(app, "BackendStack", dynamo_db_stack, cognito_stack, env)
+albums = AlbumsStack(
+    app, "AlbumsStack", cognito_stack, dynamo_db_stack, s3_stack, api_gateway, env
+)
+
+artists = ArtistsStack(
+    app, "ArtistsStack", cognito_stack, dynamo_db_stack, s3_stack, api_gateway, env
+)
+
+genres = GenresStack(
+    app, "GenresStack", cognito_stack, dynamo_db_stack, s3_stack, api_gateway, env
+)
+
+interactions = InteractionsStack(
+    app, "InteractionsStack", dynamo_db_stack, env
+)
+
+playlists = PlaylistsStack(
+    app, "PlaylistsStack", cognito_stack, dynamo_db_stack, s3_stack, api_gateway, env
+)
+
+songs = SongsStack(
+    app, "SongsStack", cognito_stack, dynamo_db_stack, s3_stack, api_gateway, env
+)
+
+subscriptions = SubscriptionsStack(
+    app, "SubscriptionsStack", cognito_stack, dynamo_db_stack, s3_stack, api_gateway, env
+)
+
+app.synth()
