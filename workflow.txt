@@ -1,0 +1,10 @@
+1 cognito registracija + login + autorizacija + logout + workeri za registraciju
+2 kreiranje, izmena, dobavljanje i brisanje zanra
+3 kreiranje, izmena i dobavljanje artista
+4 kreiranje, izmena, dobavljanje i brisanje singla (sqs za brisanje i worker)
+5 kreiranje, izmena, dobavljanje i brisanje albuma
+6 brisanje artista
+7 subscribe + worker za subscribe + email/sms
+8 dobavljanje feeda + worker za feed
+9 dobavljanje transkripcije + worker za transkripciju
+10 offline slusanje - nije pokriveno nigde nista

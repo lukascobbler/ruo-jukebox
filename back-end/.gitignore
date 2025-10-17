@@ -1,3 +1,5 @@
 /.venv/
 /.idea/
 /cdk.out/
+/iac/__pycache__/
+/iac/constructs/__pycache__/
