@@ -15,6 +15,7 @@ class CognitoStack(Stack):
         super().__init__(scope, id, **kwargs)
 
         self.user_pool = None
+        self.authorizer = None
         self.auth_kwargs = None
 
         self._define_user_pool()
@@ -96,7 +97,7 @@ class CognitoStack(Stack):
 
     def _define_auth_kwargs(self):
         # only the users from our user pool can log in
-        authorizer = apigw.CognitoUserPoolsAuthorizer(self, "ApiAuthorizer", cognito_user_pools=[self.user_pool])
+        self.authorizer = apigw.CognitoUserPoolsAuthorizer(self, "ApiAuthorizer", cognito_user_pools=[self.user_pool])
         # predefined kwargs to put on every API gateway route
         self.auth_kwargs = dict(authorizer=authorizer, authorization_type=apigw.AuthorizationType.COGNITO)
 

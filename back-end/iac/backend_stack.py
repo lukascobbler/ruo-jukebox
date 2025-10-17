@@ -14,12 +14,9 @@ class BackendStack(Stack):
     def __init__(self, scope: Construct, id: str, dynamo_db, cognito, env, **kwargs):
         super().__init__(scope, id, **kwargs)
 
+        auth_kwargs = cognito.auth_kwargs
+
         # Artists
-        artists_create = self.mk_lambda("ArtistsCreate", "services/music_service/artists/create", env)
-        artists_list   = self.mk_lambda("ArtistsList",   "services/music_service/artists/list", env)
-        artists_get    = self.mk_lambda("ArtistsGet",    "services/music_service/artists/get", env)
-        artists_update = self.mk_lambda("ArtistsUpdate", "services/music_service/artists/update", env)
-        artists_delete = self.mk_lambda("ArtistsDelete", "services/music_service/artists/delete", env)
 
         # Albums
         albums_create   = self.mk_lambda("AlbumsCreate",  "services/music_service/albums/create", env)
@@ -75,7 +72,7 @@ class BackendStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_11,
             handler="lambda_function.lambda_handler",
             code=_lambda.Code.from_asset("services/streams/on_content_change"),
-            environment=common_env,
+            environment=env,
             timeout=Duration.seconds(60),
             memory_size=512,
         )
@@ -128,7 +125,7 @@ class BackendStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_11,
             handler="lambda_function.lambda_handler",
             code=_lambda.Code.from_asset("services/streams/on_ratings_change"),
-            environment=common_env,
+            environment=env,
             timeout=Duration.seconds(60),
             memory_size=512,
         )
@@ -157,7 +154,7 @@ class BackendStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_11,
             handler="lambda_function.lambda_handler",
             code=_lambda.Code.from_asset("services/streams/on_interaction"),
-            environment=common_env,
+            environment=env,
             timeout=Duration.seconds(60),
             memory_size=512,
         )
@@ -180,7 +177,7 @@ class BackendStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_11,
             handler="lambda_function.lambda_handler",
             code=_lambda.Code.from_asset("services/streams/on_subscription_change"),
-            environment=common_env,
+            environment=env,
             timeout=Duration.seconds(60),
             memory_size=512,
         )
@@ -199,24 +196,8 @@ class BackendStack(Stack):
         ))
 
         # API gateway
-        api = apigw.RestApi(
-            self, "ApiGateway",
-            default_cors_preflight_options=apigw.CorsOptions(
-                allow_origins=apigw.Cors.ALL_ORIGINS(),  # TODO change
-                allow_methods=["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
-                allow_headers=apigw.Cors.DEFAULT_HEADERS()
-            ),
-            endpoint_configuration=apigw.EndpointConfiguration(types=[apigw.EndpointType.REGIONAL]),
-        )
 
         # Artists
-        artists = api.root.add_resource("artists")
-        artists.add_method("POST", apigw.LambdaIntegration(artists_create), **auth_kwargs)   # admin: check group in lambda
-        artists.add_method("GET",  apigw.LambdaIntegration(artists_list),   **auth_kwargs)
-        artist_id = artists.add_resource("{id}")
-        artist_id.add_method("GET",    apigw.LambdaIntegration(artists_get),    **auth_kwargs)
-        artist_id.add_method("PATCH",  apigw.LambdaIntegration(artists_update), **auth_kwargs)
-        artist_id.add_method("DELETE", apigw.LambdaIntegration(artists_delete), **auth_kwargs)
 
         # Albums
         albums = api.root.add_resource("albums")
@@ -285,49 +266,3 @@ class BackendStack(Stack):
         # not needed because we have made special construct to be reused
         # SQS Trigger
         # processor_lambda.add_event_source(lambda_event_sources.SqsEventSource(queue))
-
-
-        # Settings for custom domain
-        certificate = acm.Certificate.from_certificate_arn(
-            self, "ApiCert",
-            "arn:aws:acm:eu-central-1:172132042466:certificate/779aabb6-2c06-4075-b2a4-31fac8a4cb2c"
-        )
-
-        domain_name = apigw.DomainName(
-            self, "CustomDomain",
-            domain_name="api.jb.moma.rs",
-            certificate=certificate,
-        )
-
-        apigw.BasePathMapping(
-            self, "ApiMapping",
-            domain_name=domain_name,
-            rest_api=api,
-            base_path="",
-            stage=api.deployment_stage
-        )
-
-    # lambda setup helper
-    def mk_lambda(self, logical_id: str, path: str, env: dict, extra_env: dict | None = None) -> _lambda.Function:
-        env = {**env, **(extra_env or {})}
-        fn = _lambda.Function(
-            self, logical_id,
-            runtime=_lambda.Runtime.PYTHON_3_11,
-            handler="lambda_function.lambda_handler",
-            code=_lambda.Code.from_asset(path),
-            environment=env,
-            timeout=Duration.seconds(15),
-            memory_size=256,
-        )
-        # grants TODO right now everyone gets everything
-        dynamo_db.audio_bucket.grant_read_write(fn)
-        dynamo_db.images_bucket.grant_read_write(fn)
-        dynamo_db.transcripts_bucket.grant_read_write(fn)
-        for t in [
-            dynamo_db.artists, dynamo_db.albums, dynamo_db.tracks, dynamo_db.track_artists, dynamo_db.genres,
-            dynamo_db.content_genres, dynamo_db.users, dynamo_db.playlists, dynamo_db.playlist_items,
-            dynamo_db.ratings, dynamo_db.subscriptions, dynamo_db.interactions, dynamo_db.feed,
-            dynamo_db.transcriptions
-        ]:
-            t.grant_read_write_data(fn)
-        return fn

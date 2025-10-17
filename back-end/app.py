@@ -1,14 +1,18 @@
 import aws_cdk
 
+from iac.api_gateway_stack import ApiGatewayStack
+from iac.artists_stack import ArtistsStack
 from iac.backend_stack import BackendStack
 from iac.cognito_stack import CognitoStack
-from iac.database_stack import DatabaseStack
+from iac.dynamo_db_stack import DynamoDbStack
+from iac.s3_stack import S3Stack
 
-def generate_environment(cognito, dynamo_db):
+
+def generate_environment(cognito, dynamo_db: DynamoDbStack, s3_bucket: S3Stack):
     return {
-            "AUDIO_BUCKET": dynamo_db.audio_bucket.bucket_name,
-            "IMAGES_BUCKET": dynamo_db.images_bucket.bucket_name,
-            "TRANSCRIPTS_BUCKET": dynamo_db.transcripts_bucket.bucket_name,
+            "AUDIO_BUCKET": s3_bucket.audio_bucket.bucket_name,
+            "IMAGES_BUCKET": s3_bucket.images_bucket.bucket_name,
+            "TRANSCRIPTS_BUCKET": s3_bucket.transcripts_bucket.bucket_name,
             "ARTISTS_TABLE": dynamo_db.artists.table_name,
             "ALBUMS_TABLE": dynamo_db.albums.table_name,
             "TRACKS_TABLE": dynamo_db.tracks.table_name,
@@ -34,7 +38,10 @@ REGION = 'eu-central-1'
 app = aws_cdk.App()
 
 cognito_stack = CognitoStack(app, "CognitoStack")
-dynamo_db_stack = DatabaseStack(app, "DynamoDbStack")
-env = generate_environment(cognito_stack, dynamo_db_stack)
+dynamo_db_stack = DynamoDbStack(app, "DynamoDbStack")
+s3_stack = S3Stack(app, "S3Stack")
+api_gateway = ApiGatewayStack(app, "ApiGatewayStack")
+env = generate_environment(cognito_stack, dynamo_db_stack, s3_stack)
 
-backend_stack = BackendStack(app, "BackendStack", dynamo_db_stack, cognito_stack, env=env)
+artists_stack = ArtistsStack(app, "ArtistsStack", cognito_stack, dynamo_db_stack, api_gateway, env)
+backend_stack = BackendStack(app, "BackendStack", dynamo_db_stack, cognito_stack, env)
