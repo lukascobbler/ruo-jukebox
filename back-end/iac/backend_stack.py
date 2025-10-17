@@ -27,13 +27,6 @@ class BackendStack(Stack):
         # Genres
 
         # Playlists
-        playlists_create       = self.mk_lambda("PlaylistsCreate",     "services/music_service/playlists/create", env)
-        playlists_list_mine    = self.mk_lambda("PlaylistsListMine","services/music_service/playlists/list_mine", env)
-        playlists_get          = self.mk_lambda("PlaylistsGet",        "services/music_service/playlists/get", env)
-        playlists_update       = self.mk_lambda("PlaylistsUpdate",     "services/music_service/playlists/update", env)
-        playlists_delete       = self.mk_lambda("PlaylistsDelete",     "services/music_service/playlists/delete", env)
-        playlists_add_track    = self.mk_lambda("PlaylistsAddTrack",    "services/music_service/playlists/add_track", env)
-        playlists_remove_track = self.mk_lambda("PlaylistsRemoveTrack", "services/music_service/playlists/remove_track", env)
 
         # Ratings API (stream takes care of aggregation)
 
@@ -191,17 +184,6 @@ class BackendStack(Stack):
         # Genres
 
         # Playlists
-        playlists = api.root.add_resource("playlists")
-        playlists.add_method("POST", apigw.LambdaIntegration(playlists_create), **auth_kwargs)
-        playlists.add_method("GET",  apigw.LambdaIntegration(playlists_list_mine), **auth_kwargs)
-        pl_id = playlists.add_resource("{id}")
-        pl_id.add_method("GET",    apigw.LambdaIntegration(playlists_get),    **auth_kwargs)
-        pl_id.add_method("PATCH",  apigw.LambdaIntegration(playlists_update), **auth_kwargs)
-        pl_id.add_method("DELETE", apigw.LambdaIntegration(playlists_delete), **auth_kwargs)
-        pl_tracks = pl_id.add_resource("tracks")
-        pl_tracks.add_method("POST", apigw.LambdaIntegration(playlists_add_track), **auth_kwargs)
-        pl_trk_id = pl_tracks.add_resource("{trackId}")
-        pl_trk_id.add_method("DELETE", apigw.LambdaIntegration(playlists_remove_track), **auth_kwargs)
 
         # može i ovako, ne mora se koristiti construct ako je nešto jednostavno
         # processor_lambda = _lambda.Function(
