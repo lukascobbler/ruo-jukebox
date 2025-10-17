@@ -13,7 +13,6 @@ class DatabaseStack(Stack):
 
         self.audio_bucket = s3.Bucket(
             self, "AudioBucket",
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
             cors=[s3.CorsRule(
                 allowed_methods=[s3.HttpMethods.PUT, s3.HttpMethods.GET, s3.HttpMethods.HEAD, s3.HttpMethods.DELETE],
                 allowed_origins=["*"],   # TODO change cors everywhere
@@ -27,7 +26,6 @@ class DatabaseStack(Stack):
         # images bucket
         self.images_bucket = s3.Bucket(
             self, "ImagesBucket",
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
             cors=[s3.CorsRule(
                 allowed_methods=[s3.HttpMethods.PUT, s3.HttpMethods.GET, s3.HttpMethods.HEAD, s3.HttpMethods.DELETE],
                 allowed_origins=["*"],
@@ -41,7 +39,6 @@ class DatabaseStack(Stack):
         # transcripts bucket TODO
         self.transcripts_bucket = s3.Bucket(
             self, "TranscriptsBucket",
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
             cors=[s3.CorsRule(
                 allowed_methods=[s3.HttpMethods.GET, s3.HttpMethods.HEAD],
                 allowed_origins=["*"],
@@ -68,7 +65,6 @@ class DatabaseStack(Stack):
             index_name="byName",
             partition_key=ddb.Attribute(name="name_lc", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="created_at", type=ddb.AttributeType.NUMBER),
-            removal_policy=RemovalPolicy.DESTROY
         )
 
         self.albums = ddb.Table(
@@ -86,7 +82,6 @@ class DatabaseStack(Stack):
             index_name="byArtist",
             partition_key=ddb.Attribute(name="primary_artist_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="created_at", type=ddb.AttributeType.NUMBER),
-            removal_policy=RemovalPolicy.DESTROY
         )
 
         self.tracks = ddb.Table(
@@ -131,7 +126,6 @@ class DatabaseStack(Stack):
             index_name="byArtist",
             partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
-            removal_policy=RemovalPolicy.DESTROY
         )
 
         # keeps track of genres for tracks/albums/artists

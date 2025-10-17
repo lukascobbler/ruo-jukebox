@@ -7,7 +7,7 @@ class LambdaWithSqs(Construct):
         super().__init__(scope, id_str)
         self.lambda_function = _lambda.Function(
             self, "Lambda",
-            runtime=_lambda.Runtime.PYTHON_3_11,
+            runtime=_lambda.Runtime.PYTHON_3_11(),
             handler="lambda_function.lambda_handler",
             code=_lambda.Code.from_asset(handler_path),
             environment=env

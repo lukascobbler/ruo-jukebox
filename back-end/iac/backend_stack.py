@@ -42,18 +42,18 @@ class BackendStack(Stack):
         # pre-signup trigger lambda, auto-confirms email for cognito
         pre_signup = _lambda.Function(
             self, "CognitoPreSignUp",
-            runtime=_lambda.Runtime.PYTHON_3_11,
+            runtime=_lambda.Runtime.PYTHON_3_11(),
             handler="pre_signup.lambda_handler",
             code=_lambda.Code.from_asset("services/auth/pre_signup"),
             timeout=Duration.seconds(5),
             memory_size=128,
         )
-        user_pool.add_trigger(cognito.UserPoolOperation.PRE_SIGN_UP, pre_signup)
+        user_pool.add_trigger(cognito.UserPoolOperation.PRE_SIGN_UP(), pre_signup)
 
         # post-confirm trigger lambda adds user to "user" group
         post_confirm = _lambda.Function(
             self, "CognitoPostConfirm",
-            runtime=_lambda.Runtime.PYTHON_3_11,
+            runtime=_lambda.Runtime.PYTHON_3_11(),
             handler="post_confirm.lambda_handler",
             code=_lambda.Code.from_asset("services/auth/post_confirm"),
             environment={
@@ -63,7 +63,7 @@ class BackendStack(Stack):
             timeout=Duration.seconds(10),
             memory_size=256,
         )
-        user_pool.add_trigger(cognito.UserPoolOperation.POST_CONFIRMATION, post_confirm)
+        user_pool.add_trigger(cognito.UserPoolOperation.POST_CONFIRMATION(), post_confirm)
         post_confirm.add_to_role_policy(iam.PolicyStatement(
             actions=["cognito-idp:AdminAddUserToGroup"],
             resources=[f"arn:aws:cognito-idp:{self.region}:{self.account}:userpool/{user_pool.user_pool_id}"]
@@ -102,7 +102,7 @@ class BackendStack(Stack):
             env = {**common_env, **(extra_env or {})}
             fn = _lambda.Function(
                 self, logical_id,
-                runtime=_lambda.Runtime.PYTHON_3_11,
+                runtime=_lambda.Runtime.PYTHON_3_11(),
                 handler="lambda_function.lambda_handler",
                 code=_lambda.Code.from_asset(path),
                 environment=env,
@@ -179,7 +179,7 @@ class BackendStack(Stack):
         # 1 New content (Albums + Tracks) -> notify subscribers, add feed cards, start transcription for tracks
         content_events_fn = _lambda.Function(
             self, "ContentEvents",
-            runtime=_lambda.Runtime.PYTHON_3_11,
+            runtime=_lambda.Runtime.PYTHON_3_11(),
             handler="lambda_function.lambda_handler",
             code=_lambda.Code.from_asset("services/streams/on_content_change"),
             environment=common_env,
@@ -232,7 +232,7 @@ class BackendStack(Stack):
         # Ratings aggregator (Ratings stream NEW_AND_OLD_IMAGES -> update target entities)
         ratings_agg_fn = _lambda.Function(
             self, "RatingsAggregator",
-            runtime=_lambda.Runtime.PYTHON_3_11,
+            runtime=_lambda.Runtime.PYTHON_3_11(),
             handler="lambda_function.lambda_handler",
             code=_lambda.Code.from_asset("services/streams/on_ratings_change"),
             environment=common_env,
@@ -261,7 +261,7 @@ class BackendStack(Stack):
         # feed builders from user activity and subscriptions
         interactions_feed_fn = _lambda.Function(
             self, "InteractionsFeed",
-            runtime=_lambda.Runtime.PYTHON_3_11,
+            runtime=_lambda.Runtime.PYTHON_3_11(),
             handler="lambda_function.lambda_handler",
             code=_lambda.Code.from_asset("services/streams/on_interaction"),
             environment=common_env,
@@ -284,7 +284,7 @@ class BackendStack(Stack):
 
         subs_feed_fn = _lambda.Function(
             self, "SubscriptionsFeed",
-            runtime=_lambda.Runtime.PYTHON_3_11,
+            runtime=_lambda.Runtime.PYTHON_3_11(),
             handler="lambda_function.lambda_handler",
             code=_lambda.Code.from_asset("services/streams/on_subscription_change"),
             environment=common_env,
@@ -309,9 +309,9 @@ class BackendStack(Stack):
         api = apigw.RestApi(
             self, "ApiGateway",
             default_cors_preflight_options=apigw.CorsOptions(
-                allow_origins=apigw.Cors.ALL_ORIGINS,  # TODO change
+                allow_origins=apigw.Cors.ALL_ORIGINS(),  # TODO change
                 allow_methods=["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
-                allow_headers=apigw.Cors.DEFAULT_HEADERS
+                allow_headers=apigw.Cors.DEFAULT_HEADERS()
             ),
             endpoint_configuration=apigw.EndpointConfiguration(types=[apigw.EndpointType.REGIONAL]),
         )
@@ -378,7 +378,7 @@ class BackendStack(Stack):
         # može i ovako, ne mora se koristiti construct ako je nešto jednostavno
         # processor_lambda = _lambda.Function(
         #     self, "ProcessorLambda",
-        #     runtime=_lambda.Runtime.PYTHON_3_11,
+        #     runtime=_lambda.Runtime.PYTHON_3_11(),
         #     handler="lambda_function.lambda_handler",
         #     code=_lambda.Code.from_asset("lambdas/processor"),
         #     environment={"TABLE_NAME": table.table_name}
