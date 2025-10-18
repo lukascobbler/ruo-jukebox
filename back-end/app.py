@@ -5,6 +5,7 @@ from iac.cognito_stack import CognitoStack
 from iac.domain_stacks.albums_stack import AlbumsStack
 from iac.domain_stacks.artists_stack import ArtistsStack
 from iac.domain_stacks.genres_stack import GenresStack
+# from iac.domain_stacks.users_stack import UsersStack
 from iac.domain_stacks.interactions_stack import InteractionsStack
 from iac.domain_stacks.playlists_stack import PlaylistsStack
 from iac.domain_stacks.songs_stack import SongsStack
@@ -43,21 +44,24 @@ REGION = 'eu-central-1'
 app = aws_cdk.App()
 
 cognito_stack = CognitoStack(app, "CognitoStack")
-api_gateway = ApiGatewayStack(app, "ApiGatewayStack", cognito_stack)
 dynamo_db_stack = DynamoDbStack(app, "DynamoDbStack")
 s3_stack = S3Stack(app, "S3Stack")
 env = generate_environment(cognito_stack, dynamo_db_stack, s3_stack)
 
+api_gateway = ApiGatewayStack(
+    app, "ApiGatewayStack", cognito_stack, dynamo_db_stack, s3_stack, env
+)
+
 albums = AlbumsStack(
-    app, "AlbumsStack", cognito_stack, dynamo_db_stack, s3_stack, api_gateway, env
+    app, "AlbumsStack", dynamo_db_stack, s3_stack, api_gateway, env
 )
 
 artists = ArtistsStack(
-    app, "ArtistsStack", cognito_stack, dynamo_db_stack, s3_stack, api_gateway, env
+    app, "ArtistsStack", dynamo_db_stack, s3_stack, api_gateway, env
 )
 
 genres = GenresStack(
-    app, "GenresStack", cognito_stack, dynamo_db_stack, s3_stack, api_gateway, env
+    app, "GenresStack", dynamo_db_stack, s3_stack, api_gateway, env
 )
 
 interactions = InteractionsStack(
@@ -65,7 +69,7 @@ interactions = InteractionsStack(
 )
 
 playlists = PlaylistsStack(
-    app, "PlaylistsStack", cognito_stack, dynamo_db_stack, s3_stack, api_gateway, env
+    app, "PlaylistsStack", dynamo_db_stack, s3_stack, api_gateway, env
 )
 
 songs = SongsStack(
@@ -73,7 +77,7 @@ songs = SongsStack(
 )
 
 subscriptions = SubscriptionsStack(
-    app, "SubscriptionsStack", cognito_stack, dynamo_db_stack, s3_stack, api_gateway, env
+    app, "SubscriptionsStack", dynamo_db_stack, s3_stack, api_gateway, env
 )
 
 app.synth()

@@ -13,14 +13,13 @@ from iac.s3_stack import S3Stack
 
 
 class PlaylistsStack(Stack):
-    def __init__(self, scope: Construct, id: str,
-                 cognito: CognitoStack, dynamo_db: DynamoDbStack,
+    def __init__(self, scope: Construct, id: str, dynamo_db: DynamoDbStack,
                  s3: S3Stack, api_gateway: ApiGatewayStack,
                  env, **kwargs):
         super().__init__(scope, id, **kwargs)
-        self._init_endpoints(cognito, dynamo_db, s3, api_gateway, env)
+        self._init_endpoints(dynamo_db, s3, api_gateway, env)
 
-    def _init_endpoints(self, cognito, dynamo_db, s3, api_gateway, env):
+    def _init_endpoints(self, dynamo_db, s3, api_gateway, env):
         playlists_create = mk_lambda(self, "PlaylistsCreate", "services/playlists/create", env, dynamo_db, s3)
         playlists_list_mine = mk_lambda(self, "PlaylistsListMine", "services/playlists/list_mine", env, dynamo_db, s3)
         playlists_get = mk_lambda(self, "PlaylistsGet", "services/playlists/get", env, dynamo_db, s3)

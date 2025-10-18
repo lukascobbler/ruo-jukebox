@@ -13,8 +13,7 @@
 ## Backend deployment
 
 1. Deploy stack: \
-   `cdk deploy DatabaseStack --require-approval never` \
-   `cdk deploy BackendStack --require-approval never`
+   `cdk deploy CognitoStack --require-approval never` \
+   `cdk deploy --all --require-approval never`
 2. Destroy (if needed): \
-   `cdk destroy DatabaseStack --force` \
-   `cdk destroy BackendStack --force`
+   `cdk destroy CognitoStack --force` 

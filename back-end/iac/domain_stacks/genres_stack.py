@@ -14,13 +14,13 @@ from iac.s3_stack import S3Stack
 
 class GenresStack(Stack):
     def __init__(self, scope: Construct, id: str,
-                 cognito: CognitoStack, dynamo_db: DynamoDbStack,
+                 dynamo_db: DynamoDbStack,
                  s3: S3Stack, api_gateway: ApiGatewayStack,
                  env, **kwargs):
         super().__init__(scope, id, **kwargs)
-        self._init_endpoints(cognito, dynamo_db, s3, api_gateway, env)
+        self._init_endpoints(dynamo_db, s3, api_gateway, env)
 
-    def _init_endpoints(self, cognito, dynamo_db, s3, api_gateway, env):
+    def _init_endpoints(self, dynamo_db, s3, api_gateway, env):
         genres_create = mk_lambda(self, "GenresCreate", "services/genres/create", env, dynamo_db, s3)
         genres_list   = mk_lambda(self, "GenresList",   "services/genres/list", env, dynamo_db, s3)
         genres_get    = mk_lambda(self, "GenresGet",    "services/genres/get", env, dynamo_db, s3)

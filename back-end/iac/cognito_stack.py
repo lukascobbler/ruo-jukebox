@@ -1,3 +1,5 @@
+from aws_cdk.aws_cognito import UserPoolGroup
+from aws_cdk.aws_iam import ManagedPolicy
 from constructs import Construct
 from aws_cdk import (
     Stack, Duration, RemovalPolicy,
@@ -45,16 +47,18 @@ class CognitoStack(Stack):
 
     def _define_user_groups(self):
         # defines the user group
-        cognito.CfnUserPoolGroup(
-            self, "UsersGroup",
+        UserPoolGroup(
+            self,
+            "LoggedInUsersGroup",
+            user_pool=self.user_pool,
             group_name=LOGGED_IN_GROUP_NAME,
-            user_pool_id=self.user_pool.user_pool_id
         )
         # defines the admin group
-        cognito.CfnUserPoolGroup(
-            self, "AdminsGroup",
+        UserPoolGroup(
+            self,
+            "AdminGroup",
+            user_pool=self.user_pool,
             group_name=ADMIN_GROUP_NAME,
-            user_pool_id=self.user_pool.user_pool_id
         )
 
     def _add_pre_post_user_actions(self):
@@ -85,13 +89,15 @@ class CognitoStack(Stack):
         )
 
         # apply the add user to group lambda after the user is created
-        self.user_pool.add_trigger(cognito.UserPoolOperation.POST_CONFIRMATION, add_user_to_user_group)
+        self.user_pool.add_trigger(
+            cognito.UserPoolOperation.POST_CONFIRMATION,
+            add_user_to_user_group
+        )
 
         # gives permission to the lambda that adds a user to a group to add users to groups (the resource)
-        add_user_to_user_group.add_to_role_policy(iam.PolicyStatement(
-            actions=["cognito-idp:AdminAddUserToGroup"],
-            resources=[f"arn:aws:cognito-idp:{self.region}:{self.account}:userpool/{self.user_pool.user_pool_id}"]
-        ))
+        add_user_to_user_group.role.add_managed_policy(
+            ManagedPolicy.from_aws_managed_policy_name("AmazonCognitoPowerUser")
+        )
 
     def _expose_objects(self):
         CfnOutput(self, "UserPoolId", value=self.user_pool.user_pool_id)

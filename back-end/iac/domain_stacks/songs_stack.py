@@ -22,11 +22,11 @@ class SongsStack(Stack):
                  s3: S3Stack, api_gateway: ApiGatewayStack,
                  env, **kwargs):
         super().__init__(scope, id, **kwargs)
-        self._init_endpoints(cognito, dynamo_db, s3, api_gateway, env)
+        self._init_endpoints(dynamo_db, s3, api_gateway, env)
         self._init_song_processing(cognito, dynamo_db, s3, env)
-        self._init_rating_processing(cognito, dynamo_db, s3, env)
+        self._init_rating_processing(dynamo_db, env)
 
-    def _init_endpoints(self, cognito, dynamo_db, s3, api_gateway, env):
+    def _init_endpoints(self, dynamo_db, s3, api_gateway, env):
         song_init = mk_lambda(self, "SongInitUpload", "services/songs/init_upload", env, dynamo_db, s3)
         song_done = mk_lambda(self, "SongCompleteUpload", "services/songs/complete_upload", env, dynamo_db, s3)
         song_list = mk_lambda(self, "SongList", "services/songs/list", env, dynamo_db, s3)
@@ -151,7 +151,7 @@ class SongsStack(Stack):
             report_batch_item_failures=True,
         ))
 
-    def _init_rating_processing(self, cognito, dynamo_db, s3, env):
+    def _init_rating_processing(self, dynamo_db, env):
         # Ratings aggregator (Ratings stream NEW_AND_OLD_IMAGES -> update target entities)
         ratings_agg_fn = _lambda.Function(
             self, "RatingsAggregator",

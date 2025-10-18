@@ -14,15 +14,14 @@ from iac.s3_stack import S3Stack
 
 
 class SubscriptionsStack(Stack):
-    def __init__(self, scope: Construct, id: str,
-                 cognito: CognitoStack, dynamo_db: DynamoDbStack,
+    def __init__(self, scope: Construct, id: str, dynamo_db: DynamoDbStack,
                  s3: S3Stack, api_gateway: ApiGatewayStack,
                  env, **kwargs):
         super().__init__(scope, id, **kwargs)
-        self._init_endpoints(cognito, dynamo_db, s3, api_gateway, env)
+        self._init_endpoints(dynamo_db, s3, api_gateway, env)
         self._init_subscription_processing(dynamo_db, env)
 
-    def _init_endpoints(self, cognito, dynamo_db, s3, api_gateway, env):
+    def _init_endpoints(self, dynamo_db, s3, api_gateway, env):
         subs_create = mk_lambda(self, "SubsCreate",    "services/subscriptions/create", env, dynamo_db, s3)
         subs_list   = mk_lambda(self, "SubsListMine",  "services/subscriptions/list_mine", env, dynamo_db, s3)
         subs_delete = mk_lambda(self, "SubsDelete",    "services/subscriptions/delete", env, dynamo_db, s3)
