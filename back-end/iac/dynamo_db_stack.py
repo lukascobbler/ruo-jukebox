@@ -163,7 +163,7 @@ class DynamoDbStack(Stack):
             write_capacity=1
         )
 
-        # fast lookup of users ratings
+        # fast lookup of users song-ratings
         self.ratings.add_global_secondary_index(
             index_name="byUser",
             partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),

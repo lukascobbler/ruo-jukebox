@@ -30,16 +30,17 @@ class SongsStack(Stack):
         auth_kwargs = cognito.auth_kwargs
         authorizer = cognito.authorizer
 
-        song_init = mk_lambda("SongInitUpload", "songs/init_upload", env, dynamo_db, s3)
-        song_done = mk_lambda("SongCompleteUpload", "songs/complete_upload", env, dynamo_db, s3)
-        song_list = mk_lambda("SongList", "songs/list", env, dynamo_db, s3)
-        song_get = mk_lambda("SongGet", "songs/get", env, dynamo_db, s3)
-        song_update = mk_lambda("SongUpdate", "songs/update", env, dynamo_db, s3)
-        song_delete = mk_lambda("SongDelete", "songs/delete", env, dynamo_db, s3)
-        song_cov_init = mk_lambda("SongCoverInit", "songs/init_cover_upload", env, dynamo_db, s3)
-        song_cov_done = mk_lambda("SongCoverDone", "songs/complete_cover", env, dynamo_db, s3)
-        ratings_put = mk_lambda("SongRatingPut", "ratings/put", env, dynamo_db, s3)
-        ratings_delete = mk_lambda("SongRatingDelete", "ratings/delete", env, dynamo_db, s3)
+        song_init = mk_lambda("SongInitUpload", "services/songs/init_upload", env, dynamo_db, s3)
+        song_done = mk_lambda("SongCompleteUpload", "services/songs/complete_upload", env, dynamo_db, s3)
+        song_list = mk_lambda("SongList", "services/songs/list", env, dynamo_db, s3)
+        song_get = mk_lambda("SongGet", "services/songs/get", env, dynamo_db, s3)
+        song_update = mk_lambda("SongUpdate", "services/songs/update", env, dynamo_db, s3)
+        song_delete = mk_lambda("SongDelete", "services/songs/delete", env, dynamo_db, s3)
+        song_cov_init = mk_lambda("SongCoverInit", "services/songs/init_cover_upload", env, dynamo_db, s3)
+        song_cov_done = mk_lambda("SongCoverDone", "services/songs/complete_cover", env, dynamo_db, s3)
+
+        ratings_put = mk_lambda("SongRatingPut", "services/song-ratings/put", env, dynamo_db, s3)
+        ratings_delete = mk_lambda("SongRatingDelete", "services/song-ratings/delete", env, dynamo_db, s3)
 
         song = api_gateway.api.root.add_resource("song")
         song_id = song.add_resource("{id}")

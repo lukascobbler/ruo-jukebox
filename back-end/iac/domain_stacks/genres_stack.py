@@ -18,15 +18,17 @@ class GenresStack(Stack):
                  s3: S3Stack, api_gateway: ApiGatewayStack,
                  env, **kwargs):
         super().__init__(scope, id, **kwargs)
+        self._init_endpoints(cognito, dynamo_db, s3, api_gateway, env)
 
+    def _init_endpoints(self, cognito, dynamo_db, s3, api_gateway, env):
         auth_kwargs = cognito.auth_kwargs
         authorizer = cognito.authorizer
 
-        genres_create = mk_lambda("GenresCreate", "genres/create", env, dynamo_db, s3)
-        genres_list   = mk_lambda("GenresList",   "genres/list", env, dynamo_db, s3)
-        genres_get    = mk_lambda("GenresGet",    "genres/get", env, dynamo_db, s3)
-        genres_update = mk_lambda("GenresUpdate", "genres/update", env, dynamo_db, s3)
-        genres_delete = mk_lambda("GenresDelete", "genres/delete", env, dynamo_db, s3)
+        genres_create = mk_lambda("GenresCreate", "services/genres/create", env, dynamo_db, s3)
+        genres_list   = mk_lambda("GenresList",   "services/genres/list", env, dynamo_db, s3)
+        genres_get    = mk_lambda("GenresGet",    "services/genres/get", env, dynamo_db, s3)
+        genres_update = mk_lambda("GenresUpdate", "services/genres/update", env, dynamo_db, s3)
+        genres_delete = mk_lambda("GenresDelete", "services/genres/delete", env, dynamo_db, s3)
 
         genres = api_gateway.api.root.add_resource("genres")
         genre_id = genres.add_resource("{id}")

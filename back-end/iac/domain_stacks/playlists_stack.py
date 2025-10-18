@@ -18,17 +18,19 @@ class PlaylistsStack(Stack):
                  s3: S3Stack, api_gateway: ApiGatewayStack,
                  env, **kwargs):
         super().__init__(scope, id, **kwargs)
+        self._init_endpoints(cognito, dynamo_db, s3, api_gateway, env)
 
+    def _init_endpoints(self, cognito, dynamo_db, s3, api_gateway, env):
         auth_kwargs = cognito.auth_kwargs
         authorizer = cognito.authorizer
 
-        playlists_create = mk_lambda("PlaylistsCreate", "playlists/create", env, dynamo_db, s3)
-        playlists_list_mine = mk_lambda("PlaylistsListMine", "playlists/list_mine", env, dynamo_db, s3)
-        playlists_get = mk_lambda("PlaylistsGet", "playlists/get", env, dynamo_db, s3)
-        playlists_update = mk_lambda("PlaylistsUpdate", "playlists/update", env, dynamo_db, s3)
-        playlists_delete = mk_lambda("PlaylistsDelete", "playlists/delete", env, dynamo_db, s3)
-        playlists_add_track = mk_lambda("PlaylistsAddTrack", "playlists/add_track", env, dynamo_db, s3)
-        playlists_remove_track = mk_lambda("PlaylistsRemoveTrack", "playlists/remove_track", env, dynamo_db, s3)
+        playlists_create = mk_lambda("PlaylistsCreate", "services/playlists/create", env, dynamo_db, s3)
+        playlists_list_mine = mk_lambda("PlaylistsListMine", "services/playlists/list_mine", env, dynamo_db, s3)
+        playlists_get = mk_lambda("PlaylistsGet", "services/playlists/get", env, dynamo_db, s3)
+        playlists_update = mk_lambda("PlaylistsUpdate", "services/playlists/update", env, dynamo_db, s3)
+        playlists_delete = mk_lambda("PlaylistsDelete", "services/playlists/delete", env, dynamo_db, s3)
+        playlists_add_track = mk_lambda("PlaylistsAddTrack", "services/playlists/add_track", env, dynamo_db, s3)
+        playlists_remove_track = mk_lambda("PlaylistsRemoveTrack", "services/playlists/remove_track", env, dynamo_db, s3)
 
         playlists = api_gateway.api.root.add_resource("playlists")
         pl_id = playlists.add_resource("{id}")

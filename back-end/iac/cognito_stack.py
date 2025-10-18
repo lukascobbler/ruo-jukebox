@@ -99,7 +99,7 @@ class CognitoStack(Stack):
         # only the users from our user pool can log in
         self.authorizer = apigw.CognitoUserPoolsAuthorizer(self, "ApiAuthorizer", cognito_user_pools=[self.user_pool])
         # predefined kwargs to put on every API gateway route
-        self.auth_kwargs = dict(authorizer=authorizer, authorization_type=apigw.AuthorizationType.COGNITO)
+        self.auth_kwargs = dict(authorizer=self.authorizer, authorization_type=apigw.AuthorizationType.COGNITO)
 
     def _expose_objects(self):
         CfnOutput(self, "UserPoolId", value=self.user_pool.user_pool_id)

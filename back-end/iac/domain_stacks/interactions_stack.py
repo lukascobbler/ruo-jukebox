@@ -21,7 +21,7 @@ class InteractionsStack(Stack):
                  dynamo_db: DynamoDbStack,
                  env, **kwargs):
         super().__init__(scope, id, **kwargs)
-        self._init_interactions_processing(self, dynamo_db, env)
+        self._init_interactions_processing(dynamo_db, env)
 
     def _init_interactions_processing(self, dynamo_db, env):
         # feed builders from user activity and subscriptions

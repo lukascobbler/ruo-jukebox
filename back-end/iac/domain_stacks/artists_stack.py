@@ -18,15 +18,17 @@ class ArtistsStack(Stack):
                  s3: S3Stack, api_gateway: ApiGatewayStack,
                  env, **kwargs):
         super().__init__(scope, id, **kwargs)
+        self._init_endpoints(cognito, dynamo_db, s3, api_gateway, env)
 
+    def _init_endpoints(self, cognito, dynamo_db, s3, api_gateway, env):
         auth_kwargs = cognito.auth_kwargs
         authorizer = cognito.authorizer
 
-        artists_create = mk_lambda("ArtistsCreate", "artists/create", env, dynamo_db, s3)
-        artists_list   = mk_lambda("ArtistsList",   "artists/list", env, dynamo_db, s3)
-        artists_get    = mk_lambda("ArtistsGet",    "artists/get", env, dynamo_db, s3)
-        artists_update = mk_lambda("ArtistsUpdate", "artists/update", env, dynamo_db, s3)
-        artists_delete = mk_lambda("ArtistsDelete", "artists/delete", env, dynamo_db, s3)
+        artists_create = mk_lambda("ArtistsCreate", "services/artists/create", env, dynamo_db, s3)
+        artists_list   = mk_lambda("ArtistsList",   "services/artists/list", env, dynamo_db, s3)
+        artists_get    = mk_lambda("ArtistsGet",    "services/artists/get", env, dynamo_db, s3)
+        artists_update = mk_lambda("ArtistsUpdate", "services/artists/update", env, dynamo_db, s3)
+        artists_delete = mk_lambda("ArtistsDelete", "services/artists/delete", env, dynamo_db, s3)
 
         artists = api_gateway.api.root.add_resource("artists")
         artist_id = artists.add_resource("{id}")
