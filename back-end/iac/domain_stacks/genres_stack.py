@@ -21,14 +21,11 @@ class GenresStack(Stack):
         self._init_endpoints(cognito, dynamo_db, s3, api_gateway, env)
 
     def _init_endpoints(self, cognito, dynamo_db, s3, api_gateway, env):
-        auth_kwargs = cognito.auth_kwargs
-        authorizer = cognito.authorizer
-
-        genres_create = mk_lambda("GenresCreate", "services/genres/create", env, dynamo_db, s3)
-        genres_list   = mk_lambda("GenresList",   "services/genres/list", env, dynamo_db, s3)
-        genres_get    = mk_lambda("GenresGet",    "services/genres/get", env, dynamo_db, s3)
-        genres_update = mk_lambda("GenresUpdate", "services/genres/update", env, dynamo_db, s3)
-        genres_delete = mk_lambda("GenresDelete", "services/genres/delete", env, dynamo_db, s3)
+        genres_create = mk_lambda(self, "GenresCreate", "services/genres/create", env, dynamo_db, s3)
+        genres_list   = mk_lambda(self, "GenresList",   "services/genres/list", env, dynamo_db, s3)
+        genres_get    = mk_lambda(self, "GenresGet",    "services/genres/get", env, dynamo_db, s3)
+        genres_update = mk_lambda(self, "GenresUpdate", "services/genres/update", env, dynamo_db, s3)
+        genres_delete = mk_lambda(self, "GenresDelete", "services/genres/delete", env, dynamo_db, s3)
 
         genres = api_gateway.api.root.add_resource("genres")
         genre_id = genres.add_resource("{id}")
@@ -36,37 +33,27 @@ class GenresStack(Stack):
         genres.add_method(
             "POST",
             apigw.LambdaIntegration(genres_create),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         genres.add_method(
             "GET",
             apigw.LambdaIntegration(genres_list),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
 
         genre_id.add_method(
             "GET",
             apigw.LambdaIntegration(genres_get),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         genre_id.add_method(
             "PATCH",
             apigw.LambdaIntegration(genres_update),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         genre_id.add_method(
             "DELETE",
             apigw.LambdaIntegration(genres_delete),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
 

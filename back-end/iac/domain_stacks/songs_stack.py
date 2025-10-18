@@ -27,20 +27,17 @@ class SongsStack(Stack):
         self._init_rating_processing(cognito, dynamo_db, s3, env)
 
     def _init_endpoints(self, cognito, dynamo_db, s3, api_gateway, env):
-        auth_kwargs = cognito.auth_kwargs
-        authorizer = cognito.authorizer
+        song_init = mk_lambda(self, "SongInitUpload", "services/songs/init_upload", env, dynamo_db, s3)
+        song_done = mk_lambda(self, "SongCompleteUpload", "services/songs/complete_upload", env, dynamo_db, s3)
+        song_list = mk_lambda(self, "SongList", "services/songs/list", env, dynamo_db, s3)
+        song_get = mk_lambda(self, "SongGet", "services/songs/get", env, dynamo_db, s3)
+        song_update = mk_lambda(self, "SongUpdate", "services/songs/update", env, dynamo_db, s3)
+        song_delete = mk_lambda(self, "SongDelete", "services/songs/delete", env, dynamo_db, s3)
+        song_cov_init = mk_lambda(self, "SongCoverInit", "services/songs/init_cover_upload", env, dynamo_db, s3)
+        song_cov_done = mk_lambda(self, "SongCoverDone", "services/songs/complete_cover", env, dynamo_db, s3)
 
-        song_init = mk_lambda("SongInitUpload", "services/songs/init_upload", env, dynamo_db, s3)
-        song_done = mk_lambda("SongCompleteUpload", "services/songs/complete_upload", env, dynamo_db, s3)
-        song_list = mk_lambda("SongList", "services/songs/list", env, dynamo_db, s3)
-        song_get = mk_lambda("SongGet", "services/songs/get", env, dynamo_db, s3)
-        song_update = mk_lambda("SongUpdate", "services/songs/update", env, dynamo_db, s3)
-        song_delete = mk_lambda("SongDelete", "services/songs/delete", env, dynamo_db, s3)
-        song_cov_init = mk_lambda("SongCoverInit", "services/songs/init_cover_upload", env, dynamo_db, s3)
-        song_cov_done = mk_lambda("SongCoverDone", "services/songs/complete_cover", env, dynamo_db, s3)
-
-        ratings_put = mk_lambda("SongRatingPut", "services/song-ratings/put", env, dynamo_db, s3)
-        ratings_delete = mk_lambda("SongRatingDelete", "services/song-ratings/delete", env, dynamo_db, s3)
+        ratings_put = mk_lambda(self,"SongRatingPut", "services/song-ratings/put", env, dynamo_db, s3)
+        ratings_delete = mk_lambda(self,"SongRatingDelete", "services/song-ratings/delete", env, dynamo_db, s3)
 
         song = api_gateway.api.root.add_resource("song")
         song_id = song.add_resource("{id}")
@@ -49,74 +46,54 @@ class SongsStack(Stack):
         song.add_resource("init-upload").add_method(
             "POST",
             apigw.LambdaIntegration(song_init),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         song.add_resource("complete-upload").add_method(
             "POST",
             apigw.LambdaIntegration(song_done),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         song.add_method(
             "GET",
             apigw.LambdaIntegration(song_list),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         song.add_resource("init-cover-upload").add_method(
             "POST",
             apigw.LambdaIntegration(song_cov_init),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         song.add_resource("complete-cover").add_method(
             "POST",
             apigw.LambdaIntegration(song_cov_done),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
 
         song_id.add_method(
             "GET",
             apigw.LambdaIntegration(song_get),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         song_id.add_method(
             "PATCH",
             apigw.LambdaIntegration(song_update),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         song_id.add_method(
             "DELETE",
             apigw.LambdaIntegration(song_delete),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
 
         rating.add_method(
             "PUT",
             apigw.LambdaIntegration(ratings_put),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         rating.add_method(
             "DELETE",
             apigw.LambdaIntegration(ratings_delete),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
 
     def _init_song_processing(self, cognito, dynamo_db, s3, env):

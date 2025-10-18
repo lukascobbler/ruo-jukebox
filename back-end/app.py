@@ -43,9 +43,9 @@ REGION = 'eu-central-1'
 app = aws_cdk.App()
 
 cognito_stack = CognitoStack(app, "CognitoStack")
+api_gateway = ApiGatewayStack(app, "ApiGatewayStack", cognito_stack)
 dynamo_db_stack = DynamoDbStack(app, "DynamoDbStack")
 s3_stack = S3Stack(app, "S3Stack")
-api_gateway = ApiGatewayStack(app, "ApiGatewayStack")
 env = generate_environment(cognito_stack, dynamo_db_stack, s3_stack)
 
 albums = AlbumsStack(

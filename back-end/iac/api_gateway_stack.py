@@ -9,20 +9,26 @@ from aws_cdk import (
     aws_certificatemanager as acm
 )
 
+from iac.cognito_stack import CognitoStack
+
 
 class ApiGatewayStack(Stack):
-    def __init__(self, scope: Construct, id: str, **kwargs):
+    def __init__(self, scope: Construct, id: str, cognito: CognitoStack, **kwargs):
         super().__init__(scope, id, **kwargs)
 
         self.api = None
+        self.auth_kwargs = None
+
+        self._define_api()
+        self._define_auth_kwargs(cognito)
 
     def _define_api(self):
         self.api = apigw.RestApi(
             self, "ApiGateway",
             default_cors_preflight_options=apigw.CorsOptions(
-                allow_origins=apigw.Cors.ALL_ORIGINS(),  # TODO change
+                allow_origins=apigw.Cors.ALL_ORIGINS,  # TODO change
                 allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-                allow_headers=apigw.Cors.DEFAULT_HEADERS()
+                allow_headers=apigw.Cors.DEFAULT_HEADERS
             ),
             endpoint_configuration=apigw.EndpointConfiguration(types=[apigw.EndpointType.REGIONAL]),
         )
@@ -45,4 +51,16 @@ class ApiGatewayStack(Stack):
             rest_api=self.api,
             base_path="",
             stage=self.api.deployment_stage
+        )
+
+    def _define_auth_kwargs(self, cognito):
+        # only the users from our user pool can log in
+        authorizer = apigw.CognitoUserPoolsAuthorizer(
+            self, "ApiAuthorizer",
+            cognito_user_pools=[cognito.user_pool],
+        )
+        # predefined kwargs to put on every API gateway route
+        self.auth_kwargs = dict(
+            authorizer=authorizer,
+            authorization_type=apigw.AuthorizationType.COGNITO
         )

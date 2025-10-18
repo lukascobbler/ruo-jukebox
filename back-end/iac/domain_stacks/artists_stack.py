@@ -21,14 +21,11 @@ class ArtistsStack(Stack):
         self._init_endpoints(cognito, dynamo_db, s3, api_gateway, env)
 
     def _init_endpoints(self, cognito, dynamo_db, s3, api_gateway, env):
-        auth_kwargs = cognito.auth_kwargs
-        authorizer = cognito.authorizer
-
-        artists_create = mk_lambda("ArtistsCreate", "services/artists/create", env, dynamo_db, s3)
-        artists_list   = mk_lambda("ArtistsList",   "services/artists/list", env, dynamo_db, s3)
-        artists_get    = mk_lambda("ArtistsGet",    "services/artists/get", env, dynamo_db, s3)
-        artists_update = mk_lambda("ArtistsUpdate", "services/artists/update", env, dynamo_db, s3)
-        artists_delete = mk_lambda("ArtistsDelete", "services/artists/delete", env, dynamo_db, s3)
+        artists_create = mk_lambda(self, "ArtistsCreate", "services/artists/create", env, dynamo_db, s3)
+        artists_list   = mk_lambda(self, "ArtistsList",   "services/artists/list", env, dynamo_db, s3)
+        artists_get    = mk_lambda(self, "ArtistsGet",    "services/artists/get", env, dynamo_db, s3)
+        artists_update = mk_lambda(self, "ArtistsUpdate", "services/artists/update", env, dynamo_db, s3)
+        artists_delete = mk_lambda(self, "ArtistsDelete", "services/artists/delete", env, dynamo_db, s3)
 
         artists = api_gateway.api.root.add_resource("artists")
         artist_id = artists.add_resource("{id}")
@@ -36,36 +33,26 @@ class ArtistsStack(Stack):
         artists.add_method(
             "POST",
             apigw.LambdaIntegration(artists_create),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )  # todo admin: check group in lambda
         artists.add_method(
             "GET",
             apigw.LambdaIntegration(artists_list),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
 
         artist_id.add_method(
             "GET",
             apigw.LambdaIntegration(artists_get),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         artist_id.add_method(
             "PATCH",
             apigw.LambdaIntegration(artists_update),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         artist_id.add_method(
             "DELETE",
             apigw.LambdaIntegration(artists_delete),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )

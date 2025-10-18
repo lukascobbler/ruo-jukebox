@@ -23,12 +23,9 @@ class SubscriptionsStack(Stack):
         self._init_subscription_processing(dynamo_db, env)
 
     def _init_endpoints(self, cognito, dynamo_db, s3, api_gateway, env):
-        auth_kwargs = cognito.auth_kwargs
-        authorizer = cognito.authorizer
-
-        subs_create = mk_lambda("SubsCreate",    "services/subscriptions/create", env, dynamo_db, s3)
-        subs_list   = mk_lambda("SubsListMine",  "services/subscriptions/list_mine", env, dynamo_db, s3)
-        subs_delete = mk_lambda("SubsDelete",    "services/subscriptions/delete", env, dynamo_db, s3)
+        subs_create = mk_lambda(self, "SubsCreate",    "services/subscriptions/create", env, dynamo_db, s3)
+        subs_list   = mk_lambda(self, "SubsListMine",  "services/subscriptions/list_mine", env, dynamo_db, s3)
+        subs_delete = mk_lambda(self, "SubsDelete",    "services/subscriptions/delete", env, dynamo_db, s3)
 
         # todo zavrsiti endpointove za subskripcije
 

@@ -13,10 +13,10 @@ from iac.dynamo_db_stack import DynamoDbStack
 from iac.s3_stack import S3Stack
 
 
-def mk_lambda(self, logical_id: str, path: str, env: dict, dynamo_db: DynamoDbStack, s3: S3Stack, extra_env: dict | None = None) -> _lambda.Function:
+def mk_lambda(stack, logical_id: str, path: str, env: dict, dynamo_db: DynamoDbStack, s3: S3Stack, extra_env: dict | None = None) -> _lambda.Function:
     env = {**env, **(extra_env or {})}
     fn = _lambda.Function(
-        self, logical_id,
+        stack, logical_id,
         runtime=_lambda.Runtime.PYTHON_3_11,
         handler="lambda_function.lambda_handler",
         code=_lambda.Code.from_asset(path),

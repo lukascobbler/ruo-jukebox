@@ -3,3 +3,7 @@
 /cdk.out/
 /iac/__pycache__/
 /iac/constructs/__pycache__/
+
+**/.idea/**
+.idea/
+../.idea/

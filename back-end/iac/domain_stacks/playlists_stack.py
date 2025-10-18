@@ -21,16 +21,13 @@ class PlaylistsStack(Stack):
         self._init_endpoints(cognito, dynamo_db, s3, api_gateway, env)
 
     def _init_endpoints(self, cognito, dynamo_db, s3, api_gateway, env):
-        auth_kwargs = cognito.auth_kwargs
-        authorizer = cognito.authorizer
-
-        playlists_create = mk_lambda("PlaylistsCreate", "services/playlists/create", env, dynamo_db, s3)
-        playlists_list_mine = mk_lambda("PlaylistsListMine", "services/playlists/list_mine", env, dynamo_db, s3)
-        playlists_get = mk_lambda("PlaylistsGet", "services/playlists/get", env, dynamo_db, s3)
-        playlists_update = mk_lambda("PlaylistsUpdate", "services/playlists/update", env, dynamo_db, s3)
-        playlists_delete = mk_lambda("PlaylistsDelete", "services/playlists/delete", env, dynamo_db, s3)
-        playlists_add_track = mk_lambda("PlaylistsAddTrack", "services/playlists/add_track", env, dynamo_db, s3)
-        playlists_remove_track = mk_lambda("PlaylistsRemoveTrack", "services/playlists/remove_track", env, dynamo_db, s3)
+        playlists_create = mk_lambda(self, "PlaylistsCreate", "services/playlists/create", env, dynamo_db, s3)
+        playlists_list_mine = mk_lambda(self, "PlaylistsListMine", "services/playlists/list_mine", env, dynamo_db, s3)
+        playlists_get = mk_lambda(self, "PlaylistsGet", "services/playlists/get", env, dynamo_db, s3)
+        playlists_update = mk_lambda(self, "PlaylistsUpdate", "services/playlists/update", env, dynamo_db, s3)
+        playlists_delete = mk_lambda(self, "PlaylistsDelete", "services/playlists/delete", env, dynamo_db, s3)
+        playlists_add_track = mk_lambda(self, "PlaylistsAddTrack", "services/playlists/add_track", env, dynamo_db, s3)
+        playlists_remove_track = mk_lambda(self, "PlaylistsRemoveTrack", "services/playlists/remove_track", env, dynamo_db, s3)
 
         playlists = api_gateway.api.root.add_resource("playlists")
         pl_id = playlists.add_resource("{id}")
@@ -40,50 +37,36 @@ class PlaylistsStack(Stack):
         playlists.add_method(
             "POST",
             apigw.LambdaIntegration(playlists_create),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         playlists.add_method(
             "GET",
             apigw.LambdaIntegration(playlists_list_mine),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         pl_id.add_method(
             "GET",
             apigw.LambdaIntegration(playlists_get),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         pl_id.add_method(
             "PATCH",
             apigw.LambdaIntegration(playlists_update),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         pl_id.add_method(
             "DELETE",
             apigw.LambdaIntegration(playlists_delete),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         pl_tracks.add_method(
             "POST",
             apigw.LambdaIntegration(playlists_add_track),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
         pl_trk_id.add_method(
             "DELETE",
             apigw.LambdaIntegration(playlists_remove_track),
-            **auth_kwargs,
-            authorization_type=AuthorizationType.COGNITO,
-            authorizer=authorizer
+            **api_gateway.auth_kwargs
         )
 

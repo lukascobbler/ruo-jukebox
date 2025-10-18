@@ -2,7 +2,6 @@ from constructs import Construct
 from aws_cdk import (
     Stack, Duration, RemovalPolicy,
     aws_lambda as _lambda,
-    aws_apigateway as apigw,
     aws_cognito as cognito,
     aws_iam as iam, CfnOutput
 )
@@ -21,7 +20,6 @@ class CognitoStack(Stack):
         self._define_user_pool()
         self._define_user_groups()
         self._add_pre_post_user_actions()
-        self._define_auth_kwargs()
         self._expose_objects()
 
     def _define_user_pool(self):
@@ -94,12 +92,6 @@ class CognitoStack(Stack):
             actions=["cognito-idp:AdminAddUserToGroup"],
             resources=[f"arn:aws:cognito-idp:{self.region}:{self.account}:userpool/{self.user_pool.user_pool_id}"]
         ))
-
-    def _define_auth_kwargs(self):
-        # only the users from our user pool can log in
-        self.authorizer = apigw.CognitoUserPoolsAuthorizer(self, "ApiAuthorizer", cognito_user_pools=[self.user_pool])
-        # predefined kwargs to put on every API gateway route
-        self.auth_kwargs = dict(authorizer=self.authorizer, authorization_type=apigw.AuthorizationType.COGNITO)
 
     def _expose_objects(self):
         CfnOutput(self, "UserPoolId", value=self.user_pool.user_pool_id)
