@@ -16,6 +16,7 @@ from iac.common import mk_lambda
 from iac.dynamo_db_stack import DynamoDbStack
 from iac.s3_stack import S3Stack
 
+
 class SongsStack(Stack):
     def __init__(self, scope: Construct, id: str,
                  cognito: CognitoStack, dynamo_db: DynamoDbStack,
@@ -36,8 +37,8 @@ class SongsStack(Stack):
         song_cov_init = mk_lambda(self, "SongCoverInit", "services/songs/init_cover_upload", env, dynamo_db, s3)
         song_cov_done = mk_lambda(self, "SongCoverDone", "services/songs/complete_cover", env, dynamo_db, s3)
 
-        ratings_put = mk_lambda(self,"SongRatingPut", "services/song-ratings/put", env, dynamo_db, s3)
-        ratings_delete = mk_lambda(self,"SongRatingDelete", "services/song-ratings/delete", env, dynamo_db, s3)
+        ratings_put = mk_lambda(self, "SongRatingPut", "services/song-ratings/put", env, dynamo_db, s3)
+        ratings_delete = mk_lambda(self, "SongRatingDelete", "services/song-ratings/delete", env, dynamo_db, s3)
 
         song = api_gateway.api.root.add_resource("song")
         song_id = song.add_resource("{id}")
@@ -101,7 +102,7 @@ class SongsStack(Stack):
         song_events_fn = _lambda.Function(
             self, "ContentEvents",
             runtime=_lambda.Runtime.PYTHON_3_11,
-            handler="lambda_function.lambda_handler",
+            handler="lambda.lambda_handler",
             code=_lambda.Code.from_asset("services/streams/on_content_change"),
             environment=env,
             timeout=Duration.seconds(60),
@@ -156,7 +157,7 @@ class SongsStack(Stack):
         ratings_agg_fn = _lambda.Function(
             self, "RatingsAggregator",
             runtime=_lambda.Runtime.PYTHON_3_11,
-            handler="lambda_function.lambda_handler",
+            handler="lambda.lambda_handler",
             code=_lambda.Code.from_asset("services/streams/on_ratings_change"),
             environment=env,
             timeout=Duration.seconds(60),

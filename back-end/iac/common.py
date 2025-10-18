@@ -18,7 +18,7 @@ def mk_lambda(stack, logical_id: str, path: str, env: dict, dynamo_db: DynamoDbS
     fn = _lambda.Function(
         stack, logical_id,
         runtime=_lambda.Runtime.PYTHON_3_11,
-        handler="lambda_function.lambda_handler",
+        handler="lambda.lambda_handler",
         code=_lambda.Code.from_asset(path),
         environment=env,
         timeout=Duration.seconds(15),

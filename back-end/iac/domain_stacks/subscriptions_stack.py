@@ -23,7 +23,7 @@ class SubscriptionsStack(Stack):
 
     def _init_endpoints(self, dynamo_db, s3, api_gateway, env):
         subs_create = mk_lambda(self, "SubsCreate",    "services/subscriptions/create", env, dynamo_db, s3)
-        subs_list   = mk_lambda(self, "SubsListMine",  "services/subscriptions/list_mine", env, dynamo_db, s3)
+        subs_list = mk_lambda(self, "SubsListMine",  "services/subscriptions/list_mine", env, dynamo_db, s3)
         subs_delete = mk_lambda(self, "SubsDelete",    "services/subscriptions/delete", env, dynamo_db, s3)
 
         # todo zavrsiti endpointove za subskripcije
@@ -32,7 +32,7 @@ class SubscriptionsStack(Stack):
         subs_feed_fn = _lambda.Function(
             self, "SubscriptionsFeed",
             runtime=_lambda.Runtime.PYTHON_3_11,
-            handler="lambda_function.lambda_handler",
+            handler="lambda.lambda_handler",
             code=_lambda.Code.from_asset("services/streams/on_subscription_change"),
             environment=env,
             timeout=Duration.seconds(60),

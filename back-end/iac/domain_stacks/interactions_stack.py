@@ -16,6 +16,7 @@ from iac.common import mk_lambda
 from iac.dynamo_db_stack import DynamoDbStack
 from iac.s3_stack import S3Stack
 
+
 class InteractionsStack(Stack):
     def __init__(self, scope: Construct, id: str,
                  dynamo_db: DynamoDbStack,
@@ -28,7 +29,7 @@ class InteractionsStack(Stack):
         interactions_feed_fn = _lambda.Function(
             self, "InteractionsFeed",
             runtime=_lambda.Runtime.PYTHON_3_11,
-            handler="lambda_function.lambda_handler",
+            handler="lambda.lambda_handler",
             code=_lambda.Code.from_asset("services/streams/on_interaction"),
             environment=env,
             timeout=Duration.seconds(60),
