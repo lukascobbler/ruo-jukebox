@@ -1,5 +1,10 @@
+from iac.constructs.lambda_with_permissions import LambdaWithPermissions
+from iac.shared_layer_stack import SharedLayerStack
+from iac.api_gateway_stack import ApiGatewayStack
+from iac.dynamo_db_stack import DynamoDbStack
+from iac.cognito_stack import CognitoStack
+from iac.s3_stack import S3Stack
 from constructs import Construct
-from aws_cdk.aws_apigateway import AuthorizationType
 from aws_cdk import (
     Stack,
     aws_apigateway as apigw,
@@ -10,35 +15,29 @@ from aws_cdk import (
     aws_iam as iam
 )
 
-from iac.api_gateway_stack import ApiGatewayStack
-from iac.cognito_stack import CognitoStack
-from iac.common import mk_lambda
-from iac.dynamo_db_stack import DynamoDbStack
-from iac.s3_stack import S3Stack
-
 
 class SongsStack(Stack):
     def __init__(self, scope: Construct, id: str,
                  cognito: CognitoStack, dynamo_db: DynamoDbStack,
-                 s3: S3Stack, api_gateway: ApiGatewayStack,
+                 s3: S3Stack, api_gateway: ApiGatewayStack, shared_layer_stack: SharedLayerStack,
                  env, **kwargs):
         super().__init__(scope, id, **kwargs)
-        self._init_endpoints(dynamo_db, s3, api_gateway, env)
+        self._init_endpoints(dynamo_db, s3, api_gateway, shared_layer_stack, env)
         self._init_song_processing(cognito, dynamo_db, s3, env)
         self._init_rating_processing(dynamo_db, env)
 
-    def _init_endpoints(self, dynamo_db, s3, api_gateway, env):
-        song_init = mk_lambda(self, "SongInitUpload", "services/songs/init_upload", env, dynamo_db, s3)
-        song_done = mk_lambda(self, "SongCompleteUpload", "services/songs/complete_upload", env, dynamo_db, s3)
-        song_list = mk_lambda(self, "SongList", "services/songs/list", env, dynamo_db, s3)
-        song_get = mk_lambda(self, "SongGet", "services/songs/get", env, dynamo_db, s3)
-        song_update = mk_lambda(self, "SongUpdate", "services/songs/update", env, dynamo_db, s3)
-        song_delete = mk_lambda(self, "SongDelete", "services/songs/delete", env, dynamo_db, s3)
-        song_cov_init = mk_lambda(self, "SongCoverInit", "services/songs/init_cover_upload", env, dynamo_db, s3)
-        song_cov_done = mk_lambda(self, "SongCoverDone", "services/songs/complete_cover", env, dynamo_db, s3)
+    def _init_endpoints(self, dynamo_db, s3, api_gateway, shared_layer_stack, env):
+        song_init = LambdaWithPermissions(self, "SongInitUpload", "services/songs/init_upload", env, dynamo_db, s3, shared_layer_stack).fn
+        song_done = LambdaWithPermissions(self, "SongCompleteUpload", "services/songs/complete_upload", env, dynamo_db, s3, shared_layer_stack).fn
+        song_list = LambdaWithPermissions(self, "SongList", "services/songs/list", env, dynamo_db, s3, shared_layer_stack).fn
+        song_get = LambdaWithPermissions(self, "SongGet", "services/songs/get", env, dynamo_db, s3, shared_layer_stack).fn
+        song_update = LambdaWithPermissions(self, "SongUpdate", "services/songs/update", env, dynamo_db, s3, shared_layer_stack).fn
+        song_delete = LambdaWithPermissions(self, "SongDelete", "services/songs/delete", env, dynamo_db, s3, shared_layer_stack).fn
+        song_cov_init = LambdaWithPermissions(self, "SongCoverInit", "services/songs/init_cover_upload", env, dynamo_db, s3, shared_layer_stack).fn
+        song_cov_done = LambdaWithPermissions(self, "SongCoverDone", "services/songs/complete_cover", env, dynamo_db, s3, shared_layer_stack).fn
 
-        ratings_put = mk_lambda(self, "SongRatingPut", "services/song-ratings/put", env, dynamo_db, s3)
-        ratings_delete = mk_lambda(self, "SongRatingDelete", "services/song-ratings/delete", env, dynamo_db, s3)
+        ratings_put = LambdaWithPermissions(self, "SongRatingPut", "services/song-ratings/put", env, dynamo_db, s3, shared_layer_stack).fn
+        ratings_delete = LambdaWithPermissions(self, "SongRatingDelete", "services/song-ratings/delete", env, dynamo_db, s3, shared_layer_stack).fn
 
         song = api_gateway.api.root.add_resource("song")
         song_id = song.add_resource("{id}")

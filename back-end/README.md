@@ -12,8 +12,10 @@
 
 ## Backend deployment
 
-1. Deploy stack: \
+1. Add requirements to shared layer: \
+   `pip install -r requirements.txt -t shared_layer/python`
+2. Deploy stack: \
    `cdk deploy CognitoStack --require-approval never` \
    `cdk deploy --all --require-approval never`
-2. Destroy (if needed): \
+3. Destroy (if needed): \
    `cdk destroy CognitoStack --force` 

@@ -1,3 +1,8 @@
+from iac.constructs.lambda_with_permissions import LambdaWithPermissions
+from iac.shared_layer_stack import SharedLayerStack
+from iac.api_gateway_stack import ApiGatewayStack
+from iac.dynamo_db_stack import DynamoDbStack
+from iac.s3_stack import S3Stack
 from constructs import Construct
 from aws_cdk import (
     Stack,
@@ -6,25 +11,19 @@ from aws_cdk import (
     aws_sqs as sqs,
 )
 
-from iac.api_gateway_stack import ApiGatewayStack
-from iac.cognito_stack import CognitoStack
-from iac.common import mk_lambda
-from iac.dynamo_db_stack import DynamoDbStack
-from iac.s3_stack import S3Stack
-
 
 class SubscriptionsStack(Stack):
     def __init__(self, scope: Construct, id: str, dynamo_db: DynamoDbStack,
-                 s3: S3Stack, api_gateway: ApiGatewayStack,
+                 s3: S3Stack, api_gateway: ApiGatewayStack, shared_layer_stack: SharedLayerStack,
                  env, **kwargs):
         super().__init__(scope, id, **kwargs)
-        self._init_endpoints(dynamo_db, s3, api_gateway, env)
+        self._init_endpoints(dynamo_db, s3, api_gateway, shared_layer_stack, env)
         self._init_subscription_processing(dynamo_db, env)
 
-    def _init_endpoints(self, dynamo_db, s3, api_gateway, env):
-        subs_create = mk_lambda(self, "SubsCreate",    "services/subscriptions/create", env, dynamo_db, s3)
-        subs_list = mk_lambda(self, "SubsListMine",  "services/subscriptions/list_mine", env, dynamo_db, s3)
-        subs_delete = mk_lambda(self, "SubsDelete",    "services/subscriptions/delete", env, dynamo_db, s3)
+    def _init_endpoints(self, dynamo_db, s3, api_gateway, shared_layer_stack, env):
+        subs_create = LambdaWithPermissions(self, "SubsCreate", "services/subscriptions/create", env, dynamo_db, s3, shared_layer_stack).fn
+        subs_list = LambdaWithPermissions(self, "SubsListMine", "services/subscriptions/list_mine", env, dynamo_db, s3, shared_layer_stack).fn
+        subs_delete = LambdaWithPermissions(self, "SubsDelete", "services/subscriptions/delete", env, dynamo_db, s3, shared_layer_stack).fn
 
         # todo zavrsiti endpointove za subskripcije
 

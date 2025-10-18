@@ -1,31 +1,26 @@
-from constructs import Construct
-from aws_cdk.aws_apigateway import AuthorizationType
-from aws_cdk import (
-    Stack,
-    aws_apigateway as apigw,
-)
-
+from iac.constructs.lambda_with_permissions import LambdaWithPermissions
+from aws_cdk import (Stack, aws_apigateway as apigw)
+from iac.shared_layer_stack import SharedLayerStack
 from iac.api_gateway_stack import ApiGatewayStack
-from iac.cognito_stack import CognitoStack
-from iac.common import mk_lambda
 from iac.dynamo_db_stack import DynamoDbStack
 from iac.s3_stack import S3Stack
+from constructs import Construct
 
 
 class ArtistsStack(Stack):
     def __init__(self, scope: Construct, id: str,
                  dynamo_db: DynamoDbStack,
-                 s3: S3Stack, api_gateway: ApiGatewayStack,
+                 s3: S3Stack, api_gateway: ApiGatewayStack, shared_layer_stack: SharedLayerStack,
                  env, **kwargs):
         super().__init__(scope, id, **kwargs)
-        self._init_endpoints(dynamo_db, s3, api_gateway, env)
+        self._init_endpoints(dynamo_db, s3, api_gateway, shared_layer_stack, env)
 
-    def _init_endpoints(self, dynamo_db, s3, api_gateway, env):
-        artists_create = mk_lambda(self, "ArtistsCreate", "services/artists/create", env, dynamo_db, s3)
-        artists_list   = mk_lambda(self, "ArtistsList",   "services/artists/list", env, dynamo_db, s3)
-        artists_get    = mk_lambda(self, "ArtistsGet",    "services/artists/get", env, dynamo_db, s3)
-        artists_update = mk_lambda(self, "ArtistsUpdate", "services/artists/update", env, dynamo_db, s3)
-        artists_delete = mk_lambda(self, "ArtistsDelete", "services/artists/delete", env, dynamo_db, s3)
+    def _init_endpoints(self, dynamo_db, s3, api_gateway, shared_layer_stack, env):
+        artists_create = LambdaWithPermissions(self, "ArtistsCreate", "services/artists/create", env, dynamo_db, s3, shared_layer_stack).fn
+        artists_list = LambdaWithPermissions(self, "ArtistsList", "services/artists/list", env, dynamo_db, s3, shared_layer_stack).fn
+        artists_get = LambdaWithPermissions(self, "ArtistsGet", "services/artists/get", env, dynamo_db, s3, shared_layer_stack).fn
+        artists_update = LambdaWithPermissions(self, "ArtistsUpdate", "services/artists/update", env, dynamo_db, s3, shared_layer_stack).fn
+        artists_delete = LambdaWithPermissions(self, "ArtistsDelete", "services/artists/delete", env, dynamo_db, s3, shared_layer_stack).fn
 
         artists = api_gateway.api.root.add_resource("artists")
         artist_id = artists.add_resource("{id}")

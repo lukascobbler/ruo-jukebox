@@ -1,9 +1,8 @@
-from aws_cdk import (
-    Stack, RemovalPolicy, Duration,
-    aws_dynamodb as ddb,
-    aws_s3 as s3,
-)
 from constructs import Construct
+from aws_cdk import (
+    Stack, RemovalPolicy,
+    aws_dynamodb as ddb
+)
 
 class DynamoDbStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs):
@@ -115,6 +114,13 @@ class DynamoDbStack(Stack):
             billing_mode=ddb.BillingMode.PROVISIONED,
             read_capacity=1,
             write_capacity=1
+        )
+
+        # fast lookup of users by email
+        self.users.add_global_secondary_index(
+            index_name="byEmail",
+            partition_key=ddb.Attribute(name="email", type=ddb.AttributeType.STRING),
+            projection_type=ddb.ProjectionType.ALL,
         )
 
         self.playlists = ddb.Table(

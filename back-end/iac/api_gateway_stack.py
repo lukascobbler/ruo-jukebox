@@ -1,28 +1,23 @@
-from aws_cdk.aws_iam import PolicyStatement
-from constructs import Construct
-from aws_cdk import (
-    Stack, Duration, RemovalPolicy,
-    aws_lambda as _lambda,
-    aws_lambda_event_sources as lambda_events,
-    aws_apigateway as apigw,
-    aws_sqs as sqs,
-    aws_iam as iam,
-    aws_certificatemanager as acm, CfnOutput
-)
-
-from iac.cognito_stack import CognitoStack
-from iac.common import mk_lambda
+from iac.constructs.lambda_with_permissions import LambdaWithPermissions
+from iac.shared_layer_stack import SharedLayerStack
 from iac.dynamo_db_stack import DynamoDbStack
+from aws_cdk.aws_iam import PolicyStatement
+from iac.cognito_stack import CognitoStack
 from iac.s3_stack import S3Stack
+from constructs import Construct
+
+from aws_cdk import (
+    aws_certificatemanager as acm,
+    aws_apigateway as apigw,
+    CfnOutput,
+    Stack
+)
 
 
 class ApiGatewayStack(Stack):
     def __init__(self, scope: Construct, id: str,
-                 cognito: CognitoStack,
-                 dynamo_db: DynamoDbStack, s3: S3Stack,
-                 env,
-                 **kwargs
-                 ):
+                 cognito: CognitoStack, dynamo_db: DynamoDbStack, s3: S3Stack, shared_layer_stack: SharedLayerStack,
+                 env, **kwargs):
         super().__init__(scope, id, **kwargs)
 
         self.api = None
@@ -30,7 +25,7 @@ class ApiGatewayStack(Stack):
 
         self._define_api()
         self._define_auth_kwargs(cognito)
-        self._define_auth_api(cognito, dynamo_db, s3, env)
+        self._define_auth_api(cognito, dynamo_db, s3, shared_layer_stack, env)
 
     def _define_api(self):
         self.api = apigw.RestApi(
@@ -75,11 +70,11 @@ class ApiGatewayStack(Stack):
             authorization_type=apigw.AuthorizationType.COGNITO
         )
 
-    def _define_auth_api(self, cognito, dynamo_db, s3, env):
-        hello_test_get = mk_lambda(self, "HelloTest", "services/auth/hello_test", env, dynamo_db, s3)
-        register_submit = mk_lambda(self, "Register", "services/auth/register", env, dynamo_db, s3)
-        login_submit = mk_lambda(self, "Login", "services/auth/login", env, dynamo_db, s3)
-        logout_submit = mk_lambda(self, "Logout", "services/auth/logout", env, dynamo_db, s3)
+    def _define_auth_api(self, cognito, dynamo_db, s3, shared_layer_stack, env):
+        hello_test_get = LambdaWithPermissions(self, "HelloTest", "services/auth/hello_test", env, dynamo_db, s3, shared_layer_stack).fn
+        register_submit = LambdaWithPermissions(self, "Register", "services/auth/register", env, dynamo_db, s3, shared_layer_stack).fn
+        login_submit = LambdaWithPermissions(self, "Login", "services/auth/login", env, dynamo_db, s3, shared_layer_stack).fn
+        logout_submit = LambdaWithPermissions(self, "Logout", "services/auth/logout", env, dynamo_db, s3, shared_layer_stack).fn
 
         register_submit.add_to_role_policy(
             PolicyStatement(

@@ -1,33 +1,28 @@
-from constructs import Construct
-from aws_cdk.aws_apigateway import AuthorizationType
-from aws_cdk import (
-    Stack,
-    aws_apigateway as apigw,
-)
-
+from iac.constructs.lambda_with_permissions import LambdaWithPermissions
+from aws_cdk import (Stack, aws_apigateway as apigw)
+from iac.shared_layer_stack import SharedLayerStack
 from iac.api_gateway_stack import ApiGatewayStack
-from iac.cognito_stack import CognitoStack
-from iac.common import mk_lambda
 from iac.dynamo_db_stack import DynamoDbStack
 from iac.s3_stack import S3Stack
+from constructs import Construct
 
 
 class AlbumsStack(Stack):
     def __init__(self, scope: Construct, id: str,
                  dynamo_db: DynamoDbStack,
-                 s3: S3Stack, api_gateway: ApiGatewayStack,
+                 s3: S3Stack, api_gateway: ApiGatewayStack, shared_layer_stack: SharedLayerStack,
                  env, **kwargs):
         super().__init__(scope, id, **kwargs)
-        self._init_endpoints(dynamo_db, s3, api_gateway, env)
+        self._init_endpoints(dynamo_db, s3, api_gateway, shared_layer_stack, env)
 
-    def _init_endpoints(self, dynamo_db, s3, api_gateway, env):
-        albums_create = mk_lambda(self, "AlbumsCreate", "services/albums/create", env, dynamo_db, s3)
-        albums_list = mk_lambda(self, "AlbumsList", "services/albums/list", env, dynamo_db, s3)
-        albums_get = mk_lambda(self, "AlbumsGet", "services/albums/get", env, dynamo_db, s3)
-        albums_update = mk_lambda(self, "AlbumsUpdate", "services/albums/update", env, dynamo_db, s3)
-        albums_delete = mk_lambda(self, "AlbumsDelete", "services/albums/delete", env, dynamo_db, s3)
-        albums_cov_init = mk_lambda(self, "AlbumsCoverInit", "services/albums/init_cover_upload", env, dynamo_db, s3)
-        albums_cov_done = mk_lambda(self, "AlbumsCoverDone", "services/albums/complete_cover", env, dynamo_db, s3)
+    def _init_endpoints(self, dynamo_db, s3, api_gateway, shared_layer_stack, env):
+        albums_create = LambdaWithPermissions(self, "AlbumsCreate", "services/albums/create", env, dynamo_db, s3, shared_layer_stack).fn
+        albums_list = LambdaWithPermissions(self, "AlbumsList", "services/albums/list", env, dynamo_db, s3, shared_layer_stack).fn
+        albums_get = LambdaWithPermissions(self, "AlbumsGet", "services/albums/get", env, dynamo_db, s3, shared_layer_stack).fn
+        albums_update = LambdaWithPermissions(self, "AlbumsUpdate", "services/albums/update", env, dynamo_db, s3, shared_layer_stack).fn
+        albums_delete = LambdaWithPermissions(self, "AlbumsDelete", "services/albums/delete", env, dynamo_db, s3, shared_layer_stack).fn
+        albums_cov_init = LambdaWithPermissions(self, "AlbumsCoverInit", "services/albums/init_cover_upload", env, dynamo_db, s3, shared_layer_stack).fn
+        albums_cov_done = LambdaWithPermissions(self, "AlbumsCoverDone", "services/albums/complete_cover", env, dynamo_db, s3, shared_layer_stack).fn
 
         albums = api_gateway.api.root.add_resource("albums")
         album_id = albums.add_resource("{id}")

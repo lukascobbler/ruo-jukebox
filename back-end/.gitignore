@@ -6,3 +6,6 @@
 **/.idea/**
 .idea/
 ../.idea/
+
+/shared_layer/python/**
+!/shared_layer/python/.keep

@@ -12,7 +12,7 @@ from aws_cdk import (
 
 from iac.api_gateway_stack import ApiGatewayStack
 from iac.cognito_stack import CognitoStack
-from iac.common import mk_lambda
+
 from iac.dynamo_db_stack import DynamoDbStack
 from iac.s3_stack import S3Stack
 
