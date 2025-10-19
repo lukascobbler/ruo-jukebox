@@ -3,14 +3,7 @@ from dataclasses import asdict
 import boto3
 from boto3.dynamodb.conditions import Key
 from model.model import GenreItem
-from dataclasses import dataclass
 
-
-@dataclass
-class GenreItem:
-    id: str
-    name: str
-    isSubscribed: bool | None
 
 TABLE_NAME = os.environ['GENRES_TABLE']
 dynamodb = boto3.resource('dynamodb')

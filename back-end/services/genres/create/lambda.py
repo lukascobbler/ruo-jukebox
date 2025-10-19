@@ -1,7 +1,6 @@
 import os, json, time, uuid
 import boto3
 from botocore.exceptions import ClientError
-from services.common import _response
 from pre_authorize import pre_authorize
 
 dynamodb = boto3.resource("dynamodb")
