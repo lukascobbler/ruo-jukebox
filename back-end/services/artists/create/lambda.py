@@ -1,6 +1,7 @@
 import os, json, time, uuid
 import boto3
 from botocore.exceptions import ClientError
+from pre_authorize import pre_authorize
 
 dynamodb = boto3.resource("dynamodb")
 ddb = boto3.client("dynamodb")
@@ -41,6 +42,7 @@ def _batch_genre_names(ids):
         out.update({it["genre_id"]: it.get("Name","") for it in items})
     return out
 
+@pre_authorize(['Admin'])
 def lambda_handler(event, context):
     try:
         body = json.loads(event.get("body") or "{}")

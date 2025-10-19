@@ -1,6 +1,7 @@
 import os, json, time
 import boto3
 from botocore.exceptions import ClientError
+from pre_authorize import pre_authorize
 
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client("s3")
@@ -14,6 +15,7 @@ CORS_HEADERS = {
 artists = dynamodb.Table(os.environ["ARTISTS_TABLE"])
 images_bucket = os.environ["IMAGES_BUCKET"]
 
+@pre_authorize(['Admin'])
 def lambda_handler(event, context):
     artist_id = (event.get("pathParameters") or {}).get("id")
     if not artist_id:

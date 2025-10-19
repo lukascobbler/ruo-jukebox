@@ -1,6 +1,7 @@
 import os, json, time
 import boto3
 from botocore.exceptions import ClientError
+from pre_authorize import pre_authorize
 
 dynamodb = boto3.resource("dynamodb")
 genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
@@ -11,6 +12,7 @@ CORS_HEADERS = {
     "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
 }
 
+@pre_authorize(['Admin', 'LoggedInUser'])
 def lambda_handler(event, context):
     path_params = event.get("pathParameters") or {}
     genre_id = path_params.get("id")

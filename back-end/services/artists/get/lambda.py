@@ -6,6 +6,7 @@ import json
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 from model.model import Artist, GenreItem
+from pre_authorize import pre_authorize
 
 dynamodb = boto3.resource("dynamodb")
 ddb = boto3.client("dynamodb")
@@ -32,6 +33,8 @@ def _genre_names(ids: list[str]) -> dict[str, str]:
     plain = [{k: list(v.values())[0] for k, v in it.items()} for it in items]
     return {it["genre_id"]: it.get("Name", "") for it in plain}
 
+
+@pre_authorize(['Admin', 'LoggedInUser'])
 def lambda_handler(event, context):
     artist_id = (event.get("pathParameters") or {}).get("id")
     if not artist_id:

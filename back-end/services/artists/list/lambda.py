@@ -2,6 +2,7 @@ import os
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError
+from pre_authorize import pre_authorize
 
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client("s3")
@@ -85,6 +86,7 @@ def _presigned_picture_url(key: str | None) -> str | None:
     except ClientError:
         return None
 
+@pre_authorize(['Admin', 'LoggedInUser'])
 def lambda_handler(event, context):
     artist_items = _scan_all_artists()
 
