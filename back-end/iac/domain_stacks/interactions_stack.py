@@ -1,28 +1,20 @@
-from constructs import Construct
-from aws_cdk.aws_apigateway import AuthorizationType
-from aws_cdk import (
-    Stack,
-    aws_apigateway as apigw,
-    aws_lambda as _lambda,
-    aws_lambda_event_sources as lambda_events,
-    Duration,
-    aws_sqs as sqs,
-    aws_iam as iam
-)
-
-from iac.api_gateway_stack import ApiGatewayStack
-from iac.cognito_stack import CognitoStack
-
 from iac.dynamo_db_stack import DynamoDbStack
-from iac.s3_stack import S3Stack
+from constructs import Construct
+from aws_cdk import (
+    aws_lambda_event_sources as lambda_events,
+    aws_lambda as _lambda,
+    aws_sqs as sqs,
+    Duration,
+    Stack
+)
 
 
 class InteractionsStack(Stack):
     def __init__(self, scope: Construct, id: str,
                  dynamo_db: DynamoDbStack,
-                 env, **kwargs):
+                 environment, **kwargs):
         super().__init__(scope, id, **kwargs)
-        self._init_interactions_processing(dynamo_db, env)
+        self._init_interactions_processing(dynamo_db, environment)
 
     def _init_interactions_processing(self, dynamo_db, env):
         # feed builders from user activity and subscriptions

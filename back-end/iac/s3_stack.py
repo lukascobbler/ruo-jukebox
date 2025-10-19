@@ -1,8 +1,4 @@
-from aws_cdk import (
-    Stack, RemovalPolicy, Duration,
-    aws_dynamodb as ddb,
-    aws_s3 as s3,
-)
+from aws_cdk import Stack, RemovalPolicy, PhysicalName, aws_s3 as s3
 from constructs import Construct
 
 
@@ -13,6 +9,7 @@ class S3Stack(Stack):
         # songs bucket
         self.audio_bucket = s3.Bucket(
             self, "AudioBucket",
+            bucket_name=PhysicalName.GENERATE_IF_NEEDED,
             cors=[s3.CorsRule(
                 allowed_methods=[s3.HttpMethods.PUT, s3.HttpMethods.GET, s3.HttpMethods.HEAD, s3.HttpMethods.DELETE],
                 allowed_origins=["*"],   # TODO change cors everywhere
@@ -26,6 +23,7 @@ class S3Stack(Stack):
         # images bucket
         self.images_bucket = s3.Bucket(
             self, "ImagesBucket",
+            bucket_name=PhysicalName.GENERATE_IF_NEEDED,
             cors=[s3.CorsRule(
                 allowed_methods=[s3.HttpMethods.PUT, s3.HttpMethods.GET, s3.HttpMethods.HEAD, s3.HttpMethods.DELETE],
                 allowed_origins=["*"],
@@ -39,6 +37,7 @@ class S3Stack(Stack):
         # transcripts bucket TODO
         self.transcripts_bucket = s3.Bucket(
             self, "TranscriptsBucket",
+            bucket_name=PhysicalName.GENERATE_IF_NEEDED,
             cors=[s3.CorsRule(
                 allowed_methods=[s3.HttpMethods.GET, s3.HttpMethods.HEAD],
                 allowed_origins=["*"],
