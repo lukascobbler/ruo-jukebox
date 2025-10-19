@@ -63,7 +63,8 @@ class DynamoDbStack(Stack):
 
         self.genres = ddb.Table(
             self, "Genres",
-            partition_key=ddb.Attribute(name="genre_id", type=ddb.AttributeType.STRING),
+            partition_key=ddb.Attribute(name="PK", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="genre_id", type=ddb.AttributeType.STRING),
             removal_policy=RemovalPolicy.DESTROY,
             billing_mode=ddb.BillingMode.PROVISIONED,
             read_capacity=1,
@@ -92,18 +93,31 @@ class DynamoDbStack(Stack):
         self.content_genres = ddb.Table(
             self, "ContentGenres",
             partition_key=ddb.Attribute(name="genre", type=ddb.AttributeType.STRING),
-            sort_key=ddb.Attribute(name="entity", type=ddb.AttributeType.STRING),
             removal_policy=RemovalPolicy.DESTROY,
             billing_mode=ddb.BillingMode.PROVISIONED,
             read_capacity=1,
             write_capacity=1
         )
-        
-        # fast lookup for all entities for a genre
+
+        # GSI for artists in a genre
         self.content_genres.add_global_secondary_index(
-            index_name="byEntity",
-            partition_key=ddb.Attribute(name="entity", type=ddb.AttributeType.STRING),
-            sort_key=ddb.Attribute(name="genre", type=ddb.AttributeType.STRING),
+            index_name="byArtist",
+            partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="genre", type=ddb.AttributeType.STRING)
+        )
+
+        # GSI for albums in a genre
+        self.content_genres.add_global_secondary_index(
+            index_name="byAlbum",
+            partition_key=ddb.Attribute(name="album_id", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="genre", type=ddb.AttributeType.STRING)
+        )
+
+        # GSI for tracks in a genre
+        self.content_genres.add_global_secondary_index(
+            index_name="byTrack",
+            partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="genre", type=ddb.AttributeType.STRING)
         )
 
         # mirrors cognito
