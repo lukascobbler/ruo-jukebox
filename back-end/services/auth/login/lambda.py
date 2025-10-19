@@ -1,38 +1,44 @@
-from boto3.dynamodb.conditions import Key
+from botocore.exceptions import ClientError
 import boto3
 import json
 import os
 
-dynamodb = boto3.resource("dynamodb")
-TABLE_NAME = os.environ["TABLE_NAME"]
-
+COGNITO_CLIENT_ID = os.environ["USER_POOL_CLIENT_ID"]
+cognito = boto3.client("cognito-idp")
 
 def lambda_handler(event, context):
-    table = dynamodb.Table(TABLE_NAME)
+    try:
+        body = json.loads(event.get("body", "{}"))
+        username = body.get("username")
+        password = body.get("password")
 
-    for record in event["Records"]:
-        msg = json.loads(record["body"])
-        name = msg.get("name")
-        value_str = msg.get("value", "0")
+        if not username or not password:
+            return {"statusCode": 400, "body": json.dumps({"message": "Username and password required"})}
 
         try:
-            value = int(value_str)
-        except ValueError:
-            value = 0
+            resp = cognito.initiate_auth(
+                ClientId=COGNITO_CLIENT_ID,
+                AuthFlow="USER_PASSWORD_AUTH",
+                AuthParameters={"USERNAME": username, "PASSWORD": password}
+            )
+        except cognito.exceptions.NotAuthorizedException:
+            return {"statusCode": 401, "body": json.dumps({"message": "Invalid username or password"})}
+        except cognito.exceptions.UserNotFoundException:
+            return {"statusCode": 404, "body": json.dumps({"message": "User not found"})}
+        except ClientError as e:
+            return {"statusCode": 500, "body": json.dumps({"message": f"Cognito error: {str(e)}"})}
 
-        response = table.query(
-            KeyConditionExpression=Key("name").eq(name),
-            ScanIndexForward=False,
-            Limit=1
-        )
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "message": "Login successful",
+                "id_token": resp["AuthenticationResult"]["IdToken"],
+                "access_token": resp["AuthenticationResult"]["AccessToken"],
+                "refresh_token": resp["AuthenticationResult"]["RefreshToken"],
+                "expires_in": resp["AuthenticationResult"]["ExpiresIn"],
+                "token_type": resp["AuthenticationResult"]["TokenType"]
+            })
+        }
 
-        latest_seq = 0
-        latest_value = 0
-        if response["Items"]:
-            latest_seq = int(response["Items"][0].get("seq", 0))
-            latest_value = int(response["Items"][0].get("value", 0))
-
-        new_seq = latest_seq + 1
-        new_value = latest_value + value
-
-        table.put_item(Item={"name": name, "seq": new_seq, "value": new_value})
+    except Exception as e:
+        return {"statusCode": 500, "body": json.dumps({"message": f"Internal server error: {str(e)}"})}

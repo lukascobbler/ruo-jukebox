@@ -7,6 +7,7 @@ from iac.domain_stacks.albums_stack import AlbumsStack
 from iac.domain_stacks.genres_stack import GenresStack
 from iac.domain_stacks.songs_stack import SongsStack
 from iac.shared_layer_stack import SharedLayerStack
+from iac.domain_stacks.auth_stack import AuthStack
 from iac.api_gateway_stack import ApiGatewayStack
 from iac.dynamo_db_stack import DynamoDbStack
 from iac.cognito_stack import CognitoStack
@@ -46,16 +47,14 @@ env_vars = {
     "FROM_EMAIL": "no-reply@jukebox.example.com",
 }
 
-# create auth lambdas in Cognito stack
-cognito_stack.create_lambdas(dynamo_db_stack, s3_stack, shared_layer_stack, env_vars)
-
-# API Gateway (import Cognito pool using exported IDs)
+# API Gateway
 api_gateway = ApiGatewayStack(app, "ApiGatewayStack", user_pool=cognito_stack.user_pool, env=ENV)
 
-# attach auth endpoints
-cognito_stack.attach_to_api(api_gateway.api)
+# Auth stack
+auth_stack = AuthStack(app, "AuthStack", cognito_stack, dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+auth_stack.attach_to_api(api_gateway)
 
-# domain stacks
+# Domain stacks
 albums = AlbumsStack(app, "AlbumsStack", dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
 albums.attach_to_api(api_gateway)
 
