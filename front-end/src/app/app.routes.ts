@@ -12,6 +12,7 @@ import {AllAlbumsComponent} from './components/admin/albums/all-albums/all-album
 import {AllSinglesComponent} from './components/admin/singles/all-singles.component';
 import {AlbumDetailsComponent} from './components/admin/albums/album-details/album-details.component';
 import {RegistrationComponent} from './components/anonymous/registration/registration.component';
+import {LoginComponent} from './components/anonymous/login/login.component';
 
 export const routes: Routes = [
   {path: "home", component: HomeComponent},
@@ -27,5 +28,6 @@ export const routes: Routes = [
   {path: "all-albums", component: AllAlbumsComponent},
   {path: "edit-album/:id", component: AlbumDetailsComponent},
   {path: "all-singles", component: AllSinglesComponent},
-  {path: "register", component: RegistrationComponent}
+  {path: "register", component: RegistrationComponent},
+  {path: "login", component: LoginComponent}
 ];
