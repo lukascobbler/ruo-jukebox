@@ -12,6 +12,7 @@ import {Artist} from '../../../../models/Artist';
 import {ActivatedRoute, Router} from '@angular/router';
 import {SearchComponent} from '../../search/search.component';
 import {Genre} from '../../../../models/Genre';
+import {AuthService} from '../../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-music-content',
@@ -30,6 +31,7 @@ import {Genre} from '../../../../models/Genre';
 export class MusicContentComponent implements OnInit {
   router = inject(Router);
   route = inject(ActivatedRoute);
+  auth = inject(AuthService);
 
   genre: Genre | null  = null;
 

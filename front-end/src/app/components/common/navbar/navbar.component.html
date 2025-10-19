@@ -6,7 +6,7 @@
   <hr class="sidebar-line">
 
   <ng-container *ngFor="let item of sidebarItems">
-    <a *ngIf="currentUserRole && item.label !== 'Logout' && item.roles.includes(currentUserRole)"
+    <a *ngIf="currentUserRole && item.roles.includes(currentUserRole)"
        (click)="item.action ? item.action() : null"
        routerLinkActive="active-link"
        [routerLink]="item.link"
@@ -25,14 +25,4 @@
       </a>
     </ng-container>
   </div>
-
-  <ng-container *ngFor="let item of sidebarItems">
-    <a *ngIf="currentUserRole && item.label === 'Logout' && item.roles.includes(currentUserRole)"
-       (click)="item.action ? item.action() : null"
-       routerLinkActive="active-link"
-       [routerLink]="item.link"
-       [ngClass]="item.class">
-      <span class="material-symbols-rounded" [ngClass]="{ 'full-icon': item.isFullIcon }">{{ item.icon }}</span> {{ item.label }}
-    </a>
-  </ng-container>
 </div>

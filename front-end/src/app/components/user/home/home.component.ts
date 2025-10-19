@@ -12,6 +12,7 @@ import {Album} from '../../../models/Album';
 import {Artist} from '../../../models/Artist';
 import {Router} from '@angular/router';
 import {SearchComponent} from '../search/search.component';
+import {AuthService} from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -31,6 +32,7 @@ import {SearchComponent} from '../search/search.component';
 })
 export class HomeComponent implements OnInit {
   router = inject(Router);
+  auth = inject(AuthService);
 
   albums: Album[] = [
     { id: '1', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}] },
