@@ -4,6 +4,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {GenreItem} from '../../../../models/GenreItem';
 import {Router} from '@angular/router';
 import {SearchComponent} from '../../search/search.component';
+import {AuthService} from '../../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-genres',
@@ -20,6 +21,7 @@ import {SearchComponent} from '../../search/search.component';
 })
 export class GenresComponent {
   private router = inject(Router);
+  auth = inject(AuthService);
 
   genres: GenreItem[] = [
     { name: 'Rock', isSubscribed: true, id: '1' },

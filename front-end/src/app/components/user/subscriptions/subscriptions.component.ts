@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {ReactiveFormsModule} from "@angular/forms";
 import {SongTableComponent} from "../song-table/song-table.component";
 import {
@@ -11,6 +11,7 @@ import {
   MatRow, MatRowDef, MatTable
 } from '@angular/material/table';
 import {MatIconButton} from '@angular/material/button';
+import {AuthService} from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-subscriptions',
@@ -34,6 +35,8 @@ import {MatIconButton} from '@angular/material/button';
   styleUrl: './subscriptions.component.scss'
 })
 export class SubscriptionsComponent {
+  auth = inject(AuthService);
+
   displayedColumns = ['subscriptionName', 'actions'];
   subscribedToDataSource = [
     {subscriptionName: "Awesome artist"},

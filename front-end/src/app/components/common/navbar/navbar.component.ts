@@ -47,7 +47,7 @@ export class NavbarComponent implements OnInit {
     {label: 'Artists', icon: 'artist', link: '/all-artists', roles: ['Admin']},
     {label: 'Albums', icon: 'album', isFullIcon: true, link: '/all-albums', roles: ['Admin']},
     {label: 'Singles', icon: 'music_note', link: '/all-singles', roles: ['Admin']},
-    {label: 'Logout', icon: 'logout', roles: ['Admin', 'User'], class: 'logout', action: () => this.logout()},
+    {label: 'Logout', icon: 'logout', roles: ['Admin'], class: 'logout', action: () => this.logout()},
   ];
 
   userPlaylists: Playlist[] = [
@@ -72,10 +72,7 @@ export class NavbarComponent implements OnInit {
   }
 
   logout() {
-    this.auth.logout().subscribe({
-      complete: () => this.router.navigate(['/login']),
-      error: () => this.router.navigate(['/login']),
-    });
+    this.auth.logout();
   }
 
   createPlaylist() {

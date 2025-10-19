@@ -12,6 +12,7 @@ import {
   RoundMissingIconLargeComponent
 } from '../../common/missing-icons/round/round-missing-icon-large/round-missing-icon-large.component';
 import {SearchComponent} from '../search/search.component';
+import {AuthService} from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-search-results-page',
@@ -30,6 +31,7 @@ import {SearchComponent} from '../search/search.component';
 export class SearchResultsComponent implements OnInit {
   router = inject(Router);
   route = inject(ActivatedRoute);
+  auth = inject(AuthService);
 
   searchTerm: string = "";
 

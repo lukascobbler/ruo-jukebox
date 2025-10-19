@@ -18,7 +18,7 @@
       </mat-form-field>
 
       <button class="orange-button button" type="submit" [disabled]="loading">Login</button>
-      <button class="orange-button button" type="button" (click)="goRegister()">Register</button>
+      <button class="orange-button button" type="button" [disabled]="loading" (click)="goRegister()">Register</button>
     </form>
   </div>
 </div>

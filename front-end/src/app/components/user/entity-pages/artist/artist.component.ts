@@ -11,6 +11,7 @@ import {
 } from '../../../common/missing-icons/round/round-missing-icon-small/round-missing-icon-small.component';
 import {Song} from '../../../../models/Song';
 import {Router} from '@angular/router';
+import {AuthService} from '../../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-artist',
@@ -27,6 +28,7 @@ import {Router} from '@angular/router';
 })
 export class ArtistComponent implements OnInit {
   router = inject(Router);
+  auth = inject(AuthService);
 
   artist: Artist = {id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: true};
 

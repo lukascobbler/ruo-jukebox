@@ -1,14 +1,17 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {finalize, tap} from 'rxjs/operators';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {Role} from '../../models/Role';
+import {Router} from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly API_URL = 'https://api.jb.moma.rs';
   private readonly TOKEN_KEY = 'access_token';
   private readonly ID_TOKEN_KEY = 'id_token';
+
+  router = inject(Router);
 
   private roleSubject = new BehaviorSubject<Role | null>(null);
   role$ = this.roleSubject.asObservable();
@@ -41,11 +44,14 @@ export class AuthService {
     });
   }
 
-  logout(): Observable<void> {
+  logout() {
     const token = this.getToken();
-    return this.http
+    this.http
       .post<void>(`${this.API_URL}/auth/logout`, { access_token: token })
-      .pipe(finalize(() => this.clear()));
+      .pipe(finalize(() => this.clear())).subscribe({
+        complete: () => this.router.navigate(['/login']),
+        error: () => this.router.navigate(['/login']),
+      });
   }
 
   getToken(): string | null {
