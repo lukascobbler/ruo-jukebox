@@ -5,6 +5,7 @@ import {Role} from '../../../models/Role';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {CreatePlaylistDialogComponent} from '../../user/dialogs/create-playlist/create-playlist-dialog.component';
 import {Playlist} from '../../../models/Playlist';
+import {AuthService} from '../../../services/auth/auth.service';
 
 interface NavItem {
   label: string;
@@ -32,7 +33,8 @@ interface NavItem {
 })
 export class NavbarComponent implements OnInit {
   private router = inject(Router);
-  currentUserRole: Role | null = "Admin";
+  auth = inject(AuthService);
+  currentUserRole: Role | null = null;
 
   constructor(private dialog: MatDialog) {
   }
@@ -45,7 +47,7 @@ export class NavbarComponent implements OnInit {
     {label: 'Artists', icon: 'artist', link: '/all-artists', roles: ['Admin']},
     {label: 'Albums', icon: 'album', isFullIcon: true, link: '/all-albums', roles: ['Admin']},
     {label: 'Singles', icon: 'music_note', link: '/all-singles', roles: ['Admin']},
-    {label: 'Logout', icon: 'logout', roles: ['Admin'], class: 'logout', action: () => this.logout()},
+    {label: 'Logout', icon: 'logout', roles: ['Admin', 'User'], class: 'logout', action: () => this.logout()},
   ];
 
   userPlaylists: Playlist[] = [
@@ -64,11 +66,16 @@ export class NavbarComponent implements OnInit {
   ];
 
   ngOnInit() {
-
+    this.auth.role$.subscribe(role => {
+      this.currentUserRole = role;
+    });
   }
 
   logout() {
-    // logout
+    this.auth.logout().subscribe({
+      complete: () => this.router.navigate(['/login']),
+      error: () => this.router.navigate(['/login']),
+    });
   }
 
   createPlaylist() {

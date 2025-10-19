@@ -82,7 +82,7 @@ class SongsStack(Stack):
             role=song_events_role
         )
 
-        for t in [dynamo_db.albums, dynamo_db.tracks, dynamo_db.artists, dynamo_db.users, dynamo_db.content_genres,
+        for t in [dynamo_db.albums, dynamo_db.songs, dynamo_db.artists, dynamo_db.users, dynamo_db.content_genres,
                   dynamo_db.subscriptions, dynamo_db.feed, dynamo_db.transcriptions]:
             t.grant_read_write_data(song_events_fn)
         s3.audio_bucket.grant_read(song_events_fn)  # if you kick off Transcribe on S3 media
@@ -102,7 +102,7 @@ class SongsStack(Stack):
 
         # DLQs for each stream mapping
         albums_stream_dlq = sqs.Queue(self, "AlbumsStreamDLQ", retention_period=Duration.days(14))
-        tracks_stream_dlq = sqs.Queue(self, "TracksStreamDLQ", retention_period=Duration.days(14))
+        songs_stream_dlq = sqs.Queue(self, "SongsStreamDLQ", retention_period=Duration.days(14))
 
         song_events_fn.add_event_source(lambda_events.DynamoEventSource(
             dynamo_db.albums,
@@ -115,13 +115,13 @@ class SongsStack(Stack):
             report_batch_item_failures=True,  # if some fail, return the failures and aws tries again
         ))
         song_events_fn.add_event_source(lambda_events.DynamoEventSource(
-            dynamo_db.tracks,
+            dynamo_db.songs,
             starting_position=_lambda.StartingPosition.LATEST,
             batch_size=100,
             max_batching_window=Duration.seconds(1),
             retry_attempts=3,
             bisect_batch_on_error=True,
-            on_failure=lambda_events.SqsDlq(tracks_stream_dlq),
+            on_failure=lambda_events.SqsDlq(songs_stream_dlq),
             report_batch_item_failures=True,
         ))
 
@@ -158,7 +158,7 @@ class SongsStack(Stack):
         ))
 
         # entity tables updated by aggregator
-        dynamo_db.tracks.grant_read_write_data(ratings_agg_fn)
+        dynamo_db.songs.grant_read_write_data(ratings_agg_fn)
         dynamo_db.albums.grant_read_write_data(ratings_agg_fn)
         dynamo_db.artists.grant_read_write_data(ratings_agg_fn)
         dynamo_db.playlists.grant_read_write_data(ratings_agg_fn)

@@ -1,5 +1,5 @@
 <div class="container">
-  <button (click)="createNewAlbum()" class="bottom-right-button yellow-button">
+  <button (click)="createNewAlbum()" class="bottom-right-button orange-button">
     <span class="material-symbols-rounded">add</span> Create new album
   </button>
   <div class="table-container">
@@ -24,6 +24,11 @@
       <ng-container matColumnDef="artist">
         <mat-header-cell class="artist" *matHeaderCellDef>Artist</mat-header-cell>
         <mat-cell class="artist" *matCellDef="let album"><p class="nowrap-text">{{ album.artist }}</p></mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="genres">
+        <mat-header-cell class="genres" *matHeaderCellDef>Genres</mat-header-cell>
+        <mat-cell class="genres" *matCellDef="let album"><p class="nowrap-text">{{ getAlbumGenres(album) }}</p></mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="actions">

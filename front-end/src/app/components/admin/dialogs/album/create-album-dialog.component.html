@@ -16,10 +16,18 @@
         <mat-option [value]="'artist4'">Awesome artist 4</mat-option>
       </mat-select>
     </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-select placeholder="Genres">
+        <mat-option [value]="'rock'">Rock</mat-option>
+        <mat-option [value]="'jazz'">Jazz</mat-option>
+        <mat-option [value]="'classical'">Classical</mat-option>
+        <mat-option [value]="'pop'">Pop</mat-option>
+      </mat-select>
+    </mat-form-field>
     <app-upload-image-box class="picture"></app-upload-image-box>
   </div>
 
-  <button (click)="closeDialog()" [disabled]="false" class="yellow-button finish">
+  <button (click)="closeDialog()" [disabled]="false" class="orange-button finish">
     Create
   </button>
 </div>

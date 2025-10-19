@@ -1,4 +1,4 @@
-import {Genre} from './Genre';
+import {GenreItem} from './GenreItem';
 
 export interface Song {
   id: string;
@@ -10,5 +10,5 @@ export interface Song {
   artistId: string;
   duration: number;
   lyrics: string;
-  genres: Genre[];
+  genres: GenreItem[];
 }

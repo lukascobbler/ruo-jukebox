@@ -1,7 +1,7 @@
 import {Component, inject} from '@angular/core';
 import {NgClass, NgForOf} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {Genre} from '../../../../models/Genre';
+import {GenreItem} from '../../../../models/GenreItem';
 import {Router} from '@angular/router';
 import {SearchComponent} from '../../search/search.component';
 
@@ -21,7 +21,7 @@ import {SearchComponent} from '../../search/search.component';
 export class GenresComponent {
   private router = inject(Router);
 
-  genres: Genre[] = [
+  genres: GenreItem[] = [
     { name: 'Rock', isSubscribed: true, id: '1' },
     { name: 'Jazz', isSubscribed: false, id: '2' },
     { name: 'Classical', isSubscribed: false, id: '3' },
@@ -36,11 +36,11 @@ export class GenresComponent {
     { name: 'Electronic', isSubscribed: false, id: '12' },
   ];
 
-  goToGenre(genre: Genre) {
+  goToGenre(genre: GenreItem) {
     this.router.navigate(['genre', genre.id]);
   }
 
-  unsubscribeFromGenre(event: Event, genre: Genre) {
+  unsubscribeFromGenre(event: Event, genre: GenreItem) {
     event.stopPropagation();
 
     genre.isSubscribed = !genre.isSubscribed;

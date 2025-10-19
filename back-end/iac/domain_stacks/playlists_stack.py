@@ -22,8 +22,8 @@ class PlaylistsStack(Stack):
             "PlaylistsGet": "services/playlists/get",
             "PlaylistsUpdate": "services/playlists/update",
             "PlaylistsDelete": "services/playlists/delete",
-            "PlaylistsAddTrack": "services/playlists/add_track",
-            "PlaylistsRemoveTrack": "services/playlists/remove_track"
+            "PlaylistsAddSong": "services/playlists/add_song",
+            "PlaylistsRemoveSong": "services/playlists/remove_song"
         }
         for key, path in lambda_defs.items():
             self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, shared_layer_stack).fn
@@ -31,8 +31,8 @@ class PlaylistsStack(Stack):
     def attach_to_api(self, api: ApiGatewayStack):
         playlists = api.api.root.add_resource("playlists")
         pl_id = playlists.add_resource("{id}")
-        pl_tracks = pl_id.add_resource("tracks")
-        pl_trk_id = pl_tracks.add_resource("{trackId}")
+        pl_songs = pl_id.add_resource("songs")
+        pl_song_id = pl_songs.add_resource("{songId}")
 
         playlists.add_method("POST", apigw.LambdaIntegration(self.lambdas["PlaylistsCreate"]), **api.auth_kwargs)
         playlists.add_method("GET", apigw.LambdaIntegration(self.lambdas["PlaylistsListMine"]), **api.auth_kwargs)
@@ -41,5 +41,5 @@ class PlaylistsStack(Stack):
         pl_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["PlaylistsUpdate"]), **api.auth_kwargs)
         pl_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["PlaylistsDelete"]), **api.auth_kwargs)
 
-        pl_tracks.add_method("POST", apigw.LambdaIntegration(self.lambdas["PlaylistsAddTrack"]), **api.auth_kwargs)
-        pl_trk_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["PlaylistsRemoveTrack"]), **api.auth_kwargs)
+        pl_songs.add_method("POST", apigw.LambdaIntegration(self.lambdas["PlaylistsAddSong"]), **api.auth_kwargs)
+        pl_song_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["PlaylistsRemoveSong"]), **api.auth_kwargs)

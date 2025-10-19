@@ -12,6 +12,12 @@ DEFAULT_GROUP = os.environ.get("DEFAULT_GROUP", "LoggedInUser")
 dynamodb = boto3.resource("dynamodb")
 cognito = boto3.client("cognito-idp")
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE"
+}
+
 def lambda_handler(event, context):
     try:
         body = json.loads(event.get("body", "{}"))
@@ -23,16 +29,16 @@ def lambda_handler(event, context):
         birthday = body.get("birthday")
 
         if not username or not email or not password or not first_name or not last_name or not birthday:
-            return {"statusCode": 400, "body": json.dumps({"message": "Missing required fields"})}
+            return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Missing required fields"})}
 
         table = dynamodb.Table(USERS_TABLE)
 
         # Check if username/email exists
         if table.get_item(Key={"user_id": username}).get("Item"):
-            return {"statusCode": 409, "body": json.dumps({"message": "Username already exists"})}
+            return {"statusCode": 409, "headers": CORS_HEADERS, "body": json.dumps({"message": "Username already exists"})}
 
         if table.query(IndexName="byEmail", KeyConditionExpression=Key("email").eq(email)).get("Items"):
-            return {"statusCode": 409, "body": json.dumps({"message": "Email already exists"})}
+            return {"statusCode": 409, "headers": CORS_HEADERS, "body": json.dumps({"message": "Email already exists"})}
 
         # Hash password
         hashed_password = pbkdf2_sha256.hash(password)
@@ -47,7 +53,7 @@ def lambda_handler(event, context):
                     {"Name": "email_verified", "Value": "true"},
                     {"Name": "given_name", "Value": first_name},
                     {"Name": "family_name", "Value": last_name},
-                    {"Name": "birthdate", "Value": birthday}
+                    {"Name": "birthdate", "Value": birthday}  # Make sure format is YYYY-MM-DD
                 ],
                 MessageAction="SUPPRESS"
             )
@@ -69,7 +75,7 @@ def lambda_handler(event, context):
 
         except ClientError as e:
             code = e.response.get("Error", {}).get("Code", "UnknownError")
-            return {"statusCode": 500, "body": json.dumps({"message": f"Cognito error ({code}): {str(e)}"})}
+            return {"statusCode": 500, "headers": CORS_HEADERS, "body": json.dumps({"message": f"Cognito error ({code}): {str(e)}"})}
 
         table.put_item(Item={
             "user_id": username,
@@ -80,7 +86,7 @@ def lambda_handler(event, context):
             "birthday": birthday
         })
 
-        return {"statusCode": 201, "body": json.dumps({"message": "User registered successfully"})}
+        return {"statusCode": 201, "headers": CORS_HEADERS, "body": json.dumps({"message": "User registered successfully"})}
 
     except Exception as e:
-        return {"statusCode": 500, "body": json.dumps({"message": f"Internal server error: {str(e)}"})}
+        return {"statusCode": 500, "headers": CORS_HEADERS, "body": json.dumps({"message": f"Internal server error: {str(e)}"})}

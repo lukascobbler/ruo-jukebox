@@ -38,5 +38,5 @@ class InteractionsStack(Stack):
             on_failure=lambda_events.SqsDlq(inter_stream_dlq),
             report_batch_item_failures=True,
         ))
-        for t in [dynamo_db.tracks, dynamo_db.albums, dynamo_db.artists, dynamo_db.feed]:
+        for t in [dynamo_db.songs, dynamo_db.albums, dynamo_db.artists, dynamo_db.feed]:
             t.grant_read_write_data(interactions_feed_fn)
