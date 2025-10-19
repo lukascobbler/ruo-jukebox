@@ -7,7 +7,6 @@ import os
 
 USERS_TABLE = os.environ["USERS_TABLE"]
 COGNITO_USER_POOL_ID = os.environ["USER_POOL_ID"]
-COGNITO_CLIENT_ID = os.environ["USER_POOL_CLIENT_ID"]
 DEFAULT_GROUP = os.environ.get("DEFAULT_GROUP", "LoggedInUser")
 
 dynamodb = boto3.resource("dynamodb")
@@ -19,22 +18,20 @@ def lambda_handler(event, context):
         username = body.get("username")
         email = body.get("email")
         password = body.get("password")
+        first_name = body.get("first_name")
+        last_name = body.get("last_name")
+        birthday = body.get("birthday")
 
-        if not username or not email or not password:
+        if not username or not email or not password or not first_name or not last_name or not birthday:
             return {"statusCode": 400, "body": json.dumps({"message": "Missing required fields"})}
 
         table = dynamodb.Table(USERS_TABLE)
 
         # Check if username/email exists
-        existing_username = table.get_item(Key={"user_id": username})
-        if "Item" in existing_username:
+        if table.get_item(Key={"user_id": username}).get("Item"):
             return {"statusCode": 409, "body": json.dumps({"message": "Username already exists"})}
 
-        existing_email = table.query(
-            IndexName="byEmail",
-            KeyConditionExpression=Key("email").eq(email)
-        )
-        if existing_email.get("Items"):
+        if table.query(IndexName="byEmail", KeyConditionExpression=Key("email").eq(email)).get("Items"):
             return {"statusCode": 409, "body": json.dumps({"message": "Email already exists"})}
 
         # Hash password
@@ -48,9 +45,11 @@ def lambda_handler(event, context):
                 UserAttributes=[
                     {"Name": "email", "Value": email},
                     {"Name": "email_verified", "Value": "true"},
+                    {"Name": "given_name", "Value": first_name},
+                    {"Name": "family_name", "Value": last_name},
+                    {"Name": "birthdate", "Value": birthday}
                 ],
-                TemporaryPassword=password,
-                MessageAction="SUPPRESS"  # Don't send auto email
+                MessageAction="SUPPRESS"
             )
 
             # Set permanent password
@@ -69,13 +68,16 @@ def lambda_handler(event, context):
             )
 
         except ClientError as e:
-            return {"statusCode": 500, "body": json.dumps({"message": f"Cognito error: {str(e)}"})}
+            code = e.response.get("Error", {}).get("Code", "UnknownError")
+            return {"statusCode": 500, "body": json.dumps({"message": f"Cognito error ({code}): {str(e)}"})}
 
-        # Save user in DynamoDB
         table.put_item(Item={
             "user_id": username,
             "email": email,
             "password": hashed_password,
+            "first_name": first_name,
+            "last_name": last_name,
+            "birthday": birthday
         })
 
         return {"statusCode": 201, "body": json.dumps({"message": "User registered successfully"})}

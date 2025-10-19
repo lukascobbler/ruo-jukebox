@@ -9,45 +9,30 @@ from constructs import Construct
 
 class ArtistsStack(Stack):
     def __init__(self, scope: Construct, id: str,
-                 dynamo_db: DynamoDbStack,
-                 s3: S3Stack, api_gateway: ApiGatewayStack, shared_layer_stack: SharedLayerStack,
-                 env, **kwargs):
+                 dynamo_db: DynamoDbStack, s3: S3Stack, shared_layer_stack: SharedLayerStack,
+                 environment, **kwargs):
         super().__init__(scope, id, **kwargs)
-        self._init_endpoints(dynamo_db, s3, api_gateway, shared_layer_stack, env)
+        self.lambdas = {}
+        self._create_lambdas(dynamo_db, s3, shared_layer_stack, environment)
 
-    def _init_endpoints(self, dynamo_db, s3, api_gateway, shared_layer_stack, env):
-        artists_create = LambdaWithPermissions(self, "ArtistsCreate", "services/artists/create", env, dynamo_db, s3, shared_layer_stack).fn
-        artists_list = LambdaWithPermissions(self, "ArtistsList", "services/artists/list", env, dynamo_db, s3, shared_layer_stack).fn
-        artists_get = LambdaWithPermissions(self, "ArtistsGet", "services/artists/get", env, dynamo_db, s3, shared_layer_stack).fn
-        artists_update = LambdaWithPermissions(self, "ArtistsUpdate", "services/artists/update", env, dynamo_db, s3, shared_layer_stack).fn
-        artists_delete = LambdaWithPermissions(self, "ArtistsDelete", "services/artists/delete", env, dynamo_db, s3, shared_layer_stack).fn
+    def _create_lambdas(self, dynamo_db, s3, shared_layer_stack, env):
+        lambda_defs = {
+            "ArtistsCreate": "services/artists/create",
+            "ArtistsList": "services/artists/list",
+            "ArtistsGet": "services/artists/get",
+            "ArtistsUpdate": "services/artists/update",
+            "ArtistsDelete": "services/artists/delete"
+        }
+        for key, path in lambda_defs.items():
+            self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, shared_layer_stack).fn
 
+    def attach_to_api(self, api_gateway: ApiGatewayStack):
         artists = api_gateway.api.root.add_resource("artists")
         artist_id = artists.add_resource("{id}")
 
-        artists.add_method(
-            "POST",
-            apigw.LambdaIntegration(artists_create),
-            **api_gateway.auth_kwargs
-        )  # todo admin: check group in lambda
-        artists.add_method(
-            "GET",
-            apigw.LambdaIntegration(artists_list),
-            **api_gateway.auth_kwargs
-        )
+        artists.add_method("POST", apigw.LambdaIntegration(self.lambdas["ArtistsCreate"]), **api_gateway.auth_kwargs)  # todo admin: check group in lambda
+        artists.add_method("GET", apigw.LambdaIntegration(self.lambdas["ArtistsList"]), **api_gateway.auth_kwargs)
 
-        artist_id.add_method(
-            "GET",
-            apigw.LambdaIntegration(artists_get),
-            **api_gateway.auth_kwargs
-        )
-        artist_id.add_method(
-            "PATCH",
-            apigw.LambdaIntegration(artists_update),
-            **api_gateway.auth_kwargs
-        )
-        artist_id.add_method(
-            "DELETE",
-            apigw.LambdaIntegration(artists_delete),
-            **api_gateway.auth_kwargs
-        )
+        artist_id.add_method("GET", apigw.LambdaIntegration(self.lambdas["ArtistsGet"]), **api_gateway.auth_kwargs)
+        artist_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["ArtistsUpdate"]), **api_gateway.auth_kwargs)
+        artist_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["ArtistsDelete"]), **api_gateway.auth_kwargs)

@@ -6,80 +6,72 @@ from iac.domain_stacks.artists_stack import ArtistsStack
 from iac.domain_stacks.albums_stack import AlbumsStack
 from iac.domain_stacks.genres_stack import GenresStack
 from iac.domain_stacks.songs_stack import SongsStack
+from iac.shared_layer_stack import SharedLayerStack
+from iac.domain_stacks.auth_stack import AuthStack
 from iac.api_gateway_stack import ApiGatewayStack
 from iac.dynamo_db_stack import DynamoDbStack
 from iac.cognito_stack import CognitoStack
+from aws_cdk import App, Environment, Fn
 from iac.s3_stack import S3Stack
-import aws_cdk
 
-from iac.shared_layer_stack import SharedLayerStack
+app = App()
+ENV = Environment(account="172132042466", region="eu-central-1")
 
+# shared resources
+cognito_stack = CognitoStack(app, "CognitoStack", env=ENV)
+dynamo_db_stack = DynamoDbStack(app, "DynamoDbStack", env=ENV)
+s3_stack = S3Stack(app, "S3Stack", env=ENV)
+shared_layer_stack = SharedLayerStack(app, "SharedLayerStack", env=ENV)
 
-def generate_environment(cognito, dynamo_db: DynamoDbStack, s3_bucket: S3Stack):
-    return {
-        "AUDIO_BUCKET": s3_bucket.audio_bucket.bucket_name,
-        "IMAGES_BUCKET": s3_bucket.images_bucket.bucket_name,
-        "TRANSCRIPTS_BUCKET": s3_bucket.transcripts_bucket.bucket_name,
-        "ARTISTS_TABLE": dynamo_db.artists.table_name,
-        "ALBUMS_TABLE": dynamo_db.albums.table_name,
-        "TRACKS_TABLE": dynamo_db.tracks.table_name,
-        "TRACK_ARTISTS_TABLE": dynamo_db.track_artists.table_name,
-        "GENRES_TABLE": dynamo_db.genres.table_name,
-        "CONTENT_GENRES_TABLE": dynamo_db.content_genres.table_name,
-        "USERS_TABLE": dynamo_db.users.table_name,
-        "PLAYLISTS_TABLE": dynamo_db.playlists.table_name,
-        "PLAYLIST_ITEMS_TABLE": dynamo_db.playlist_items.table_name,
-        "RATINGS_TABLE": dynamo_db.ratings.table_name,
-        "SUBSCRIPTIONS_TABLE": dynamo_db.subscriptions.table_name,
-        "INTERACTIONS_TABLE": dynamo_db.interactions.table_name,
-        "FEED_TABLE": dynamo_db.feed.table_name,
-        "TRANSCRIPTIONS_TABLE": dynamo_db.transcriptions.table_name,
-        "USER_POOL_ID": cognito.user_pool.user_pool_id,
-        "USER_POOL_CLIENT_ID": cognito.app_client.user_pool_client_id,
-        # Email (SES verified sender) TODO wtf
-        "FROM_EMAIL": "no-reply@jukebox.example.com",
-    }
+env_vars = {
+    "AUDIO_BUCKET": s3_stack.audio_bucket.bucket_name,
+    "IMAGES_BUCKET": s3_stack.images_bucket.bucket_name,
+    "TRANSCRIPTS_BUCKET": s3_stack.transcripts_bucket.bucket_name,
+    "ARTISTS_TABLE": dynamo_db_stack.artists.table_name,
+    "ALBUMS_TABLE": dynamo_db_stack.albums.table_name,
+    "TRACKS_TABLE": dynamo_db_stack.tracks.table_name,
+    "TRACK_ARTISTS_TABLE": dynamo_db_stack.track_artists.table_name,
+    "GENRES_TABLE": dynamo_db_stack.genres.table_name,
+    "CONTENT_GENRES_TABLE": dynamo_db_stack.content_genres.table_name,
+    "USERS_TABLE": dynamo_db_stack.users.table_name,
+    "PLAYLISTS_TABLE": dynamo_db_stack.playlists.table_name,
+    "PLAYLIST_ITEMS_TABLE": dynamo_db_stack.playlist_items.table_name,
+    "RATINGS_TABLE": dynamo_db_stack.ratings.table_name,
+    "SUBSCRIPTIONS_TABLE": dynamo_db_stack.subscriptions.table_name,
+    "INTERACTIONS_TABLE": dynamo_db_stack.interactions.table_name,
+    "FEED_TABLE": dynamo_db_stack.feed.table_name,
+    "TRANSCRIPTIONS_TABLE": dynamo_db_stack.transcriptions.table_name,
+    "USER_POOL_ID": cognito_stack.user_pool.user_pool_id,
+    "USER_POOL_CLIENT_ID": cognito_stack.app_client.user_pool_client_id,
+    # Email (SES verified sender) TODO wtf
+    "FROM_EMAIL": "no-reply@jukebox.example.com",
+}
 
+# API Gateway
+api_gateway = ApiGatewayStack(app, "ApiGatewayStack", user_pool=cognito_stack.user_pool, env=ENV)
 
-REGION = 'eu-central-1'
-app = aws_cdk.App()
+# Auth stack
+auth_stack = AuthStack(app, "AuthStack", cognito_stack, dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+auth_stack.attach_to_api(api_gateway)
 
-cognito_stack = CognitoStack(app, "CognitoStack")
-dynamo_db_stack = DynamoDbStack(app, "DynamoDbStack")
-s3_stack = S3Stack(app, "S3Stack")
-shared_layer_stack = SharedLayerStack(app, "SharedLayerStack")
-env = generate_environment(cognito_stack, dynamo_db_stack, s3_stack)
+# Domain stacks
+albums = AlbumsStack(app, "AlbumsStack", dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+albums.attach_to_api(api_gateway)
 
-api_gateway = ApiGatewayStack(
-    app, "ApiGatewayStack", cognito_stack, dynamo_db_stack, s3_stack, shared_layer_stack, env
-)
+artists = ArtistsStack(app, "ArtistsStack", dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+artists.attach_to_api(api_gateway)
 
-albums = AlbumsStack(
-    app, "AlbumsStack", dynamo_db_stack, s3_stack, api_gateway, shared_layer_stack, env
-)
+genres = GenresStack(app, "GenresStack", dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+genres.attach_to_api(api_gateway)
 
-artists = ArtistsStack(
-    app, "ArtistsStack", dynamo_db_stack, s3_stack, api_gateway, shared_layer_stack, env
-)
+interactions = InteractionsStack(app, "InteractionsStack", dynamo_db_stack, env_vars, env=ENV)
 
-genres = GenresStack(
-    app, "GenresStack", dynamo_db_stack, s3_stack, api_gateway, shared_layer_stack, env
-)
+playlists = PlaylistsStack(app, "PlaylistsStack", dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+playlists.attach_to_api(api_gateway)
 
-interactions = InteractionsStack(
-    app, "InteractionsStack", dynamo_db_stack, env
-)
+songs = SongsStack(app, "SongsStack", cognito_stack, dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+songs.attach_to_api(api_gateway)
 
-playlists = PlaylistsStack(
-    app, "PlaylistsStack", dynamo_db_stack, s3_stack, api_gateway, shared_layer_stack, env
-)
-
-songs = SongsStack(
-    app, "SongsStack", cognito_stack, dynamo_db_stack, s3_stack, api_gateway, shared_layer_stack, env
-)
-
-subscriptions = SubscriptionsStack(
-    app, "SubscriptionsStack", dynamo_db_stack, s3_stack, api_gateway, shared_layer_stack, env
-)
+subscriptions = SubscriptionsStack(app, "SubscriptionsStack", dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
 
 app.synth()

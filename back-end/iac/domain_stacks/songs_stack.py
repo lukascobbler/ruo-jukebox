@@ -17,87 +17,60 @@ from aws_cdk import (
 
 
 class SongsStack(Stack):
-    def __init__(self, scope: Construct, id: str,
-                 cognito: CognitoStack, dynamo_db: DynamoDbStack,
-                 s3: S3Stack, api_gateway: ApiGatewayStack, shared_layer_stack: SharedLayerStack,
-                 env, **kwargs):
+    def __init__(self, scope: Construct, id: str, cognito: CognitoStack,
+                 dynamo_db: DynamoDbStack, s3: S3Stack, shared_layer_stack: SharedLayerStack,
+                 environment, **kwargs):
         super().__init__(scope, id, **kwargs)
-        self._init_endpoints(dynamo_db, s3, api_gateway, shared_layer_stack, env)
-        self._init_song_processing(cognito, dynamo_db, s3, env)
-        self._init_rating_processing(dynamo_db, env)
+        self.lambdas = {}
+        self._create_lambdas(dynamo_db, s3, shared_layer_stack, environment)
+        self._init_song_processing(cognito, dynamo_db, s3, environment)
+        self._init_rating_processing(dynamo_db, environment)
 
-    def _init_endpoints(self, dynamo_db, s3, api_gateway, shared_layer_stack, env):
-        song_init = LambdaWithPermissions(self, "SongInitUpload", "services/songs/init_upload", env, dynamo_db, s3, shared_layer_stack).fn
-        song_done = LambdaWithPermissions(self, "SongCompleteUpload", "services/songs/complete_upload", env, dynamo_db, s3, shared_layer_stack).fn
-        song_list = LambdaWithPermissions(self, "SongList", "services/songs/list", env, dynamo_db, s3, shared_layer_stack).fn
-        song_get = LambdaWithPermissions(self, "SongGet", "services/songs/get", env, dynamo_db, s3, shared_layer_stack).fn
-        song_update = LambdaWithPermissions(self, "SongUpdate", "services/songs/update", env, dynamo_db, s3, shared_layer_stack).fn
-        song_delete = LambdaWithPermissions(self, "SongDelete", "services/songs/delete", env, dynamo_db, s3, shared_layer_stack).fn
-        song_cov_init = LambdaWithPermissions(self, "SongCoverInit", "services/songs/init_cover_upload", env, dynamo_db, s3, shared_layer_stack).fn
-        song_cov_done = LambdaWithPermissions(self, "SongCoverDone", "services/songs/complete_cover", env, dynamo_db, s3, shared_layer_stack).fn
+    def _create_lambdas(self, dynamo_db, s3, shared_layer_stack, env):
+        lambda_defs = {
+            "SongInitUpload": "services/songs/init_upload",
+            "SongCompleteUpload": "services/songs/complete_upload",
+            "SongList": "services/songs/list",
+            "SongGet": "services/songs/get",
+            "SongUpdate": "services/songs/update",
+            "SongDelete": "services/songs/delete",
+            "SongCoverInit": "services/songs/init_cover_upload",
+            "SongCoverDone": "services/songs/complete_cover",
+            "SongRatingPut": "services/song-ratings/put",
+            "SongRatingDelete": "services/song-ratings/delete"
+        }
+        for key, path in lambda_defs.items():
+            self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, shared_layer_stack).fn
 
-        ratings_put = LambdaWithPermissions(self, "SongRatingPut", "services/song-ratings/put", env, dynamo_db, s3, shared_layer_stack).fn
-        ratings_delete = LambdaWithPermissions(self, "SongRatingDelete", "services/song-ratings/delete", env, dynamo_db, s3, shared_layer_stack).fn
-
-        song = api_gateway.api.root.add_resource("song")
+    def attach_to_api(self, api: ApiGatewayStack):
+        song = api.api.root.add_resource("song")
         song_id = song.add_resource("{id}")
         rating = song_id.add_resource("rating")
 
-        song.add_resource("init-upload").add_method(
-            "POST",
-            apigw.LambdaIntegration(song_init),
-            **api_gateway.auth_kwargs
-        )
-        song.add_resource("complete-upload").add_method(
-            "POST",
-            apigw.LambdaIntegration(song_done),
-            **api_gateway.auth_kwargs
-        )
-        song.add_method(
-            "GET",
-            apigw.LambdaIntegration(song_list),
-            **api_gateway.auth_kwargs
-        )
-        song.add_resource("init-cover-upload").add_method(
-            "POST",
-            apigw.LambdaIntegration(song_cov_init),
-            **api_gateway.auth_kwargs
-        )
-        song.add_resource("complete-cover").add_method(
-            "POST",
-            apigw.LambdaIntegration(song_cov_done),
-            **api_gateway.auth_kwargs
-        )
+        song.add_resource("init-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["SongInitUpload"]), **api.auth_kwargs)
+        song.add_resource("complete-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["SongCompleteUpload"]), **api.auth_kwargs)
+        song.add_method("GET", apigw.LambdaIntegration(self.lambdas["SongList"]), **api.auth_kwargs)
+        song.add_resource("init-cover-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["SongCoverInit"]), **api.auth_kwargs)
+        song.add_resource("complete-cover").add_method("POST", apigw.LambdaIntegration(self.lambdas["SongCoverDone"]), **api.auth_kwargs)
 
-        song_id.add_method(
-            "GET",
-            apigw.LambdaIntegration(song_get),
-            **api_gateway.auth_kwargs
-        )
-        song_id.add_method(
-            "PATCH",
-            apigw.LambdaIntegration(song_update),
-            **api_gateway.auth_kwargs
-        )
-        song_id.add_method(
-            "DELETE",
-            apigw.LambdaIntegration(song_delete),
-            **api_gateway.auth_kwargs
-        )
+        song_id.add_method("GET", apigw.LambdaIntegration(self.lambdas["SongGet"]), **api.auth_kwargs)
+        song_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["SongUpdate"]), **api.auth_kwargs)
+        song_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["SongDelete"]), **api.auth_kwargs)
 
-        rating.add_method(
-            "PUT",
-            apigw.LambdaIntegration(ratings_put),
-            **api_gateway.auth_kwargs
-        )
-        rating.add_method(
-            "DELETE",
-            apigw.LambdaIntegration(ratings_delete),
-            **api_gateway.auth_kwargs
-        )
+        rating.add_method("PUT", apigw.LambdaIntegration(self.lambdas["SongRatingPut"]), **api.auth_kwargs)
+        rating.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["SongRatingDelete"]), **api.auth_kwargs)
 
     def _init_song_processing(self, cognito, dynamo_db, s3, env):
         # 1 New content (Albums + Tracks) -> notify subscribers, add feed cards, start transcription for tracks
+        song_events_role = iam.Role(
+            self, "ContentEventsRole",
+            role_name="ContentEventsLambdaRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+            ]
+        )
+
         song_events_fn = _lambda.Function(
             self, "ContentEvents",
             runtime=_lambda.Runtime.PYTHON_3_11,
@@ -106,6 +79,7 @@ class SongsStack(Stack):
             environment=env,
             timeout=Duration.seconds(60),
             memory_size=512,
+            role=song_events_role
         )
 
         for t in [dynamo_db.albums, dynamo_db.tracks, dynamo_db.artists, dynamo_db.users, dynamo_db.content_genres,
@@ -153,6 +127,14 @@ class SongsStack(Stack):
 
     def _init_rating_processing(self, dynamo_db, env):
         # Ratings aggregator (Ratings stream NEW_AND_OLD_IMAGES -> update target entities)
+        song_events_role = iam.Role(
+            self, "RatingsAggregatorRole",
+            role_name="RatingsAggregatorLambdaRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+            ]
+        )
         ratings_agg_fn = _lambda.Function(
             self, "RatingsAggregator",
             runtime=_lambda.Runtime.PYTHON_3_11,
@@ -161,6 +143,7 @@ class SongsStack(Stack):
             environment=env,
             timeout=Duration.seconds(60),
             memory_size=512,
+            role=song_events_role
         )
         ratings_stream_dlq = sqs.Queue(self, "RatingsStreamDLQ", retention_period=Duration.days(14))
         ratings_agg_fn.add_event_source(lambda_events.DynamoEventSource(

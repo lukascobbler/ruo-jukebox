@@ -1,38 +1,27 @@
-from boto3.dynamodb.conditions import Key
+from botocore.exceptions import ClientError
 import boto3
 import json
 import os
 
-dynamodb = boto3.resource("dynamodb")
-TABLE_NAME = os.environ["TABLE_NAME"]
-
+COGNITO_USER_POOL_ID = os.environ["USER_POOL_ID"]
+cognito = boto3.client("cognito-idp")
 
 def lambda_handler(event, context):
-    table = dynamodb.Table(TABLE_NAME)
+    try:
+        body = json.loads(event.get("body", "{}"))
+        access_token = body.get("access_token")
 
-    for record in event["Records"]:
-        msg = json.loads(record["body"])
-        name = msg.get("name")
-        value_str = msg.get("value", "0")
+        if not access_token:
+            return {"statusCode": 400, "body": json.dumps({"message": "Access token required"})}
 
         try:
-            value = int(value_str)
-        except ValueError:
-            value = 0
+            cognito.global_sign_out(AccessToken=access_token)
+        except cognito.exceptions.NotAuthorizedException:
+            return {"statusCode": 401, "body": json.dumps({"message": "Invalid or expired access token"})}
+        except ClientError as e:
+            return {"statusCode": 500, "body": json.dumps({"message": f"Cognito error: {str(e)}"})}
 
-        response = table.query(
-            KeyConditionExpression=Key("name").eq(name),
-            ScanIndexForward=False,
-            Limit=1
-        )
+        return {"statusCode": 200, "body": json.dumps({"message": "Logout successful"})}
 
-        latest_seq = 0
-        latest_value = 0
-        if response["Items"]:
-            latest_seq = int(response["Items"][0].get("seq", 0))
-            latest_value = int(response["Items"][0].get("value", 0))
-
-        new_seq = latest_seq + 1
-        new_value = latest_value + value
-
-        table.put_item(Item={"name": name, "seq": new_seq, "value": new_value})
+    except Exception as e:
+        return {"statusCode": 500, "body": json.dumps({"message": f"Internal server error: {str(e)}"})}

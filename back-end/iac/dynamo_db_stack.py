@@ -1,4 +1,5 @@
 from constructs import Construct
+from aws_cdk import PhysicalName
 from aws_cdk import (
     Stack, RemovalPolicy,
     aws_dynamodb as ddb
@@ -12,6 +13,7 @@ class DynamoDbStack(Stack):
 
         self.artists = ddb.Table(
             self, "Artists",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES, # maybe we dont need this?
             removal_policy=RemovalPolicy.DESTROY,
@@ -29,6 +31,7 @@ class DynamoDbStack(Stack):
 
         self.albums = ddb.Table(
             self, "Albums",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="album_id", type=ddb.AttributeType.STRING),
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES,   # subscribed notifications and feed update
             removal_policy=RemovalPolicy.DESTROY,
@@ -46,6 +49,7 @@ class DynamoDbStack(Stack):
 
         self.tracks = ddb.Table(
             self, "Tracks",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES,   # notify subscribers and start transcription
             removal_policy=RemovalPolicy.DESTROY,
@@ -63,6 +67,7 @@ class DynamoDbStack(Stack):
 
         self.genres = ddb.Table(
             self, "Genres",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="PK", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="genre_id", type=ddb.AttributeType.STRING),
             removal_policy=RemovalPolicy.DESTROY,
@@ -74,6 +79,7 @@ class DynamoDbStack(Stack):
         # many to many artists on tracks
         self.track_artists = ddb.Table(
             self, "TrackArtists",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
             removal_policy=RemovalPolicy.DESTROY,
@@ -92,7 +98,9 @@ class DynamoDbStack(Stack):
         # keeps track of genres for tracks/albums/artists
         self.content_genres = ddb.Table(
             self, "ContentGenres",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="genre", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="entity", type=ddb.AttributeType.STRING),
             removal_policy=RemovalPolicy.DESTROY,
             billing_mode=ddb.BillingMode.PROVISIONED,
             read_capacity=1,
@@ -123,6 +131,7 @@ class DynamoDbStack(Stack):
         # mirrors cognito
         self.users = ddb.Table(
             self, "Users",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
             removal_policy=RemovalPolicy.DESTROY,
             billing_mode=ddb.BillingMode.PROVISIONED,
@@ -139,6 +148,7 @@ class DynamoDbStack(Stack):
 
         self.playlists = ddb.Table(
             self, "Playlists",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="playlist_id", type=ddb.AttributeType.STRING),
             removal_policy=RemovalPolicy.DESTROY,
             billing_mode=ddb.BillingMode.PROVISIONED,
@@ -156,6 +166,7 @@ class DynamoDbStack(Stack):
         # playlist items with ordering
         self.playlist_items = ddb.Table(
             self, "PlaylistItems",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="playlist_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="position", type=ddb.AttributeType.NUMBER),
             removal_policy=RemovalPolicy.DESTROY,
@@ -174,6 +185,7 @@ class DynamoDbStack(Stack):
         # rate anything (content_key = ALBUM#id, ARTIST#id, PLAYLIST#id, TRACK#id)
         self.ratings = ddb.Table(
             self, "Ratings",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="content_key", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES, # update rating sum for content
@@ -193,6 +205,7 @@ class DynamoDbStack(Stack):
         # also generic topic = ARTIST#id, GENRE#pop
         self.subscriptions = ddb.Table(
             self, "Subscriptions",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="topic", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
             stream=ddb.StreamViewType.NEW_IMAGE, # refresh feed
@@ -209,6 +222,7 @@ class DynamoDbStack(Stack):
 
         self.interactions = ddb.Table(
             self, "Interactions",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="ts", type=ddb.AttributeType.NUMBER),
             stream=ddb.StreamViewType.NEW_IMAGE, # refresh feed
@@ -221,6 +235,7 @@ class DynamoDbStack(Stack):
 
         self.feed = ddb.Table(
             self, "Feed",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="item_id", type=ddb.AttributeType.STRING),
             time_to_live_attribute="ttl",         # enable ttl to keep feed fresh
@@ -233,6 +248,7 @@ class DynamoDbStack(Stack):
         # TODO
         self.transcriptions = ddb.Table(
             self, "Transcriptions",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
             partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
             removal_policy=RemovalPolicy.DESTROY,
             billing_mode=ddb.BillingMode.PROVISIONED,
