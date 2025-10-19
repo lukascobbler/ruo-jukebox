@@ -17,6 +17,7 @@ import {Router} from '@angular/router';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {CreateAlbumDialogComponent} from '../../dialogs/album/create-album-dialog.component';
 import {Artist} from '../../../../models/Artist';
+import { GenresService } from '../../../../services/genres/genres.service';
 
 @Component({
   selector: 'app-all-albums',
@@ -39,6 +40,7 @@ import {Artist} from '../../../../models/Artist';
   styleUrl: './all-albums.component.scss'
 })
 export class AllAlbumsComponent {
+  constructor(private genres: GenresService) {}
   dialog = inject(MatDialog);
   router = inject(Router);
 
@@ -67,9 +69,15 @@ export class AllAlbumsComponent {
   getAlbumGenres(album: Album) {
     return album.genres.map(g => g['name']).join(', ');
   }
-
+  create() {
+    this.genres.create('Rock').subscribe({
+      next: res => console.log('Created genre:', res),
+      error: err => console.error('Create failed:', err)
+    });
+  }
 
   createNewAlbum() {
+    this.create();
     const dialogRef: MatDialogRef<CreateAlbumDialogComponent, null> = this.dialog.open(CreateAlbumDialogComponent, {
       width: '250px',
       minWidth: '22vw'

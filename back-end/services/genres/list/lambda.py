@@ -1,29 +1,34 @@
-import os
+import os, json
 from dataclasses import asdict
 import boto3
 from boto3.dynamodb.conditions import Key
+from pre_authorize import pre_authorize
+from auth_layer.python.pre_authorize import pre_authorize
+from model.model import GenreItem
 
-from services.common import _response
-from services.genres.list.model.model import GenreItem
 
 TABLE_NAME = os.environ['GENRES_TABLE']
 dynamodb = boto3.resource('dynamodb')
 genres_table = dynamodb.Table(TABLE_NAME)
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+}
 
+@pre_authorize(['Admin', 'LoggedInUser'])
 def lambda_handler(event, context):
     response = genres_table.query(
         KeyConditionExpression=Key("PK").eq("genres")
     )
     items = response.get("Items", [])
-
     genres = [
         asdict(GenreItem(
             id=item.get("genre_id"),
             name=item.get("Name"),
-            isSubscribed=None  # todo dodati kad se dodaju subskripcije
+            isSubscribed=None
         ))
         for item in items
     ]
-
-    return _response(200, genres)
+    return {"statusCode": 200, "headers": CORS_HEADERS, "body": genres}
