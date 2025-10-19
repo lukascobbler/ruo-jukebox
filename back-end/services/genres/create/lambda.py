@@ -1,20 +1,25 @@
 import os, json, time, uuid
 import boto3
 from botocore.exceptions import ClientError
-from services.common import _response
 
 dynamodb = boto3.resource("dynamodb")
 genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
+
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+}
 
 def lambda_handler(event, context):
     try:
         body = json.loads(event.get("body") or "{}")
     except json.JSONDecodeError:
-        return _response(400, {"message": "Invalid JSON body"})
+        return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Invalid JSON body"})}
 
     name = (body.get("name") or "").strip()
     if not name:
-        return _response(400, {"message": "Field 'name' is required"})
+        return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Field 'name' is required"})}
 
     genre_id = f"GENRE~{uuid.uuid4().hex}"
     now = int(time.time())
@@ -33,6 +38,6 @@ def lambda_handler(event, context):
             Item=item,
             ConditionExpression="attribute_not_exists(genre_id)"
         )
-        return _response(201, {"id": genre_id, "name": name})
+        return {"statusCode": 201, "headers": CORS_HEADERS, "body": json.dumps({"id": genre_id, "name": name})}
     except ClientError as e:
-        return _response(500, {"message": "Failed to create genre", "error": str(e)})
+        return {"statusCode": 500, "headers": CORS_HEADERS, "body": json.dumps({"message": "Failed to create genre", "error": str(e)})}

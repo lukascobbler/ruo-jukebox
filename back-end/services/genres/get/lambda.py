@@ -1,11 +1,16 @@
 import os
 from dataclasses import asdict
 import boto3
+import json
 from boto3.dynamodb.conditions import Key
-from services.common import _response
-from services.genres.get.model.model import Genre, AlbumFromGenre, ArtistFromGenre
-
+from model.model import Genre, AlbumFromGenre, ArtistFromGenre
 dynamodb = boto3.resource("dynamodb")
+
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+}
 
 GENRES_TABLE = os.environ["GENRES_TABLE"]
 CONTENT_GENRES_TABLE = os.environ["CONTENT_GENRES_TABLE"]
@@ -19,11 +24,11 @@ def lambda_handler(event, context):
     path_params = event.get("pathParameters") or {}
     genre_id = path_params.get("id")
     if not genre_id:
-        return _response(400, {"message": "Genre id missing"})
+        return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Genre id missing"})}
 
     genre_item = genres_table.get_item(Key={"PK": "genres", "genre_id": genre_id}).get("Item")
     if not genre_item:
-        return _response(404, {"message": "Genre not found"})
+        return {"statusCode": 404, "headers": CORS_HEADERS, "body": json.dumps({"message": "Genre not found"})}
 
     members = _query_entities_for_genre(genre_id)
     artist_ids = [it["entity"] for it in members if it.get("entity","").startswith("ARTIST~")]
@@ -59,7 +64,7 @@ def lambda_handler(event, context):
         albums=album_models,
         artists=artist_models,
     )
-    return _response(200, asdict(genre))
+    return {"statusCode": 200, "headers": CORS_HEADERS, "body": asdict(genre)}
 
 def _query_entities_for_genre(genre_id: str) -> list[dict]:
     items, lek = [], None

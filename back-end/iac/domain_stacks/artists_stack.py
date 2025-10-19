@@ -21,7 +21,9 @@ class ArtistsStack(Stack):
             "ArtistsList": "services/artists/list",
             "ArtistsGet": "services/artists/get",
             "ArtistsUpdate": "services/artists/update",
-            "ArtistsDelete": "services/artists/delete"
+            "ArtistsDelete": "services/artists/delete",
+            "ArtistsPicInit": "services/artists/picture/init_upload",
+            "ArtistsPicComplete": "services/artists/picture/complete_upload",
         }
         for key, path in lambda_defs.items():
             self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, shared_layer_stack).fn
@@ -30,9 +32,17 @@ class ArtistsStack(Stack):
         artists = api_gateway.api.root.add_resource("artists")
         artist_id = artists.add_resource("{id}")
 
-        artists.add_method("POST", apigw.LambdaIntegration(self.lambdas["ArtistsCreate"]), **api_gateway.auth_kwargs)  # todo admin: check group in lambda
+        artists.add_method("POST", apigw.LambdaIntegration(self.lambdas["ArtistsCreate"]), **api_gateway.auth_kwargs)
         artists.add_method("GET", apigw.LambdaIntegration(self.lambdas["ArtistsList"]), **api_gateway.auth_kwargs)
 
         artist_id.add_method("GET", apigw.LambdaIntegration(self.lambdas["ArtistsGet"]), **api_gateway.auth_kwargs)
         artist_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["ArtistsUpdate"]), **api_gateway.auth_kwargs)
         artist_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["ArtistsDelete"]), **api_gateway.auth_kwargs)
+
+        picture = artist_id.add_resource("picture")
+        picture.add_resource("init_upload").add_method(
+            "POST", apigw.LambdaIntegration(self.lambdas["ArtistsPicInit"]), **api_gateway.auth_kwargs
+        )
+        picture.add_resource("complete_upload").add_method(
+            "POST", apigw.LambdaIntegration(self.lambdas["ArtistsPicComplete"]), **api_gateway.auth_kwargs
+        )

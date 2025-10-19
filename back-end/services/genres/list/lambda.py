@@ -1,13 +1,26 @@
-import os
+import os, json
 from dataclasses import asdict
 import boto3
 from boto3.dynamodb.conditions import Key
-from services.common import _response
-from services.genres.list.model.model import GenreItem
+from model.model import GenreItem
+from dataclasses import dataclass
+
+
+@dataclass
+class GenreItem:
+    id: str
+    name: str
+    isSubscribed: bool | None
 
 TABLE_NAME = os.environ['GENRES_TABLE']
 dynamodb = boto3.resource('dynamodb')
 genres_table = dynamodb.Table(TABLE_NAME)
+
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+}
 
 def lambda_handler(event, context):
     response = genres_table.query(
@@ -22,4 +35,4 @@ def lambda_handler(event, context):
         ))
         for item in items
     ]
-    return _response(200, genres)
+    return {"statusCode": 200, "headers": CORS_HEADERS, "body": genres}

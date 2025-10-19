@@ -11,6 +11,6 @@ class Artist:
     id: str
     name: str
     biography: str
+    pictureKey: Optional[str]
+    pictureUrl: Optional[str]
     genres: List[GenreItem]
-    pictureKey: Optional[str] = None
-    pictureUrl: Optional[str] = None
