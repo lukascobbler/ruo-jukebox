@@ -99,3 +99,9 @@
   background: transparent !important;
   box-shadow: none !important;
 }
+
+::ng-deep input.mat-mdc-input-element:autofill {
+  transition: background-color 99999s ease 0s,
+  color 99999s ease 0s, font-weight 99999s ease 0s,
+  font-size 99999s ease 0s !important;
+}
