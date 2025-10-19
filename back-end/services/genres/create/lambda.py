@@ -35,6 +35,4 @@ def lambda_handler(event, context):
         )
         return _response(201, {"id": genre_id, "name": name})
     except ClientError as e:
-        if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
-            return _response(409, {"message": f"Genre id already exists"})
         return _response(500, {"message": "Failed to create genre", "error": str(e)})

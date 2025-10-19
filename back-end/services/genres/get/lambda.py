@@ -6,7 +6,6 @@ from services.common import _response
 from services.genres.get.model.model import Genre, AlbumFromGenre, ArtistFromGenre
 
 dynamodb = boto3.resource("dynamodb")
-ddb_client = boto3.client("dynamodb")
 
 GENRES_TABLE = os.environ["GENRES_TABLE"]
 CONTENT_GENRES_TABLE = os.environ["CONTENT_GENRES_TABLE"]
