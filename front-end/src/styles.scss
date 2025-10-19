@@ -129,3 +129,15 @@ $orange-theme: mat.define-theme((
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-mdc-floating-label {
+  color: $pale-text !important;
+}
+
+.mat-datepicker-content {
+  background-color: $background !important;
+}
+
+.mat-datepicker-toggle {
+  margin-right: 8px;
+}
