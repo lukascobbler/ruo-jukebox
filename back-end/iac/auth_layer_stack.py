@@ -1,5 +1,5 @@
 from constructs import Construct
-from aws_cdk import Stack, aws_lambda as _lambda
+from aws_cdk import Stack, aws_lambda as _lambda, aws_lambda
 
 
 class AuthLayerStack(Stack):
@@ -9,6 +9,6 @@ class AuthLayerStack(Stack):
         self.auth_layer = _lambda.LayerVersion(
             self, "AuthLayer",
             code=_lambda.Code.from_asset("auth_layer"),
-            compatible_runtimes=_lambda.Runtime.PYTHON_3_11,
+            compatible_runtimes=[aws_lambda.Runtime.PYTHON_3_11],
             description="Authorization layer"
         )

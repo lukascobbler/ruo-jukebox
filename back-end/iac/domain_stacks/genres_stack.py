@@ -38,5 +38,4 @@ class GenresStack(Stack):
         genre_id.add_method("GET", apigw.LambdaIntegration(self.lambdas["GenresGet"]), **api.auth_kwargs)
         genre_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["GenresUpdate"]), **api.auth_kwargs)
         genre_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["GenresDelete"]), **api.auth_kwargs)
-        genres.add_method("GET", apigw.LambdaIntegration(self.lambdas["GenresGetAll"]), **api.auth_kwargs)
-
+        # genres.add_method("GET", apigw.LambdaIntegration(self.lambdas["GenresGetAll"]), **api.auth_kwargs)
