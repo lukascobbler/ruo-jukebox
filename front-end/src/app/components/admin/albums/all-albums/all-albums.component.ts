@@ -16,6 +16,7 @@ import {Album} from '../../../../models/Album';
 import {Router} from '@angular/router';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {CreateAlbumDialogComponent} from '../../dialogs/album/create-album-dialog.component';
+import {Artist} from '../../../../models/Artist';
 
 @Component({
   selector: 'app-all-albums',
@@ -41,27 +42,32 @@ export class AllAlbumsComponent {
   dialog = inject(MatDialog);
   router = inject(Router);
 
-  displayedColumns = ['cover', 'name', 'artist', 'actions'];
+  displayedColumns = ['cover', 'name', 'artist', 'genres', 'actions'];
   albumsDataSource: Album[] = [
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
-    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1'},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
+    {id: '1', name: 'Awesome album', artist: 'Awesome Artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}]},
   ];
+
+  getAlbumGenres(album: Album) {
+    return album.genres.map(g => g['name']).join(', ');
+  }
+
 
   createNewAlbum() {
     const dialogRef: MatDialogRef<CreateAlbumDialogComponent, null> = this.dialog.open(CreateAlbumDialogComponent, {

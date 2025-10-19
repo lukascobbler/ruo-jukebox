@@ -4,7 +4,7 @@
 
 .container {
   display: flex;
-  padding: 80px 380px;
+  padding: 80px 300px;
 }
 
 .table-container {
@@ -43,12 +43,17 @@ mat-cell.cover {
 
 mat-header-cell.name,
 mat-cell.name {
-  flex: 0 0 35%;
+  flex: 0 0 25%;
 }
 
 mat-header-cell.artist,
 mat-cell.artist {
-  flex: 0 0 35%;
+  flex: 0 0 25%;
+}
+
+mat-header-cell.genres,
+mat-cell.genres {
+  flex: 0 0 20%;
 }
 
 mat-header-cell.actions,

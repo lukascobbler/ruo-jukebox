@@ -16,5 +16,5 @@ import {
   styleUrl: './album.component.scss'
 })
 export class AlbumComponent {
-  album: Album = { id: '1', name: 'Awesome album', artist: 'Awesome artist', artistId: '1' };
+  album: Album = { id: '1', name: 'Awesome album', artist: 'Awesome artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}] };
 }

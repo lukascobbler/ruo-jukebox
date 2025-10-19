@@ -26,6 +26,11 @@
         <mat-cell class="artist" *matCellDef="let album"><p class="nowrap-text">{{ album.artist }}</p></mat-cell>
       </ng-container>
 
+      <ng-container matColumnDef="genres">
+        <mat-header-cell class="genres" *matHeaderCellDef>Genres</mat-header-cell>
+        <mat-cell class="genres" *matCellDef="let album"><p class="nowrap-text">{{ getAlbumGenres(album) }}</p></mat-cell>
+      </ng-container>
+
       <ng-container matColumnDef="actions">
         <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>
         <mat-cell class="actions" *matCellDef="let album">

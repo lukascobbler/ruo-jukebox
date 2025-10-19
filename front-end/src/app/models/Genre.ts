@@ -1,5 +1,19 @@
+interface AlbumFromGenre {
+  id: string;
+  name: string;
+  picture: File | null;
+  artist: string;
+}
+
+interface ArtistFromGenre {
+  id: string;
+  name: string;
+  picture: File | null;
+}
+
 export interface Genre {
   id: string;
   name: string;
-  isSubscribed?: boolean; // this field should be missing when the admin requests a genre
+  albums: AlbumFromGenre[];
+  artists: ArtistFromGenre[];
 }
