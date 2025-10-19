@@ -28,9 +28,9 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Date of birth</mat-label>
-        <input matInput [matDatepicker]="pickerNotBeforeCSR" formControlName="dateOfBirth" name="notBeforeCSR">
-        <mat-datepicker-toggle matSuffix [for]="pickerNotBeforeCSR"></mat-datepicker-toggle>
-        <mat-datepicker #pickerNotBeforeCSR></mat-datepicker>
+        <input matInput [matDatepicker]="picker" formControlName="dateOfBirth" name="dateOfBirth">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
@@ -49,7 +49,7 @@
         <li *ngIf="someRequiredMissing">All fields must be filled</li>
       </ul>
 
-      <button class="blue-button button" type="submit" [disabled]="loading">Register</button>
+      <button class="orange-button button" type="submit" [disabled]="loading">Register</button>
       <button class="gray-button button" type="button" [disabled]="loading" [routerLink]="['/login']">Back to login</button>
     </form>
   </div>

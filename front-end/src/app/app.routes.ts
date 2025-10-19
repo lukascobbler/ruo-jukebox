@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 import {HomeComponent} from './components/user/home/home.component';
 import {GenresComponent} from './components/user/discovery/genres/genres.component';
 import {MusicContentComponent} from './components/user/discovery/music-content/music-content.component';
@@ -11,6 +11,7 @@ import {AllArtistsComponent} from './components/admin/artists/all-artists.compon
 import {AllAlbumsComponent} from './components/admin/albums/all-albums/all-albums.component';
 import {AllSinglesComponent} from './components/admin/singles/all-singles.component';
 import {AlbumDetailsComponent} from './components/admin/albums/album-details/album-details.component';
+import {RegistrationComponent} from './components/anonymous/registration/registration.component';
 
 export const routes: Routes = [
   {path: "home", component: HomeComponent},
@@ -25,5 +26,6 @@ export const routes: Routes = [
   {path: "all-artists", component: AllArtistsComponent},
   {path: "all-albums", component: AllAlbumsComponent},
   {path: "edit-album/:id", component: AlbumDetailsComponent},
-  {path: "all-singles", component: AllSinglesComponent}
+  {path: "all-singles", component: AllSinglesComponent},
+  {path: "register", component: RegistrationComponent}
 ];

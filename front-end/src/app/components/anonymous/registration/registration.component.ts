@@ -1,11 +1,17 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
-import {NgFor, NgForOf, NgIf, NgOptimizedImage} from "@angular/common";
+import {NgIf, NgOptimizedImage} from "@angular/common";
 import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
 import {ToastrService} from '../../../services/toastr/toastr.service';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {MatNativeDateModule} from "@angular/material/core";
+import {MatButtonModule} from "@angular/material/button";
+import {MatIconModule} from '@angular/material/icon';
 
 const passwordsMatch = (): ValidatorFn => {
   return (group: AbstractControl) => {
@@ -24,12 +30,18 @@ const passwordsMatch = (): ValidatorFn => {
     MatLabel,
     NgOptimizedImage,
     NgIf,
+    MatIconModule,
     FormsModule,
     ReactiveFormsModule,
     RouterLink,
     MatDatepickerInput,
     MatDatepickerToggle,
     MatDatepicker,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatButtonModule,
   ],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.scss'
