@@ -1,31 +1,35 @@
 import os, json, time
 import boto3
 from botocore.exceptions import ClientError
-from services.common import _response
 
 dynamodb = boto3.resource("dynamodb")
 genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
+
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+}
 
 def lambda_handler(event, context):
     path_params = event.get("pathParameters") or {}
     genre_id = path_params.get("id")
     if not genre_id:
-        return _response(400, {"message": "Genre id missing in path"})
+        return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Genre id missing in path"})}
 
     try:
         body = json.loads(event.get("body") or "{}")
     except json.JSONDecodeError:
-        return _response(400, {"message": "Invalid JSON body"})
+        return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Invalid JSON body"})}
+
 
     if "name" not in body:
-        return _response(400, {"message": "Nothing to update (provide 'name')"})
-
+        return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Nothing to update (provide 'name')"})}
     new_name = (body.get("name") or "").strip()
     if not new_name:
-        return _response(400, {"message": "Field 'name' cannot be empty"})
+        return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Field 'name' cannot be empty"})}
 
     now = int(time.time())
-
     try:
         resp = genres_table.update_item(
             Key={"PK": "genres", "genre_id": genre_id},
@@ -36,10 +40,9 @@ def lambda_handler(event, context):
             ReturnValues="ALL_NEW",
         )
     except ClientError as e:
-        code = e.response["Error"]["Code"]
-        if code == "ConditionalCheckFailedException":
-            return _response(404, {"message": "Genre not found"})
-        return _response(500, {"message": "Failed to update genre", "error": str(e)})
+        if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
+            return {"statusCode": 404, "headers": CORS_HEADERS, "body": json.dumps({"message": "Genre not found"})}
+        return {"statusCode": 500, "headers": CORS_HEADERS, "body": json.dumps({"message": "Failed to update genre", "error": str(e)})}
 
     item = resp.get("Attributes", {})
-    return _response(200, {"id": item.get("genre_id"), "name": item.get("Name")})
+    return {"statusCode": 200, "headers": CORS_HEADERS, "body": json.dumps({"id": item.get("genre_id"), "name": item.get("Name")})}
