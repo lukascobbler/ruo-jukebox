@@ -14,7 +14,7 @@ CORS_HEADERS = {
 
 def lambda_handler(event, context):
     items, lek = [], None
-
+    if (use ima admina svuda je subscribed False, ako je user onda dobavlja iz tabele za subscription i stavlja True/False)
     while True:
         kwargs = {
             "KeyConditionExpression": Key("PK").eq("genres"),
@@ -34,7 +34,7 @@ def lambda_handler(event, context):
         {
             "id": it["genre_id"],
             "name": it.get("Name", ""),
-            "isSubscribed": None,
+            "isSubscribed": False,
         }
         for it in items
     ]
