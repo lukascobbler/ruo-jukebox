@@ -13,24 +13,31 @@ import { AllSinglesComponent } from './components/admin/singles/all-singles.comp
 import { AlbumDetailsComponent } from './components/admin/albums/album-details/album-details.component';
 import { RegistrationComponent } from './components/anonymous/registration/registration.component';
 import { LoginComponent } from './components/anonymous/login/login.component';
-import {loggedInGuard} from './services/auth/logged-in.guard';
-import {anonymousGuard} from './services/auth/anonymous-guard.guard';
+import {authGuard, noAuthGuard, roleGuard} from './services/auth/auth.guard';
+import {RoleRedirectComponent} from './services/auth/role-redirect.component';
+import {Role} from './models/Role';
 
 export const routes: Routes = [
-  { path: 'home', component: HomeComponent, canActivate: [loggedInGuard] },
-  { path: 'discovery', component: GenresComponent, canActivate: [loggedInGuard] },
-  { path: 'genre/:id', component: MusicContentComponent, canActivate: [loggedInGuard] },
-  { path: 'album/:id', component: AlbumComponent, canActivate: [loggedInGuard] },
-  { path: 'single/:id', component: AlbumComponent, canActivate: [loggedInGuard] },
-  { path: 'artist/:id', component: ArtistComponent, canActivate: [loggedInGuard] },
-  { path: 'playlist/:id', component: PlaylistComponent, canActivate: [loggedInGuard] },
-  { path: 'search/:query', component: SearchResultsComponent, canActivate: [loggedInGuard] },
-  { path: 'subscriptions', component: SubscriptionsComponent, canActivate: [loggedInGuard] },
-  { path: 'all-artists', component: AllArtistsComponent, canActivate: [loggedInGuard] },
-  { path: 'all-albums', component: AllAlbumsComponent, canActivate: [loggedInGuard] },
-  { path: 'edit-album/:id', component: AlbumDetailsComponent, canActivate: [loggedInGuard] },
-  { path: 'all-singles', component: AllSinglesComponent, canActivate: [loggedInGuard] },
-  { path: 'register', component: RegistrationComponent, canActivate: [anonymousGuard] },
-  { path: 'login', component: LoginComponent, canActivate: [anonymousGuard] },
-  { path: '**', redirectTo: 'home' },
+  // Anonymous
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'register', component: RegistrationComponent, canActivate: [noAuthGuard] },
+  { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
+  { path: '**', component: RoleRedirectComponent, canActivate: [authGuard] },
+
+  // User
+  { path: 'home', component: HomeComponent, canActivate: [authGuard, roleGuard], data: { roles: ['User'] as Role[] } },
+  { path: 'discovery', component: GenresComponent, canActivate: [authGuard, roleGuard], data: { roles: ['User'] as Role[] } },
+  { path: 'genre/:id', component: MusicContentComponent, canActivate: [authGuard, roleGuard], data: { roles: ['User'] as Role[] } },
+  { path: 'album/:id', component: AlbumComponent, canActivate: [authGuard, roleGuard], data: { roles: ['User'] as Role[] } },
+  { path: 'single/:id', component: AlbumComponent, canActivate: [authGuard, roleGuard], data: { roles: ['User'] as Role[] } },
+  { path: 'artist/:id', component: ArtistComponent, canActivate: [authGuard, roleGuard], data: { roles: ['User'] as Role[] } },
+  { path: 'playlist/:id', component: PlaylistComponent, canActivate: [authGuard, roleGuard], data: { roles: ['User'] as Role[] } },
+  { path: 'search/:query', component: SearchResultsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['User'] as Role[] } },
+  { path: 'subscriptions', component: SubscriptionsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['User'] as Role[] } },
+
+  // Admin
+  { path: 'all-artists', component: AllArtistsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['Admin'] as Role[] } },
+  { path: 'all-albums', component: AllAlbumsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['Admin'] as Role[] }  },
+  { path: 'edit-album/:id', component: AlbumDetailsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['Admin'] as Role[] }  },
+  { path: 'all-singles', component: AllSinglesComponent, canActivate: [authGuard, roleGuard], data: { roles: ['Admin'] as Role[] }  },
 ];

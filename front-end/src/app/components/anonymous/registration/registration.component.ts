@@ -2,7 +2,7 @@ import {Component, inject, OnInit} from '@angular/core';
 import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {NgIf, NgOptimizedImage} from "@angular/common";
-import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
 import {ToastrService} from '../../../services/toastr/toastr.service';
@@ -13,14 +13,6 @@ import {MatNativeDateModule} from "@angular/material/core";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from '@angular/material/icon';
 import {AuthService} from '../../../services/auth/auth.service';
-
-const passwordsMatch = (): ValidatorFn => {
-  return (group: AbstractControl) => {
-    const p = group.get('password')?.value ?? '';
-    const r = group.get('repeatPassword')?.value ?? '';
-    return p === r ? null : {passwordsMismatch: true};
-  };
-};
 
 @Component({
   selector: 'app-registration',
@@ -78,7 +70,7 @@ export class RegistrationComponent implements OnInit {
   get someRequiredMissing(): boolean {
     const v = this.form.value as Record<string, string>;
     console.log(v);
-    return ['name', 'surname', 'username', 'email', 'password', 'dateOfBirth']
+    return ['name', 'surname', 'username', 'dateOfBirth', 'email', 'password']
       .some(k => !v[k] || v[k].trim().length === 0);
   }
 
