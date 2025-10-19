@@ -6,6 +6,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import {ToastrService} from '../../../services/toastr/toastr.service';
 import {AuthService} from '../../../services/auth/auth.service';
+import {Role} from '../../../models/Role';
 
 
 @Component({
@@ -40,11 +41,11 @@ export class LoginComponent implements OnInit {
 
     this.loading = true;
     this.auth.login(email, password).subscribe({
-      next: (user) => {
+      next: (_) => {
         this.toast.success('Welcome', 'You are now logged in.');
 
-        this.router.navigate(['home']);
-        this.loading = false
+        this.router.navigate(['/**']);
+        this.loading = false;
       },
       error: (err) => {
         const msg = this.extractError(err);

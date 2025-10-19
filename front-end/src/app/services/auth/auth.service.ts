@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs/operators';
+import {finalize, tap} from 'rxjs/operators';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {Role} from '../../models/Role';
 
@@ -41,16 +41,11 @@ export class AuthService {
     });
   }
 
-  logout(): void {
+  logout(): Observable<void> {
     const token = this.getToken();
-    if (token) {
-      this.http.post(`${this.API_URL}/auth/logout`, { access_token: token }).subscribe({
-        next: () => this.clear(),
-        error: () => this.clear(),
-      });
-    } else {
-      this.clear();
-    }
+    return this.http
+      .post<void>(`${this.API_URL}/auth/logout`, { access_token: token })
+      .pipe(finalize(() => this.clear()));
   }
 
   getToken(): string | null {

@@ -22,7 +22,6 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'register', component: RegistrationComponent, canActivate: [noAuthGuard] },
   { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
-  { path: '**', component: RoleRedirectComponent, canActivate: [authGuard] },
 
   // User
   { path: 'home', component: HomeComponent, canActivate: [authGuard, roleGuard], data: { roles: ['User'] as Role[] } },
@@ -40,4 +39,7 @@ export const routes: Routes = [
   { path: 'all-albums', component: AllAlbumsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['Admin'] as Role[] }  },
   { path: 'edit-album/:id', component: AlbumDetailsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['Admin'] as Role[] }  },
   { path: 'all-singles', component: AllSinglesComponent, canActivate: [authGuard, roleGuard], data: { roles: ['Admin'] as Role[] }  },
+
+  // misc
+  { path: '**', component: RoleRedirectComponent, canActivate: [authGuard] },
 ];

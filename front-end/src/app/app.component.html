@@ -1,12 +1,11 @@
 <div class="container">
-  <div class="sub-container">
-    <app-navbar
-      [class.sub-container-height]="auth.isLoggedIn()"
-      *ngIf="auth.isLoggedIn()">
-    </app-navbar> <!-- todo when auth is added -->
+  <div
+    class="sub-container"
+    [class.sub_container_height]="auth.isLoggedIn()">
+    <app-navbar *ngIf="auth.isLoggedIn()"></app-navbar>
     <div class="content">
       <router-outlet></router-outlet>
     </div>
   </div>
-  <app-player class="player" *ngIf="auth.isLoggedIn()"></app-player> <!-- todo when auth is added -->
+  <app-player class="player-height" *ngIf="auth.isLoggedIn()"></app-player>
 </div>
