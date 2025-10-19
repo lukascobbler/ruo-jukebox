@@ -7,10 +7,11 @@
     <div class="info">
       <mat-form-field appearance="outline">
         <mat-label>Name</mat-label>
-        <input matInput/>
+        <input matInput [(ngModel)]="name"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-select placeholder="Artist">
+        <mat-label>Artists</mat-label>
+        <mat-select [(ngModel)]="selectedArtists" multiple>
           <mat-option [value]="'artist1'">Awesome artist 1</mat-option>
           <mat-option [value]="'artist2'">Awesome artist 2</mat-option>
           <mat-option [value]="'artist3'">Awesome artist 3</mat-option>
@@ -18,7 +19,8 @@
         </mat-select>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-select placeholder="Genres">
+        <mat-label>Genres</mat-label>
+        <mat-select [(ngModel)]="selectedGenres" multiple>
           <mat-option [value]="'rock'">Rock</mat-option>
           <mat-option [value]="'jazz'">Jazz</mat-option>
           <mat-option [value]="'classical'">Classical</mat-option>
@@ -31,8 +33,5 @@
       <app-upload-image-box></app-upload-image-box>
     </div>
   </div>
-
-  <button (click)="closeDialog()" [disabled]="false" class="orange-button finish">
-    Create
-  </button>
+  <button (click)="createSong()" class="orange-button finish">Create</button>
 </div>
