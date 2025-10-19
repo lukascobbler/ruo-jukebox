@@ -11,7 +11,6 @@ CONTENT_GENRES_TABLE = os.environ["CONTENT_GENRES_TABLE"]
 genres_table = dynamodb.Table(GENRES_TABLE)
 content_genres_table = dynamodb.Table(CONTENT_GENRES_TABLE)
 
-
 def lambda_handler(event, context):
     path = event.get("pathParameters") or {}
     genre_id = path.get("id")
@@ -32,20 +31,14 @@ def lambda_handler(event, context):
         deleted_genre = 1
     except ClientError as e:
         if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
-            # Someone else deleted the genre in the meantime
             deleted_genre = 0
         else:
             return _response(500, {"message": "Failed to delete genre", "error": str(e)})
 
     return _response(200, {
         "id": genre_id,
-        "deleted": {
-            "content_genres": deleted_links,
-            "genre": deleted_genre
-        }
+        "deleted": {"content_genres": deleted_links, "genre": deleted_genre}
     })
-
-# maybe add async version
 
 def _delete_all_content_genres(genre_id: str) -> int:
     total = 0

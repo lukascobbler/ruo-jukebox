@@ -19,13 +19,11 @@ def lambda_handler(event, context):
 
     if "name" not in body:
         return _response(400, {"message": "Nothing to update (provide 'name')"})
-
     new_name = (body.get("name") or "").strip()
     if not new_name:
         return _response(400, {"message": "Field 'name' cannot be empty"})
 
     now = int(time.time())
-
     try:
         resp = genres_table.update_item(
             Key={"PK": "genres", "genre_id": genre_id},
@@ -36,8 +34,7 @@ def lambda_handler(event, context):
             ReturnValues="ALL_NEW",
         )
     except ClientError as e:
-        code = e.response["Error"]["Code"]
-        if code == "ConditionalCheckFailedException":
+        if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
             return _response(404, {"message": "Genre not found"})
         return _response(500, {"message": "Failed to update genre", "error": str(e)})
 

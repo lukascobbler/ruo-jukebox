@@ -16,7 +16,7 @@ def lambda_handler(event, context):
     if not name:
         return _response(400, {"message": "Field 'name' is required"})
 
-    genre_id = f"GENRE#{uuid.uuid4().hex}"
+    genre_id = f"GENRE~{uuid.uuid4().hex}"
     now = int(time.time())
 
     item = {
@@ -36,6 +36,5 @@ def lambda_handler(event, context):
         return _response(201, {"id": genre_id, "name": name})
     except ClientError as e:
         if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
-            # another genre already owns this slug => treat as duplicate (if there is Rock, we will discard rOck, rOCk etc)
-            return _response(409, {"message": f"Genre '{name}' already exists"})
+            return _response(409, {"message": f"Genre id already exists"})
         return _response(500, {"message": "Failed to create genre", "error": str(e)})
