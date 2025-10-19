@@ -68,10 +68,13 @@ export class RegistrationComponent implements OnInit {
   }
 
   get someRequiredMissing(): boolean {
-    const v = this.form.value as Record<string, string>;
-    console.log(v);
-    return ['name', 'surname', 'username', 'dateOfBirth', 'email', 'password']
-      .some(k => !v[k] || v[k].trim().length === 0);
+    const v = this.form.value as Record<string, string | Date>;
+    return ['name', 'surname', 'username', 'email', 'password', 'dateOfBirth']
+      .some(k => {
+        const value = v[k];
+        if (typeof value === 'string') return value.trim().length === 0;
+        return value === null;
+      });
   }
 
   get invalidEmailFormat(): boolean {
@@ -96,15 +99,12 @@ export class RegistrationComponent implements OnInit {
     }
 
     const {name, surname, username, email, password, dateOfBirth} = this.form.value as {
-      name: string; surname: string; username: string; email: string; password: string;
-      dateOfBirth: string;
+      name: string; surname: string; username: string; email: string; password: string; dateOfBirth: Date;
     };
 
     this.loading = true;
-    this.auth.register({
-      name, surname, username, email,
-      password, dateOfBirth
-    } as any).subscribe({
+    const formattedDate = dateOfBirth.toISOString().split('T')[0];
+    this.auth.register({name, surname, username, email, password, dateOfBirth: formattedDate} as any).subscribe({
       next: () => {
         this.toast.success('Registered', 'Successfully registered.');
         this.router.navigate(['/login']);
