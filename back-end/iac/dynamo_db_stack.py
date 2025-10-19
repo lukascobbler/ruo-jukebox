@@ -9,8 +9,6 @@ class DynamoDbStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs):
         super().__init__(scope, id, **kwargs)
 
-        # core artists/albums/tracks/genres tables
-
         self.artists = ddb.Table(
             self, "Artists",
             table_name=PhysicalName.GENERATE_IF_NEEDED,
@@ -47,10 +45,10 @@ class DynamoDbStack(Stack):
             sort_key=ddb.Attribute(name="created_at", type=ddb.AttributeType.NUMBER),
         )
 
-        self.tracks = ddb.Table(
-            self, "Tracks",
+        self.songs = ddb.Table(
+            self, "Songs",
             table_name=PhysicalName.GENERATE_IF_NEEDED,
-            partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
+            partition_key=ddb.Attribute(name="song_id", type=ddb.AttributeType.STRING),
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES,   # notify subscribers and start transcription
             removal_policy=RemovalPolicy.DESTROY,
             billing_mode=ddb.BillingMode.PROVISIONED,
@@ -59,10 +57,10 @@ class DynamoDbStack(Stack):
         )
 
         # fast lookup for album and track order
-        self.tracks.add_global_secondary_index(
+        self.songs.add_global_secondary_index(
             index_name="byAlbum",
             partition_key=ddb.Attribute(name="album_id", type=ddb.AttributeType.STRING),
-            sort_key=ddb.Attribute(name="track_no", type=ddb.AttributeType.NUMBER)
+            sort_key=ddb.Attribute(name="song_no", type=ddb.AttributeType.NUMBER)
         )
 
         self.genres = ddb.Table(
@@ -77,10 +75,10 @@ class DynamoDbStack(Stack):
         )
 
         # many to many artists on tracks
-        self.track_artists = ddb.Table(
-            self, "TrackArtists",
+        self.song_artists = ddb.Table(
+            self, "SongArtists",
             table_name=PhysicalName.GENERATE_IF_NEEDED,
-            partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
+            partition_key=ddb.Attribute(name="song_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
             removal_policy=RemovalPolicy.DESTROY,
             billing_mode=ddb.BillingMode.PROVISIONED,
@@ -89,10 +87,10 @@ class DynamoDbStack(Stack):
         )
 
         # getting all tracks for an artist
-        self.track_artists.add_global_secondary_index(
+        self.song_artists.add_global_secondary_index(
             index_name="byArtist",
             partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
-            sort_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="song_id", type=ddb.AttributeType.STRING),
         )
 
         # keeps track of genres for tracks/albums/artists
@@ -107,25 +105,11 @@ class DynamoDbStack(Stack):
             write_capacity=1
         )
 
-        # GSI for artists in a genre
+        # fast lookup for all entities for a genre
         self.content_genres.add_global_secondary_index(
-            index_name="byArtist",
-            partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
-            sort_key=ddb.Attribute(name="genre", type=ddb.AttributeType.STRING)
-        )
-
-        # GSI for albums in a genre
-        self.content_genres.add_global_secondary_index(
-            index_name="byAlbum",
-            partition_key=ddb.Attribute(name="album_id", type=ddb.AttributeType.STRING),
-            sort_key=ddb.Attribute(name="genre", type=ddb.AttributeType.STRING)
-        )
-
-        # GSI for tracks in a genre
-        self.content_genres.add_global_secondary_index(
-            index_name="byTrack",
-            partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
-            sort_key=ddb.Attribute(name="genre", type=ddb.AttributeType.STRING)
+            index_name="byEntity",
+            partition_key=ddb.Attribute(name="entity", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="genre", type=ddb.AttributeType.STRING),
         )
 
         # mirrors cognito
@@ -174,19 +158,12 @@ class DynamoDbStack(Stack):
             read_capacity=1,
             write_capacity=1
         )
-        
-        # fast lookup of playlists containing a track (maybe not needed?)
-        self.playlist_items.add_global_secondary_index(
-            index_name="byTrack",
-            partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
-            sort_key=ddb.Attribute(name="playlist_id", type=ddb.AttributeType.STRING),
-        )
 
-        # rate anything (content_key = ALBUM#id, ARTIST#id, PLAYLIST#id, TRACK#id)
+        # rate songs (song_id = id) -- new
         self.ratings = ddb.Table(
             self, "Ratings",
             table_name=PhysicalName.GENERATE_IF_NEEDED,
-            partition_key=ddb.Attribute(name="content_key", type=ddb.AttributeType.STRING),
+            partition_key=ddb.Attribute(name="song_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES, # update rating sum for content
             removal_policy=RemovalPolicy.DESTROY,
@@ -199,7 +176,7 @@ class DynamoDbStack(Stack):
         self.ratings.add_global_secondary_index(
             index_name="byUser",
             partition_key=ddb.Attribute(name="user_id", type=ddb.AttributeType.STRING),
-            sort_key=ddb.Attribute(name="content_key", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="song_id", type=ddb.AttributeType.STRING),
         )
 
         # also generic topic = ARTIST#id, GENRE#pop
@@ -245,11 +222,10 @@ class DynamoDbStack(Stack):
             write_capacity=1
         )
 
-        # TODO
         self.transcriptions = ddb.Table(
             self, "Transcriptions",
             table_name=PhysicalName.GENERATE_IF_NEEDED,
-            partition_key=ddb.Attribute(name="track_id", type=ddb.AttributeType.STRING),
+            partition_key=ddb.Attribute(name="song_id", type=ddb.AttributeType.STRING),
             removal_policy=RemovalPolicy.DESTROY,
             billing_mode=ddb.BillingMode.PROVISIONED,
             read_capacity=1,
