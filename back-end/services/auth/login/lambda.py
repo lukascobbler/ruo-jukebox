@@ -6,6 +6,12 @@ import os
 COGNITO_CLIENT_ID = os.environ["USER_POOL_CLIENT_ID"]
 cognito = boto3.client("cognito-idp")
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+}
+
 def lambda_handler(event, context):
     try:
         body = json.loads(event.get("body", "{}"))
@@ -13,7 +19,7 @@ def lambda_handler(event, context):
         password = body.get("password")
 
         if not username or not password:
-            return {"statusCode": 400, "body": json.dumps({"message": "Username and password required"})}
+            return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Username and password required"})}
 
         try:
             resp = cognito.initiate_auth(
@@ -22,14 +28,15 @@ def lambda_handler(event, context):
                 AuthParameters={"USERNAME": username, "PASSWORD": password}
             )
         except cognito.exceptions.NotAuthorizedException:
-            return {"statusCode": 401, "body": json.dumps({"message": "Invalid username or password"})}
+            return {"statusCode": 401, "headers": CORS_HEADERS, "body": json.dumps({"message": "Invalid username or password"})}
         except cognito.exceptions.UserNotFoundException:
-            return {"statusCode": 404, "body": json.dumps({"message": "User not found"})}
+            return {"statusCode": 404, "headers": CORS_HEADERS, "body": json.dumps({"message": "User not found"})}
         except ClientError as e:
-            return {"statusCode": 500, "body": json.dumps({"message": f"Cognito error: {str(e)}"})}
+            return {"statusCode": 500, "headers": CORS_HEADERS, "body": json.dumps({"message": f"Cognito error: {str(e)}"})}
 
         return {
             "statusCode": 200,
+            "headers": CORS_HEADERS,
             "body": json.dumps({
                 "message": "Login successful",
                 "id_token": resp["AuthenticationResult"]["IdToken"],
@@ -41,4 +48,4 @@ def lambda_handler(event, context):
         }
 
     except Exception as e:
-        return {"statusCode": 500, "body": json.dumps({"message": f"Internal server error: {str(e)}"})}
+        return {"statusCode": 500, "headers": CORS_HEADERS, "body": json.dumps({"message": f"Internal server error: {str(e)}"})}
