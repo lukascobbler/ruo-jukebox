@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly API_URL = 'https://your-api-gateway-url'; // replace with your API Gateway base URL
+  private readonly API_URL = 'https://api.jb.moma.rs';
   private readonly TOKEN_KEY = 'access_token';
 
   constructor(private http: HttpClient) {}

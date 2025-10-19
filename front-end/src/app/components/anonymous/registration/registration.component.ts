@@ -12,6 +12,7 @@ import {MatDatepickerModule} from "@angular/material/datepicker";
 import {MatNativeDateModule} from "@angular/material/core";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from '@angular/material/icon';
+import {AuthService} from '../../../services/auth/auth.service';
 
 const passwordsMatch = (): ValidatorFn => {
   return (group: AbstractControl) => {
@@ -49,6 +50,7 @@ const passwordsMatch = (): ValidatorFn => {
 export class RegistrationComponent implements OnInit {
   toast = inject(ToastrService);
   fb = inject(FormBuilder);
+  auth = inject(AuthService);
   router = inject(Router);
   submitted = false;
   loading = false;
@@ -61,7 +63,7 @@ export class RegistrationComponent implements OnInit {
       username: ['', Validators.required],
       dateOfBirth: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
+      password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(64)]],
     });
   }
 
@@ -75,7 +77,8 @@ export class RegistrationComponent implements OnInit {
 
   get someRequiredMissing(): boolean {
     const v = this.form.value as Record<string, string>;
-    return ['name', 'surname', 'organization', 'email', 'password', 'repeatPassword']
+    console.log(v);
+    return ['name', 'surname', 'username', 'email', 'password', 'dateOfBirth']
       .some(k => !v[k] || v[k].trim().length === 0);
   }
 
@@ -99,6 +102,29 @@ export class RegistrationComponent implements OnInit {
       this.toast.info('Fix form', 'Please resolve the issues listed below.');
       return;
     }
+
+    const {name, surname, username, email, password, dateOfBirth} = this.form.value as {
+      name: string; surname: string; username: string; email: string; password: string;
+      dateOfBirth: string;
+    };
+
+    this.loading = true;
+    this.auth.register({
+      name, surname, username, email,
+      password, dateOfBirth
+    } as any).subscribe({
+      next: () => {
+        this.toast.success('Registered', 'Successfully registered.');
+        this.router.navigate(['/login']);
+        this.loading = false;
+      },
+      error: (err) => {
+        const msg = err?.error?.error || err?.error?.message || err?.message || 'Unexpected error.';
+        this.toast.error('Registration failed', msg);
+        this.loading = false;
+      },
+      complete: () => this.loading = false
+    });
   }
 
   goLogin() {

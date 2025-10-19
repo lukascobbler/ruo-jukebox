@@ -44,7 +44,7 @@
       </mat-form-field>
 
       <ul class="hints" *ngIf="submitted && (badPasswordLength || passwordsDontMatch || invalidEmailFormat || someRequiredMissing)">
-        <li *ngIf="badPasswordLength">Password must be between 8 and 64 characters</li>
+        <li *ngIf="badPasswordLength">Password must be between 6 and 64 characters</li>
         <li *ngIf="invalidEmailFormat">E-mail must be in a valid format</li>
         <li *ngIf="someRequiredMissing">All fields must be filled</li>
       </ul>
