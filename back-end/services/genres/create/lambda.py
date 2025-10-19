@@ -1,17 +1,10 @@
-import os, json, re, time, secrets
+import os, json, time, uuid
 import boto3
 from botocore.exceptions import ClientError
 from services.common import _response
 
 dynamodb = boto3.resource("dynamodb")
 genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
-
-# helpers for id generation TODO maybe move to common or change
-_slug_re = re.compile(r"[^a-z0-9]+")
-def _slugify(s: str) -> str:
-    s = (s or "").strip().lower()
-    s = _slug_re.sub("-", s).strip("-")
-    return s or "genre" # "Alt Rock" -> "alt-rock"
 
 def lambda_handler(event, context):
     try:
@@ -23,13 +16,14 @@ def lambda_handler(event, context):
     if not name:
         return _response(400, {"message": "Field 'name' is required"})
 
-    genre_id = _slugify(name)
+    genre_id = f"GENRE#{uuid.uuid4().hex}"
     now = int(time.time())
 
     item = {
         "PK": "genres",
         "genre_id": genre_id,
         "Name": name,
+        "name_lc": name.lower(),
         "created_at": now,
         "updated_at": now,
     }

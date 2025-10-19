@@ -29,8 +29,9 @@ def lambda_handler(event, context):
     if not genre_item:
         return _response(404, {"message": "Genre not found"})
 
-    artist_ids = _query_entity_ids("byArtist", "artist_id", genre_id)
-    album_ids = _query_entity_ids("byAlbum", "album_id", genre_id)
+    members = _query_entities_for_genre(genre_id)
+    artist_ids = [it["entity"] for it in members if it.get("entity","").startswith("ARTIST#")]
+    album_ids  = [it["entity"] for it in members if it.get("entity","").startswith("ALBUM#")]
 
     artists = _batch_get_items(ARTISTS_TABLE, "artist_id", artist_ids)
     albums = _batch_get_items(ALBUMS_TABLE, "album_id", album_ids)
@@ -66,12 +67,16 @@ def lambda_handler(event, context):
     return _response(200, asdict(genre))
 
 
-def _query_entity_ids(index_name: str, key_attr: str, genre_id: str):
-    resp = content_genres_table.query(
-        IndexName=index_name,
-        KeyConditionExpression=Key("genre").eq(genre_id)
-    )
-    return [item[key_attr] for item in resp.get("Items", []) if key_attr in item]
+def _query_entities_for_genre(genre_id: str) -> list[dict]:
+    items, lek = [], None
+    while True:
+        kwargs = {"KeyConditionExpression": Key("genre").eq(genre_id)}
+        if lek: kwargs["ExclusiveStartKey"] = lek
+        resp = content_genres_table.query(**kwargs)
+        items.extend(resp.get("Items", []))
+        lek = resp.get("LastEvaluatedKey")
+        if not lek: break
+    return items
 
 
 def _batch_get_items(table_name: str, key_name: str, ids: list):

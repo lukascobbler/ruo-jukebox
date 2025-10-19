@@ -53,8 +53,8 @@ def _delete_all_content_genres(genre_id: str) -> int:
     while True:
         kwargs = {
             "KeyConditionExpression": Key("genre").eq(genre_id),
-            "ProjectionExpression": "#g",
-            "ExpressionAttributeNames": {"#g": "genre"},
+            "ProjectionExpression": "#g, #e",
+            "ExpressionAttributeNames": {"#g": "genre", "#e": "entity"},
         }
         if last_key:
             kwargs["ExclusiveStartKey"] = last_key
@@ -66,7 +66,7 @@ def _delete_all_content_genres(genre_id: str) -> int:
 
         with content_genres_table.batch_writer() as batch:
             for it in items:
-                batch.delete_item(Key={"genre": it["genre"]})
+                batch.delete_item(Key={"genre": it["genre"], "entity": it["entity"]})
                 total += 1
 
         last_key = resp.get("LastEvaluatedKey")
