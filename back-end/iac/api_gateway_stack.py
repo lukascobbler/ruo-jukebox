@@ -10,6 +10,7 @@ class ApiGatewayStack(Stack):
 
         self.api = None
         self.auth_kwargs = None
+        self.authorizer = None
 
         self._define_api()
         self._define_auth(user_pool)
@@ -49,11 +50,11 @@ class ApiGatewayStack(Stack):
 
     def _define_auth(self, user_pool: UserPool):
         # only the users from our user pool can log in
-        authorizer = apigw.CognitoUserPoolsAuthorizer(
+        self.authorizer = apigw.CognitoUserPoolsAuthorizer(
             self, "ApiAuthorizer",
             cognito_user_pools=[user_pool],
         )
         self.auth_kwargs = dict(
-            authorizer=authorizer,
+            authorizer=self.authorizer,
             authorization_type=apigw.AuthorizationType.COGNITO
         )

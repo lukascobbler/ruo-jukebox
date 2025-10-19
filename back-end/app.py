@@ -1,3 +1,4 @@
+from iac.auth_layer_stack import AuthLayerStack
 from iac.domain_stacks.subscriptions_stack import SubscriptionsStack
 from iac.domain_stacks.interactions_stack import InteractionsStack
 from iac.domain_stacks.playlists_stack import PlaylistsStack
@@ -22,6 +23,7 @@ cognito_stack = CognitoStack(app, "CognitoStack", env=ENV)
 dynamo_db_stack = DynamoDbStack(app, "DynamoDbStack", env=ENV)
 s3_stack = S3Stack(app, "S3Stack", env=ENV)
 shared_layer_stack = SharedLayerStack(app, "SharedLayerStack", env=ENV)
+auth_layer_stack = AuthLayerStack(app, "AuthLayerStack", env=ENV)
 
 env_vars = {
     "AUDIO_BUCKET": s3_stack.audio_bucket.bucket_name,
@@ -55,23 +57,23 @@ auth_stack = AuthStack(app, "AuthStack", cognito_stack, dynamo_db_stack, s3_stac
 auth_stack.attach_to_api(api_gateway)
 
 # Domain stacks
-albums = AlbumsStack(app, "AlbumsStack", dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+albums = AlbumsStack(app, "AlbumsStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, env_vars, env=ENV)
 albums.attach_to_api(api_gateway)
 
-artists = ArtistsStack(app, "ArtistsStack", dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+artists = ArtistsStack(app, "ArtistsStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, env_vars, env=ENV)
 artists.attach_to_api(api_gateway)
 
-genres = GenresStack(app, "GenresStack", dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+genres = GenresStack(app, "GenresStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, env_vars, env=ENV)
 genres.attach_to_api(api_gateway)
 
 interactions = InteractionsStack(app, "InteractionsStack", dynamo_db_stack, env_vars, env=ENV)
 
-playlists = PlaylistsStack(app, "PlaylistsStack", dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+playlists = PlaylistsStack(app, "PlaylistsStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, env_vars, env=ENV)
 playlists.attach_to_api(api_gateway)
 
-songs = SongsStack(app, "SongsStack", cognito_stack, dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+songs = SongsStack(app, "SongsStack", cognito_stack, dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, env_vars, env=ENV)
 songs.attach_to_api(api_gateway)
 
-subscriptions = SubscriptionsStack(app, "SubscriptionsStack", dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+subscriptions = SubscriptionsStack(app, "SubscriptionsStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, env_vars, env=ENV)
 
 app.synth()

@@ -2,6 +2,7 @@ import os, json, re, time, secrets
 import boto3
 from botocore.exceptions import ClientError
 from services.common import _response
+from pre_authorize import pre_authorize
 
 dynamodb = boto3.resource("dynamodb")
 genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
@@ -13,6 +14,7 @@ def _slugify(s: str) -> str:
     s = _slug_re.sub("-", s).strip("-")
     return s or "genre" # "Alt Rock" -> "alt-rock"
 
+@pre_authorize(['Admin'])
 def lambda_handler(event, context):
     try:
         body = json.loads(event.get("body") or "{}")
