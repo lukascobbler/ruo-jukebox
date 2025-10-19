@@ -4,6 +4,8 @@ import boto3
 import json
 from boto3.dynamodb.conditions import Key
 from model.model import Genre, AlbumFromGenre, ArtistFromGenre
+from pre_authorize import pre_authorize
+
 dynamodb = boto3.resource("dynamodb")
 
 CORS_HEADERS = {
@@ -20,6 +22,7 @@ ALBUMS_TABLE = os.environ["ALBUMS_TABLE"]
 genres_table = dynamodb.Table(GENRES_TABLE)
 content_genres_table = dynamodb.Table(CONTENT_GENRES_TABLE)
 
+@pre_authorize(['Admin', ''])
 def lambda_handler(event, context):
     path_params = event.get("pathParameters") or {}
     genre_id = path_params.get("id")

@@ -53,7 +53,7 @@ env_vars = {
 api_gateway = ApiGatewayStack(app, "ApiGatewayStack", user_pool=cognito_stack.user_pool, env=ENV)
 
 # Auth stack
-auth_stack = AuthStack(app, "AuthStack", cognito_stack, dynamo_db_stack, s3_stack, shared_layer_stack, env_vars, env=ENV)
+auth_stack = AuthStack(app, "AuthStack", cognito_stack, dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, env_vars, env=ENV)
 auth_stack.attach_to_api(api_gateway)
 
 # Domain stacks

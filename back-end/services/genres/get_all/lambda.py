@@ -2,6 +2,7 @@ import os
 import boto3
 import json
 from boto3.dynamodb.conditions import Key
+from pre_authorize import pre_authorize
 
 dynamodb = boto3.resource("dynamodb")
 genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
@@ -12,6 +13,7 @@ CORS_HEADERS = {
     "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
 }
 
+@pre_authorize(['Admin', 'LoggedInUser'])
 def lambda_handler(event, context):
     items, lek = [], None
     if (use ima admina svuda je subscribed False, ako je user onda dobavlja iz tabele za subscription i stavlja True/False)

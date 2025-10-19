@@ -2,6 +2,7 @@ import os, json, time
 import boto3
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
+from pre_authorize import pre_authorize
 
 dynamodb = boto3.resource("dynamodb")
 ddb = boto3.client("dynamodb")
@@ -54,6 +55,7 @@ def _current_genres(artist_id):
         if not lek: break
     return out
 
+@pre_authorize(['Admin'])
 def lambda_handler(event, context):
     artist_id = (event.get("pathParameters") or {}).get("id")
     if not artist_id:

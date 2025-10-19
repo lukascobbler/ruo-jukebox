@@ -2,6 +2,8 @@ import os, json
 from dataclasses import asdict
 import boto3
 from boto3.dynamodb.conditions import Key
+from pre_authorize import pre_authorize
+from auth_layer.python.pre_authorize import pre_authorize
 from model.model import GenreItem
 
 
@@ -15,6 +17,7 @@ CORS_HEADERS = {
     "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
 }
 
+@pre_authorize(['Admin', 'LoggedInUser'])
 def lambda_handler(event, context):
     response = genres_table.query(
         KeyConditionExpression=Key("PK").eq("genres")
