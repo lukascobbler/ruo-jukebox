@@ -1,7 +1,7 @@
-from iac.auth_layer_stack import AuthLayerStack
 from iac.constructs.lambda_with_permissions import LambdaWithPermissions
 from iac.shared_layer_stack import SharedLayerStack
 from iac.api_gateway_stack import ApiGatewayStack
+from iac.auth_layer_stack import AuthLayerStack
 from iac.dynamo_db_stack import DynamoDbStack
 from iac.cognito_stack import CognitoStack
 from aws_cdk.aws_dynamodb import Table
@@ -20,13 +20,14 @@ from aws_cdk import (
 
 class SongsStack(Stack):
     def __init__(self, scope: Construct, id: str, cognito: CognitoStack,
-                 dynamo_db: DynamoDbStack, s3: S3Stack, shared_layer_stack: SharedLayerStack, auth_layer_stack: AuthLayerStack,
+                 dynamo_db: DynamoDbStack, s3: S3Stack, shared_layer_stack: SharedLayerStack, auth_layer_stack: AuthLayerStack, api_stack: ApiGatewayStack,
                  environment, **kwargs):
         super().__init__(scope, id, **kwargs)
         self.lambdas = {}
         self._create_lambdas(dynamo_db, s3, shared_layer_stack, auth_layer_stack, environment)
         self._init_song_processing(cognito, dynamo_db, s3, environment)
         self._init_rating_processing(dynamo_db, environment)
+        self._attach_to_api(api_stack)
 
     def _create_lambdas(self, dynamo_db, s3, shared_layer_stack, auth_layer_stack, env):
         lambda_defs = {
@@ -42,7 +43,7 @@ class SongsStack(Stack):
         for key, path in lambda_defs.items():
             self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, shared_layer_stack, auth_layer_stack).fn
 
-    def attach_to_api(self, api: ApiGatewayStack):
+    def _attach_to_api(self, api: ApiGatewayStack):
         song = api.api.root.add_resource("song")
         song_id = song.add_resource("{id}")
         rating = song_id.add_resource("rating")
