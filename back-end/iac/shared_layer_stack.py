@@ -9,7 +9,7 @@ class SharedLayerStack(Stack):
         self.shared_layer = aws_lambda.LayerVersion(
             self, "SharedLayer",
             layer_version_name="shared_layer",
-            code=aws_lambda.Code.from_asset("shared_layer"),
+            code=aws_lambda.Code.from_asset("shared_layer", asset_hash="shared_layer_v1"),
             compatible_runtimes=[aws_lambda.Runtime.PYTHON_3_11],
             description="Shared dependencies for all lambdas"
         )
