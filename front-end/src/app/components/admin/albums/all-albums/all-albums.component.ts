@@ -23,6 +23,7 @@ import {GenreItem} from '../../../../models/GenreItem';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {NgIf} from '@angular/common';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {CreateSingleDialogComponent} from '../../dialogs/single/create-single-dialog.component';
 
 @Component({
   selector: 'app-all-albums',
@@ -50,63 +51,41 @@ export class AllAlbumsComponent implements OnInit {
   dialog = inject(MatDialog);
   router = inject(Router);
   albumsService = inject(AlbumsService);
-  toastr = inject(ToastrService);
+  toast = inject(ToastrService);
   loading = true;
 
   displayedColumns = ['cover', 'name', 'artist', 'genres', 'actions'];
   albumsDataSource: Album[] = [];
 
   ngOnInit() {
-    this.albumsService.list().subscribe({
-      next: value => {
-        this.albumsDataSource = value;
-        this.loading = false;
-      },
-      error: err => {
-        this.toastr.error("Error loading", "Error loading albums: ", err);
-        this.loading = false;
-      }
-    })
+    this.loadAlbums();
   }
 
   getAlbumGenres(album: Album) {
     return album.genres.map(g => g.name).join(', ');
   }
 
+  private loadAlbums(): void {
+    this.loading = true;
+    this.albumsService.list().subscribe({
+      next: (albums) => {
+        this.albumsDataSource = albums;
+        this.loading = false;
+      },
+      error: () => this.loading = false
+    });
+  }
+
   createNewAlbum() {
-    const dialogRef: MatDialogRef<CreateAlbumDialogComponent, AlbumDialogData | null | undefined> =
-      this.dialog.open(CreateAlbumDialogComponent, {
-        width: '400px',
-        minWidth: '22vw',
-      });
+    const dialogRef: MatDialogRef<CreateSingleDialogComponent, string> = this.dialog.open(CreateSingleDialogComponent, {
+      minWidth: '900px'
+    });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (!result) return;
-
-      const { name } = result;
-
-      const artistId = 'artist1';
-      const artistName = 'Awesome artist 1';
-      const genreIds = ['rock'];
-      const genreObjects: GenreItem[] = [{ id: 'rock', name: 'Rock' }];
-
-      this.albumsService.create({ name, artistId, genreIds })
-        .subscribe({
-          next: (created) => {
-            const newAlbum: Album = {
-              id: created.id,
-              name: created.name,
-              artist: artistName,
-              artistId,
-              genres: genreObjects,
-              released: false
-            };
-            this.albumsDataSource = [...this.albumsDataSource, newAlbum];
-          },
-          error: (err) => {
-            this.toastr.error('Error','Album creation failed: ', err);
-          },
-        });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadAlbums();
+        this.toast.success('Success', 'Album successfully created!');
+      }
     });
   }
 }

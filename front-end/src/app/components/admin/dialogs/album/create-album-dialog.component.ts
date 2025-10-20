@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, inject, ViewChild} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIconButton } from '@angular/material/button';
@@ -7,7 +7,11 @@ import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { UploadImageBoxComponent } from '../upload-image-box/upload-image-box.component';
 import { MatDialogRef } from '@angular/material/dialog';
-import {NgForOf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
+import {lastValueFrom} from 'rxjs';
+import {AlbumsService} from '../../../../services/albums/albums.service';
+import {ToastrService} from '../../../../services/toastr/toastr.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 export interface AlbumDialogData {
   name: string;
@@ -28,16 +32,28 @@ export interface AlbumDialogData {
     MatOption,
     MatSelect,
     UploadImageBoxComponent,
-    NgForOf
+    NgForOf,
+    MatProgressSpinner,
+    NgIf
   ],
   templateUrl: './create-album-dialog.component.html',
   styleUrl: './create-album-dialog.component.scss'
 })
 export class CreateAlbumDialogComponent {
-  name = '';
+  albumsService = inject(AlbumsService);
+  toast = inject(ToastrService);
+  dialogRef = inject(MatDialogRef<CreateAlbumDialogComponent, string | null | undefined>);
   selectedArtistId = '';
   selectedGenreIds: string[] = [];
   pictureFile?: File;
+
+  selectedArtists: string[] = [];
+  selectedGenres: string[] = [];
+  name = '';
+  isEditMode = false;
+  loading = false;
+
+  @ViewChild(UploadImageBoxComponent) coverBox!: UploadImageBoxComponent;
 
   // placeholder lists (will later come from real services)
   availableArtists = [
@@ -53,31 +69,37 @@ export class CreateAlbumDialogComponent {
     { id: 'classical', name: 'Classical' }
   ];
 
-  constructor(
-    public dialogRef: MatDialogRef<CreateAlbumDialogComponent, AlbumDialogData | null | undefined>
-  ) {}
-
-  closeDialog() {
-    this.dialogRef.close(null);
-  }
-
   onNoClick() {
     this.dialogRef.close(undefined);
   }
 
-  onImageSelected(file: File) {
-    this.pictureFile = file;
-  }
+  async create() {
+    if (this.isEditMode) {
+      // await this.updateAlbum(); todo
+      return;
+    }
 
-  confirm() {
-    const trimmed = this.name.trim();
-    if (!trimmed || !this.selectedArtistId) return;
+    const coverFile = this.coverBox.image?.file;
 
-    this.dialogRef.close({
-      name: trimmed,
-      artistId: this.selectedArtistId,
-      genreIds: this.selectedGenreIds,
-      pictureFile: this.pictureFile
-    });
+    this.loading = true;
+    try {
+      const initRes = await lastValueFrom(this.albumsService.initUpload({
+        name: this.name,
+        artists: this.selectedArtists,
+        genres: this.selectedGenres,
+        cover_filename: coverFile?.name
+      }));
+      await fetch(initRes.upload_url, {method: 'PUT'});
+      if (coverFile && initRes.cover_upload_url)
+        await fetch(initRes.cover_upload_url, {method: 'PUT', body: coverFile});
+      await lastValueFrom(this.albumsService.completeUpload(initRes.album_id));
+
+      this.toast.success('Success', 'Song successfully created');
+      this.dialogRef.close(initRes.album_id);
+    } catch {
+      this.toast.error('Error', 'Unable to upload the album');
+    } finally {
+      this.loading = false;
+    }
   }
 }

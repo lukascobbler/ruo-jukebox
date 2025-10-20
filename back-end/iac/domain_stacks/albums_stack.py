@@ -19,14 +19,13 @@ class AlbumsStack(Stack):
 
     def _create_lambdas(self, dynamo_db, s3, shared_layer_stack, auth_layer_stack, env):
         lambda_defs = {
-            "AlbumsCreate": "services/albums/create",
             "AlbumsList": "services/albums/list",
             "AlbumsGet": "services/albums/get",
             "AlbumsUpdate": "services/albums/update",
             "AlbumsRelease": "services/albums/release",
             "AlbumsDelete": "services/albums/delete",
-            "AlbumsCoverInit": "services/albums/init_cover_upload",
-            "AlbumsCoverDone": "services/albums/complete_cover"
+            "AlbumsInitUpload": "services/albums/init_upload",
+            "AlbumsCompleteUpload": "services/albums/complete_upload"
         }
         for key, path in lambda_defs.items():
             self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, shared_layer_stack, auth_layer_stack).fn
@@ -35,13 +34,12 @@ class AlbumsStack(Stack):
         albums = api.api.root.add_resource("albums")
         album_id = albums.add_resource("{id}")
 
-        albums.add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsCreate"]), **api.auth_kwargs)
         albums.add_method("GET", apigw.LambdaIntegration(self.lambdas["AlbumsList"]), **api.auth_kwargs)
 
-        albums.add_resource("init-cover-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsCoverInit"]), **api.auth_kwargs)  # todo
-        albums.add_resource("complete-cover").add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsCoverDone"]), **api.auth_kwargs)  # todo
+        albums.add_resource("init-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsInitUpload"]), **api.auth_kwargs)
+        albums.add_resource("complete-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsCompleteUpload"]), **api.auth_kwargs)
 
         album_id.add_method("GET", apigw.LambdaIntegration(self.lambdas["AlbumsGet"]), **api.auth_kwargs)
-        album_id.add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsRelease"]), **api.auth_kwargs)  # todo
+        album_id.add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsRelease"]), **api.auth_kwargs)
         album_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["AlbumsUpdate"]), **api.auth_kwargs)  # todo
         album_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["AlbumsDelete"]), **api.auth_kwargs)  # todo

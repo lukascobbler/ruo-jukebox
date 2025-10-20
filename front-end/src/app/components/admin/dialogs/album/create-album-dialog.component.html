@@ -1,4 +1,8 @@
 <div class="container">
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+  </div>
+
   <button (click)="onNoClick()" class="close-button" mat-icon-button tabindex="-1">
     <span class="material-symbols-rounded">close</span>
   </button>
@@ -30,5 +34,5 @@
     <app-upload-image-box class="picture"></app-upload-image-box>
   </div>
 
-  <button (click)="confirm()" class="orange-button finish">Create</button>
+  <button (click)="create()" class="orange-button finish">Create</button>
 </div>

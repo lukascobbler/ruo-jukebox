@@ -34,6 +34,7 @@ env_vars = {
     "TRANSCRIPTS_BUCKET": s3_stack.transcripts_bucket.bucket_name,
     "ARTISTS_TABLE": dynamo_db_stack.artists.table_name,
     "ALBUMS_TABLE": dynamo_db_stack.albums.table_name,
+    "ALBUM_ARTISTS_TABLE": dynamo_db_stack.album_artists.table_name,
     "SONGS_TABLE": dynamo_db_stack.songs.table_name,
     "SONG_ARTISTS_TABLE": dynamo_db_stack.song_artists.table_name,
     "GENRES_TABLE": dynamo_db_stack.genres.table_name,

@@ -16,9 +16,11 @@ import {Album} from '../../../../models/album/Album';
 import {Song} from '../../../../models/Song';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {CreateAlbumDialogComponent} from '../../dialogs/album/create-album-dialog.component';
-import {CreateSongDialogComponent} from '../../dialogs/song/create-song-dialog.component';
+import {CreateAlbumSongDialogComponent} from '../../dialogs/song/create-album-song-dialog.component';
 import {Artist} from '../../../../models/Artist';
 import {NgIf} from '@angular/common';
+import {AlbumsService} from '../../../../services/albums/albums.service';
+import {ToastrService} from '../../../../services/toastr/toastr.service';
 
 @Component({
   selector: 'app-album-details',
@@ -43,7 +45,10 @@ import {NgIf} from '@angular/common';
 })
 export class AlbumDetailsComponent {
   dialog = inject(MatDialog);
+  albumsService = inject(AlbumsService);
+  toastrService = inject(ToastrService);
 
+  loading = true;
   displayedColumns = ['name', 'artist', 'genres', 'actions'];
 
   album: Album = {
@@ -80,8 +85,23 @@ export class AlbumDetailsComponent {
     return song.genres.map(g => g['name']).join(', ');
   }
 
+  releaseAlbum() {
+    this.loading = true;
+    this.albumsService.release(this.album.id).subscribe({
+      next: value => {
+        this.album.released = true;
+        this.toastrService.success("Successful", "Successfully released the album");
+        this.loading = false;
+      },
+      error: err => {
+        this.toastrService.error("Error", "Error releasing the album");
+        this.loading = false;
+      }
+    })
+  }
+
   createNewSong() {
-    const dialogRef: MatDialogRef<CreateSongDialogComponent, null> = this.dialog.open(CreateSongDialogComponent, {
+    const dialogRef: MatDialogRef<CreateAlbumSongDialogComponent, null> = this.dialog.open(CreateAlbumSongDialogComponent, {
       width: '250px',
       minWidth: '22vw'
     });

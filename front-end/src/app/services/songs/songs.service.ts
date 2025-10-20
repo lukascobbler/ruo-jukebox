@@ -8,6 +8,7 @@ export interface UploadInitPayload {
   genres: string[];
   filename: string;
   cover_filename?: string;
+  album_id?: string;
 }
 
 export interface UploadInitResponse {

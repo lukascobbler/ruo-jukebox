@@ -3,26 +3,23 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Album} from '../../models/album/Album';
 
-export interface AlbumCreateRequest {
-  name: string;
-  artistId: string;
-  genreIds: string[];
-}
-
 export interface AlbumUpdateRequest {
   name?: string;
   artistId?: string;
   genreIds?: string[];
 }
 
-export interface InitCoverUploadResponse {
-  uploadUrl: string;
-  fileKey: string;
+export interface UploadInitPayload {
+  name: string;
+  artists: string[];
+  genres: string[];
+  cover_filename?: string;
 }
 
-export interface CompleteCoverUploadRequest {
-  fileKey: string;
-  albumId: string;
+export interface UploadInitResponse {
+  album_id: string;
+  upload_url: string;
+  cover_upload_url?: string;
 }
 
 @Injectable({providedIn: 'root'})
@@ -30,26 +27,20 @@ export class AlbumsService {
   private readonly API_URL = 'https://api.jb.moma.rs';
   private readonly http = inject(HttpClient);
 
-  create(request: AlbumCreateRequest): Observable<Album> {
-    return this.http.post<Album>(`${this.API_URL}/albums`, request);
-  }
-
   list(): Observable<Album[]> {
     return this.http.get<Album[]>(`${this.API_URL}/albums`);
   }
 
-  initCoverUpload(): Observable<InitCoverUploadResponse> {
-    return this.http.post<InitCoverUploadResponse>(
-      `${this.API_URL}/albums/init-cover-upload`,
-      {}
-    );
+  release(id: string): Observable<void> {
+    return this.http.post<void>(`${this.API_URL}/albums/${encodeURIComponent(id)}`, {});
   }
 
-  completeCoverUpload(req: CompleteCoverUploadRequest): Observable<{ success: boolean }> {
-    return this.http.post<{ success: boolean }>(
-      `${this.API_URL}/albums/complete-cover`,
-      req
-    );
+  initUpload(payload: UploadInitPayload): Observable<UploadInitResponse> {
+    return this.http.post<UploadInitResponse>(`${this.API_URL}/init-upload`, payload);
+  }
+
+  completeUpload(album_id: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.API_URL}/complete-upload`, { album_id });
   }
 
   get(id: string): Observable<Album> {
