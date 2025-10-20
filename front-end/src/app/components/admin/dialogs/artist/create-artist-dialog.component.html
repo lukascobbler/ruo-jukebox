@@ -1,5 +1,10 @@
 <div class="container">
-  <button (click)="onNoClick()" class="close-button" mat-icon-button tabindex="-1">
+  <button
+    (click)="onNoClick()"
+    class="close-button"
+    mat-icon-button
+    tabindex="-1"
+  >
     <span class="material-symbols-rounded">close</span>
   </button>
 
@@ -7,27 +12,48 @@
     <div class="info">
       <mat-form-field appearance="outline">
         <mat-label>Name</mat-label>
-        <input matInput/>
+        <input matInput [formControl]="form.controls.name" />
       </mat-form-field>
+
       <mat-form-field appearance="outline">
-        <mat-select placeholder="Genres">
-          <mat-option [value]="'rock'">Rock</mat-option>
-          <mat-option [value]="'jazz'">Jazz</mat-option>
-          <mat-option [value]="'classical'">Classical</mat-option>
-          <mat-option [value]="'pop'">Pop</mat-option>
+        <mat-label>Genres</mat-label>
+        <mat-select
+          [(value)]="selectedGenreIds"
+          [multiple]="true"
+          placeholder="Select genres"
+        >
+          <mat-option
+            *ngFor="let g of genres; trackBy: trackByGenreId"
+            [value]="g.id"
+          >
+            {{ g.name }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>Biography</mat-label>
-        <textarea [scrollTop]="0" rows="5" class="textarea" matInput></textarea>
+        <textarea
+          [scrollTop]="0"
+          rows="5"
+          class="textarea"
+          matInput
+          [formControl]="form.controls.biography"
+        ></textarea>
       </mat-form-field>
     </div>
+
     <div class="picture">
-      <app-upload-image-box></app-upload-image-box>
+      <app-upload-image-box
+        (fileSelected)="onFileChosen($event)"
+      ></app-upload-image-box>
     </div>
   </div>
-
-  <button (click)="closeDialog()" [disabled]="false" class="orange-button finish">
-    Create
+  <button
+    (click)="onCreateClicked()"
+    [disabled]="busy"
+    class="orange-button finish"
+  >
+    {{ busy ? "Creating…" : "Create" }}
   </button>
 </div>

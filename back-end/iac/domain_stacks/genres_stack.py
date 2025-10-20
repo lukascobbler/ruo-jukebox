@@ -23,7 +23,6 @@ class GenresStack(Stack):
             "GenresGet": "services/genres/get",
             "GenresUpdate": "services/genres/update",
             "GenresDelete": "services/genres/delete",
-            "GenresGetAll": "services/genres/get_all",
         }
         for key, path in lambda_defs.items():
             self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, shared_layer_stack, auth_layer_stack).fn
@@ -38,4 +37,3 @@ class GenresStack(Stack):
         genre_id.add_method("GET", apigw.LambdaIntegration(self.lambdas["GenresGet"]), **api.auth_kwargs)
         genre_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["GenresUpdate"]), **api.auth_kwargs)
         genre_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["GenresDelete"]), **api.auth_kwargs)
-        # genres.add_method("GET", apigw.LambdaIntegration(self.lambdas["GenresGetAll"]), **api.auth_kwargs)
