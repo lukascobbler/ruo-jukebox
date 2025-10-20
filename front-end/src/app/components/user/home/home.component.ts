@@ -46,14 +46,14 @@ export class HomeComponent implements OnInit {
   ];
 
   artists: Artist[] = [
-    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
+    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
   ];
 
   ngOnInit() {

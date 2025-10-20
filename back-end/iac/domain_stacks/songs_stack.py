@@ -1,9 +1,10 @@
-from iac.auth_layer_stack import AuthLayerStack
 from iac.constructs.lambda_with_permissions import LambdaWithPermissions
 from iac.shared_layer_stack import SharedLayerStack
 from iac.api_gateway_stack import ApiGatewayStack
+from iac.auth_layer_stack import AuthLayerStack
 from iac.dynamo_db_stack import DynamoDbStack
 from iac.cognito_stack import CognitoStack
+from aws_cdk.aws_dynamodb import Table
 from iac.s3_stack import S3Stack
 from constructs import Construct
 from aws_cdk import (
@@ -19,13 +20,14 @@ from aws_cdk import (
 
 class SongsStack(Stack):
     def __init__(self, scope: Construct, id: str, cognito: CognitoStack,
-                 dynamo_db: DynamoDbStack, s3: S3Stack, shared_layer_stack: SharedLayerStack, auth_layer_stack: AuthLayerStack,
+                 dynamo_db: DynamoDbStack, s3: S3Stack, shared_layer_stack: SharedLayerStack, auth_layer_stack: AuthLayerStack, api_stack: ApiGatewayStack,
                  environment, **kwargs):
         super().__init__(scope, id, **kwargs)
         self.lambdas = {}
         self._create_lambdas(dynamo_db, s3, shared_layer_stack, auth_layer_stack, environment)
         self._init_song_processing(cognito, dynamo_db, s3, environment)
         self._init_rating_processing(dynamo_db, environment)
+        self._attach_to_api(api_stack)
 
     def _create_lambdas(self, dynamo_db, s3, shared_layer_stack, auth_layer_stack, env):
         lambda_defs = {
@@ -35,15 +37,13 @@ class SongsStack(Stack):
             "SongGet": "services/songs/get",
             "SongUpdate": "services/songs/update",
             "SongDelete": "services/songs/delete",
-            "SongCoverInit": "services/songs/init_cover_upload",
-            "SongCoverDone": "services/songs/complete_cover",
             "SongRatingPut": "services/song-ratings/put",
             "SongRatingDelete": "services/song-ratings/delete"
         }
         for key, path in lambda_defs.items():
             self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, shared_layer_stack, auth_layer_stack).fn
 
-    def attach_to_api(self, api: ApiGatewayStack):
+    def _attach_to_api(self, api: ApiGatewayStack):
         song = api.api.root.add_resource("song")
         song_id = song.add_resource("{id}")
         rating = song_id.add_resource("rating")
@@ -51,8 +51,6 @@ class SongsStack(Stack):
         song.add_resource("init-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["SongInitUpload"]), **api.auth_kwargs)
         song.add_resource("complete-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["SongCompleteUpload"]), **api.auth_kwargs)
         song.add_method("GET", apigw.LambdaIntegration(self.lambdas["SongList"]), **api.auth_kwargs)
-        song.add_resource("init-cover-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["SongCoverInit"]), **api.auth_kwargs)
-        song.add_resource("complete-cover").add_method("POST", apigw.LambdaIntegration(self.lambdas["SongCoverDone"]), **api.auth_kwargs)
 
         song_id.add_method("GET", apigw.LambdaIntegration(self.lambdas["SongGet"]), **api.auth_kwargs)
         song_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["SongUpdate"]), **api.auth_kwargs)
@@ -62,7 +60,7 @@ class SongsStack(Stack):
         rating.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["SongRatingDelete"]), **api.auth_kwargs)
 
     def _init_song_processing(self, cognito, dynamo_db, s3, env):
-        # 1 New content (Albums + Tracks) -> notify subscribers, add feed cards, start transcription for tracks
+        # 1 New content (Albums + Songs) -> notify subscribers, add feed cards, start transcription for songs
         song_events_role = iam.Role(
             self, "ContentEventsRole",
             role_name="ContentEventsLambdaRole",
@@ -83,9 +81,8 @@ class SongsStack(Stack):
             role=song_events_role
         )
 
-        for t in [dynamo_db.albums, dynamo_db.songs, dynamo_db.artists, dynamo_db.users, dynamo_db.content_genres,
-                  dynamo_db.subscriptions, dynamo_db.feed, dynamo_db.transcriptions]:
-            t.grant_read_write_data(song_events_fn)
+        for table in (t for t in vars(dynamo_db).values() if isinstance(t, Table)):
+            table.grant_read_write_data(song_events_fn)
         s3.audio_bucket.grant_read(song_events_fn)  # if you kick off Transcribe on S3 media
         s3.images_bucket.grant_read(song_events_fn)
         s3.transcripts_bucket.grant_read_write(song_events_fn)

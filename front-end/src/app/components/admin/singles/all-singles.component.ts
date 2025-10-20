@@ -1,75 +1,111 @@
-import {Component, inject} from '@angular/core';
-import {
-  BoxMissingIconSmallComponent
-} from '../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component';
-import {
-  MatCell,
-  MatCellDef,
-  MatColumnDef,
-  MatHeaderCell, MatHeaderCellDef,
-  MatHeaderRow,
-  MatHeaderRowDef,
-  MatRow, MatRowDef, MatTable
-} from '@angular/material/table';
-import {MatIconButton} from '@angular/material/button';
-import {Router} from '@angular/router';
-import {Song} from '../../../models/Song';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatTable, MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef} from '@angular/material/table';
+import {BoxMissingIconSmallComponent} from '../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component';
 import {CreateSingleDialogComponent} from '../dialogs/single/create-single-dialog.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {ToastrService} from '../../../services/toastr/toastr.service';
+import {PlayerService} from '../../../services/player/player.service';
+import {SongsService} from '../../../services/songs/songs.service';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {Component, inject, OnInit} from '@angular/core';
+import {MatIconButton} from '@angular/material/button';
+import {GenreItem} from '../../../models/GenreItem';
+import {Artist} from '../../../models/Artist';
+import {Song} from '../../../models/Song';
+import {NgIf} from '@angular/common';
+import {lastValueFrom} from 'rxjs';
 
 @Component({
   selector: 'app-all-singles',
   standalone: true,
   imports: [
     BoxMissingIconSmallComponent,
-    MatCell,
-    MatCellDef,
-    MatColumnDef,
-    MatHeaderCell,
-    MatHeaderRow,
-    MatHeaderRowDef,
-    MatIconButton,
-    MatRow,
-    MatRowDef,
-    MatTable,
-    MatHeaderCellDef
+    MatCell, MatCellDef, MatColumnDef,
+    MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef,
+    MatIconButton, MatRow, MatRowDef, MatTable,
+    MatProgressSpinner, NgIf
   ],
   templateUrl: './all-singles.component.html',
   styleUrl: './all-singles.component.scss'
 })
-export class AllSinglesComponent {
-  dialog = inject(MatDialog);
+export class AllSinglesComponent implements OnInit {
+  private readonly songsService = inject(SongsService);
+  private readonly player = inject(PlayerService);
+  private readonly toast = inject(ToastrService);
+  private readonly dialog = inject(MatDialog);
 
-  router = inject(Router);
+  displayedColumns = ['cover', 'name', 'artists', 'genres', 'actions'];
+  singlesDataSource: Song[] = [];
+  loading = false;
 
-  displayedColumns = ['cover', 'name', 'artist', 'genres', 'actions'];
+  ngOnInit() {
+    this.loadSingles();
+  }
 
-  singlesDataSource: Song[] = [
-    { id: '1', no: 1, title: 'Title', album: 'Album', albumId: '1', duration: 420, artist: 'Awesome Artist 123', artistId: '1', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '2', no: 1, title: 'Title', album: 'Album', albumId: '2', duration: 420, artist: 'Awesome Artist 123', artistId: '2', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '3', no: 1, title: 'Title', album: 'Album', albumId: '3', duration: 420, artist: 'Awesome Artist 123', artistId: '3', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '4', no: 1, title: 'Title', album: 'Album', albumId: '4', duration: 420, artist: 'Awesome Artist 123', artistId: '4', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '5', no: 1, title: 'Title', album: 'Album', albumId: '5', duration: 420, artist: 'Awesome Artist 123', artistId: '5', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '6', no: 1, title: 'Title', album: 'Album', albumId: '6', duration: 420, artist: 'Awesome Artist 123', artistId: '6', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '7', no: 1, title: 'Title', album: 'Album', albumId: '7', duration: 420, artist: 'Awesome Artist 123', artistId: '7', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '8', no: 1, title: 'Title', album: 'Album', albumId: '8', duration: 420, artist: 'Awesome Artist 123', artistId: '8', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '9', no: 1, title: 'Title', album: 'Album', albumId: '9', duration: 420, artist: 'Awesome Artist 123', artistId: '9', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '10', no: 1, title: 'Title', album: 'Album', albumId: '10', duration: 420, artist: 'Awesome Artist 123', artistId: '10', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '11', no: 1, title: 'Title', album: 'Album', albumId: '11', duration: 420, artist: 'Awesome Artist 123', artistId: '11', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '12', no: 1, title: 'Title', album: 'Album', albumId: '12', duration: 420, artist: 'Awesome Artist 123', artistId: '12', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '13', no: 1, title: 'Title', album: 'Album', albumId: '13', duration: 420, artist: 'Awesome Artist 123', artistId: '13', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '14', no: 1, title: 'Title', album: 'Album', albumId: '14', duration: 420, artist: 'Awesome Artist 123', artistId: '14', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '15', no: 1, title: 'Title', album: 'Album', albumId: '15', duration: 420, artist: 'Awesome Artist 123', artistId: '15', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '16', no: 1, title: 'Title', album: 'Album', albumId: '16', duration: 420, artist: 'Awesome Artist 123', artistId: '16', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '17', no: 1, title: 'Title', album: 'Album', albumId: '17', duration: 420, artist: 'Awesome Artist 123', artistId: '17', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '18', no: 1, title: 'Title', album: 'Album', albumId: '18', duration: 420, artist: 'Awesome Artist 123', artistId: '18', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-    { id: '19', no: 1, title: 'Title', album: 'Album', albumId: '19', duration: 420, artist: 'Awesome Artist 123', artistId: '19', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
-  ];
+  private loadSingles(): void {
+    this.loading = true;
+    this.songsService.listSongs().subscribe({
+      next: (songs) => {
+        this.singlesDataSource = songs;
+        this.player.loadPlaylist(songs);
+        this.loading = false;
+      },
+      error: () => this.loading = false
+    });
+  }
 
   createNewSingle() {
     const dialogRef: MatDialogRef<CreateSingleDialogComponent, null> = this.dialog.open(CreateSingleDialogComponent, {
-      width: '100vw',
-      minWidth: '1000px'
+      minWidth: '900px'
     });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadSingles();
+        this.toast.success('Success', 'Song successfully created!');
+      }
+    });
+  }
+
+  async deleteSong(song: Song): Promise<void> {
+    console.log(song)
+    try {
+      await lastValueFrom(this.songsService.deleteSong(song.song_id));
+      this.toast.success('Deleted', 'Song deleted successfully');
+      this.loadSingles();
+    } catch {
+      this.toast.error('Error', 'Failed to delete song');
+    }
+  }
+
+  updateSong(song: Song): void {
+    const dialogRef = this.dialog.open(CreateSingleDialogComponent, {
+      minWidth: '900px',
+      data: {
+        song_id: song.song_id,
+        name: song.title,
+        cover_url: song.cover_url,
+        artists: song.artists.map(a => a.name),
+        genres: song.genres.map(g => g.name)
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadSingles();
+        this.toast.success('Updated', 'Song successfully updated!');
+      }
+    });
+  }
+
+  getGenreNames(song: Song): string {
+    return song.genres.map((g: GenreItem) => g.name).join(', ') || '';
+  }
+
+  getArtistNames(song: Song): string {
+    return song.artists.map((a: Artist) => a.name).join(', ') || '';
+  }
+
+  playSong(song: Song): void {
+    this.player.play(song);
   }
 }

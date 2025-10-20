@@ -21,7 +21,7 @@ $orange-palette: (
   50: #cf7930,
   60: #d8945a,
   70: #e2ae83,
-  80: #ecc9ac,
+  80: #cf7930,
   90: #f5e4d6,
   95: #faf2ea,
   98: #fdfaf7,
@@ -134,6 +134,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   color: $pale-text !important;
 }
 
+.mat-mdc-select-panel,
 .mat-datepicker-content {
   background-color: $background !important;
 }

@@ -1,16 +1,18 @@
 <div class="drop-zone"
-  [ngStyle]="!file ? { 'cursor': 'pointer' } : {}"
-  (click)="handleBoxClick(fileInput)">
+     [ngStyle]="!file ? { 'cursor': 'pointer' } : {}"
+     (click)="handleBoxClick(fileInput)">
   <span *ngIf="!file" class="material-symbols-rounded icon">
     upload
   </span>
 
   <div *ngIf="file" class="selected-file">
-    <span class="file-name">Selected file:</span>
-    <span class="file-name">{{ file.name }}</span>
-    <button mat-icon-button (click)="onRemoveFile($event, fileInput)">
+    <span>Selected file:</span>
+    <span class="file-name">
+      {{ file.name }}
+      <button mat-icon-button (click)="onRemoveFile($event, fileInput)">
       <span class="material-symbols-rounded">close</span>
     </button>
+    </span>
   </div>
 
   <input

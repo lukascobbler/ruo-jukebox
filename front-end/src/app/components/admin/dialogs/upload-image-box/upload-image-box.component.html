@@ -1,16 +1,14 @@
-<div
-  class="drop-zone"
-  [ngStyle]="!image ? { 'cursor': 'pointer' } : {}"
-  (click)="handleBoxClick(fileInput)"
->
-  <span *ngIf="!image" class="material-symbols-rounded icon">add_photo_alternate</span>
+<div class="upload-box" (click)="onBoxClick(fileInput)">
+  <ng-container *ngIf="!image; else imagePreview">
+    <span class="material-symbols-rounded icon">add_photo_alternate</span>
+  </ng-container>
 
-  <div *ngIf="image" class="selected-file">
-    <img [src]="image.url" width="192" height="192" alt=""/>
-    <button mat-icon-button (click)="onRemoveImage($event, fileInput)">
+  <ng-template #imagePreview>
+    <img [src]="image?.url" alt="Selected Image" />
+    <button mat-icon-button class="remove-btn" (click)="onRemoveImage($event, fileInput)">
       <span class="material-symbols-rounded">close</span>
     </button>
-  </div>
+  </ng-template>
 
-  <input type="file" #fileInput hidden (change)="onSelectNewImage($event)"/>
+  <input type="file" #fileInput hidden (change)="onSelectNewImage($event)" accept="image/*" />
 </div>

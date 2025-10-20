@@ -1,37 +1,134 @@
-import { Component } from '@angular/core';
+import {UploadImageBoxComponent} from '../upload-image-box/upload-image-box.component';
+import {UploadSongBoxComponent} from '../upload-song-box/upload-song-box.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {Component, inject, ViewChild, Inject, OnInit} from '@angular/core';
+import {ToastrService} from '../../../../services/toastr/toastr.service';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {SongsService} from '../../../../services/songs/songs.service';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatIconButton} from '@angular/material/button';
+import {MatSelect} from '@angular/material/select';
 import {MatInput} from '@angular/material/input';
 import {MatOption} from '@angular/material/core';
-import {MatSelect} from '@angular/material/select';
-import {UploadImageBoxComponent} from '../upload-image-box/upload-image-box.component';
-import {MatDialogRef} from '@angular/material/dialog';
-import {UploadSongBoxComponent} from '../upload-song-box/upload-song-box.component';
+import {FormsModule} from '@angular/forms';
+import {NgIf} from '@angular/common';
+import {lastValueFrom} from 'rxjs';
 
 @Component({
   selector: 'app-single',
+  templateUrl: './create-single-dialog.component.html',
   standalone: true,
   imports: [
     MatFormField,
-    MatIconButton,
-    MatInput,
-    MatLabel,
     MatOption,
     MatSelect,
+    MatLabel,
+    MatInput,
+    MatIconButton,
+    UploadSongBoxComponent,
     UploadImageBoxComponent,
-    UploadSongBoxComponent
+    FormsModule,
+    MatProgressSpinnerModule,
+    NgIf
   ],
-  templateUrl: './create-single-dialog.component.html',
-  styleUrl: './create-single-dialog.component.scss'
+  styleUrls: ['./create-single-dialog.component.scss']
 })
-export class CreateSingleDialogComponent {
-  constructor(public dialogRef: MatDialogRef<CreateSingleDialogComponent, null>) {}
+export class CreateSingleDialogComponent implements OnInit {
+  private readonly songsService = inject(SongsService);
+  private readonly toast = inject(ToastrService);
+  private readonly dialogRef = inject(MatDialogRef<CreateSingleDialogComponent, string | null>);
+  @ViewChild(UploadSongBoxComponent) songBox!: UploadSongBoxComponent;
+  @ViewChild(UploadImageBoxComponent) coverBox!: UploadImageBoxComponent;
 
-  closeDialog() {
-    this.dialogRef.close(null);
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
+
+  selectedArtists: string[] = [];
+  selectedGenres: string[] = [];
+  name = '';
+  isEditMode = false;
+  loading = false;
+
+  ngOnInit() {
+    if (this.data) {
+      this.isEditMode = true;
+      this.name = this.data.name || '';
+      this.selectedArtists = this.data.artists || [];
+      this.selectedGenres = this.data.genres || [];
+    }
   }
 
   onNoClick() {
     this.dialogRef.close(undefined);
+  }
+
+  async createSong() {
+    if (this.isEditMode) {
+      await this.updateSong();
+      return;
+    }
+
+    const mp3File = this.songBox.file;
+    const coverFile = this.coverBox.image?.file;
+
+    if (!mp3File) {
+      this.toast.error('Error', 'Please select a song file');
+      return;
+    }
+
+    this.loading = true;
+    try {
+      const initRes = await lastValueFrom(this.songsService.initUpload({
+        name: this.name,
+        artists: this.selectedArtists,
+        genres: this.selectedGenres,
+        filename: mp3File.name,
+        cover_filename: coverFile?.name
+      }));
+      await fetch(initRes.upload_url, {method: 'PUT', body: mp3File});
+      if (coverFile && initRes.cover_upload_url)
+        await fetch(initRes.cover_upload_url, {method: 'PUT', body: coverFile});
+      await lastValueFrom(this.songsService.completeUpload(initRes.song_id));
+
+      this.toast.success('Success', 'Song successfully created');
+      this.dialogRef.close(initRes.song_id);
+    } catch {
+      this.toast.error('Error', 'Unable to upload the song');
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  private async updateSong() {
+    this.loading = true;
+    try {
+      const newCoverFile = this.coverBox.image?.file;
+      const newAudioFile = this.songBox.file;
+      const hasNewCover = !!newCoverFile;
+      const hasNewAudio = !!newAudioFile;
+
+      const body: any = {
+        name: this.name,
+        artist_ids: this.selectedArtists,
+        genre_ids: this.selectedGenres,
+      };
+
+      if (hasNewCover) body.cover_filename = newCoverFile.name;
+      if (hasNewAudio) body.audio_filename = newAudioFile.name;
+
+      const updateRes = await lastValueFrom(this.songsService.updateSong(this.data.song_id, body));
+
+      if (hasNewCover && updateRes.cover_upload_url)
+        await fetch(updateRes.cover_upload_url, {method: 'PUT', body: newCoverFile});
+
+      if (hasNewAudio && updateRes.audio_upload_url)
+        await fetch(updateRes.audio_upload_url, {method: 'PUT', body: newAudioFile});
+
+      this.toast.success('Success', 'Song updated successfully');
+      this.dialogRef.close(this.data.song_id);
+    } catch {
+      this.toast.error('Error', 'Failed to update song');
+    } finally {
+      this.loading = false;
+    }
   }
 }
