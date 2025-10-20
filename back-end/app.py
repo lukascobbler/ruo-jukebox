@@ -1,3 +1,4 @@
+from iac.domain_stacks.email_test_stack import EmailTestStack
 from iac.domain_stacks.subscriptions_stack import SubscriptionsStack
 from iac.domain_stacks.interactions_stack import InteractionsStack
 from iac.domain_stacks.playlists_stack import PlaylistsStack
@@ -11,6 +12,7 @@ from iac.api_gateway_stack import ApiGatewayStack
 from iac.auth_layer_stack import AuthLayerStack
 from iac.dynamo_db_stack import DynamoDbStack
 from iac.cognito_stack import CognitoStack
+from iac.email_stack import EmailStack
 from aws_cdk import App, Environment
 from iac.s3_stack import S3Stack
 import os
@@ -24,6 +26,7 @@ dynamo_db_stack = DynamoDbStack(app, "DynamoDbStack", env=ENV)
 s3_stack = S3Stack(app, "S3Stack", env=ENV)
 shared_layer_stack = SharedLayerStack(app, "SharedLayerStack", env=ENV)
 auth_layer_stack = AuthLayerStack(app, "AuthLayerStack", env=ENV)
+email_stack = EmailStack(app, "EmailStack", env=ENV)
 
 env_vars = {
     "AUDIO_BUCKET": s3_stack.audio_bucket.bucket_name,
@@ -45,12 +48,14 @@ env_vars = {
     "TRANSCRIPTIONS_TABLE": dynamo_db_stack.transcriptions.table_name,
     "USER_POOL_ID": cognito_stack.user_pool.user_pool_id,
     "USER_POOL_CLIENT_ID": cognito_stack.app_client.user_pool_client_id,
-    # Email (SES verified sender) TODO wtf
-    "FROM_EMAIL": "no-reply@jukebox.example.com",
+    "FROM_EMAIL": "noreply@jb.moma.rs",
 }
 
 # API Gateway
 api_gateway = ApiGatewayStack(app, "ApiGatewayStack", user_pool=cognito_stack.user_pool, env=ENV)
+
+# Email test stack
+email_test_stack = EmailTestStack(app, "EmailTestStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, api_gateway, email_stack, env_vars, env=ENV)
 
 # Auth stack
 auth_stack = AuthStack(app, "AuthStack", cognito_stack, dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, api_gateway, env_vars, env=ENV)
