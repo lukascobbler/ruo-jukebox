@@ -1,8 +1,6 @@
-import os
-import json
-import boto3
 from boto3.dynamodb.conditions import Key
 from pre_authorize import pre_authorize
+import boto3, json, os
 
 dynamodb = boto3.resource("dynamodb")
 genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
