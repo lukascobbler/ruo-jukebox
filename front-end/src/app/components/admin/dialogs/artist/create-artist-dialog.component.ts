@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, ViewChild, inject } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatOption } from '@angular/material/core';
@@ -40,6 +40,7 @@ const ALLOWED_CT = new Set([
 export class CreateArtistDialogComponent {
   @Input() genres: GenreItem[] = [];
   selectedGenreIds: string[] = [];
+  @ViewChild('imgBox') imageBox?: UploadImageBoxComponent;
 
   private fb = inject(FormBuilder);
   form = this.fb.group({
@@ -47,7 +48,6 @@ export class CreateArtistDialogComponent {
     biography: ['', [Validators.required, Validators.maxLength(5000)]],
   });
 
-  selectedFile?: File;
   busy = false;
 
   constructor(
@@ -55,18 +55,6 @@ export class CreateArtistDialogComponent {
     private artistsService: ArtistsService,
     public toast: ToastrService
   ) {}
-
-  onFileChosen(file: File | null) {
-    if (!file) {
-      this.selectedFile = undefined;
-      return;
-    }
-    if (!ALLOWED_CT.has(file.type)) {
-      this.toast.error('Invalid image', 'Allowed: JPG, PNG, WEBP, AVIF');
-      return;
-    }
-    this.selectedFile = file;
-  }
 
   trackByGenreId(_i: number, g: GenreItem) {
     return g.id;
@@ -83,6 +71,8 @@ export class CreateArtistDialogComponent {
     const name = this.form.value.name!.trim();
     const biography = this.form.value.biography!.trim();
     const genres = this.selectedGenreIds.slice();
+    const file = this.imageBox?.image?.file ?? null;
+
 
     this.busy = true;
     try {
@@ -91,8 +81,8 @@ export class CreateArtistDialogComponent {
       );
       if (!created) throw new Error('Create artist failed');
 
-      if (this.selectedFile) {
-        const ct = this.selectedFile.type;
+      if (file) {
+        const ct = file.type;
         console.log('ct (PUT & presign):', ct);
         const init = await firstValueFrom(
           this.artistsService.initPictureUpload(created.id, ct)
@@ -101,7 +91,7 @@ export class CreateArtistDialogComponent {
           throw new Error('Init upload failed');
 
         await firstValueFrom(
-          this.artistsService.uploadToS3(init.uploadUrl, this.selectedFile, ct)
+          this.artistsService.uploadToS3(init.uploadUrl, file, ct)
         );
         await firstValueFrom(
           this.artistsService.completePictureUpload(created.id, init.key)
@@ -124,10 +114,5 @@ export class CreateArtistDialogComponent {
   }
   onNoClick() {
     this.dialogRef.close(undefined);
-  }
-  onFileChange(e: Event) {
-    const input = e.target as HTMLInputElement | null;
-    const file = input?.files?.item(0) ?? null;
-    this.onFileChosen(file);
   }
 }
