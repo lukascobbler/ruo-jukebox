@@ -21,6 +21,7 @@ import {Artist} from '../../../../models/Artist';
 import {NgIf} from '@angular/common';
 import {AlbumsService} from '../../../../services/albums/albums.service';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
+import {SongsService} from '../../../../services/songs/songs.service';
 
 @Component({
   selector: 'app-album-details',
@@ -47,6 +48,7 @@ export class AlbumDetailsComponent {
   dialog = inject(MatDialog);
   albumsService = inject(AlbumsService);
   toastrService = inject(ToastrService);
+  songsService = inject(SongsService);
 
   loading = true;
   displayedColumns = ['name', 'artist', 'genres', 'actions'];
@@ -81,6 +83,11 @@ export class AlbumDetailsComponent {
     ]
   }
 
+  private loadAlbumSongs(): void {
+    this.loading = true;
+    // todo
+  }
+
   getSongGenres(song: Song) {
     return song.genres.map(g => g['name']).join(', ');
   }
@@ -104,6 +111,13 @@ export class AlbumDetailsComponent {
     const dialogRef: MatDialogRef<CreateAlbumSongDialogComponent, null> = this.dialog.open(CreateAlbumSongDialogComponent, {
       width: '250px',
       minWidth: '22vw'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadAlbumSongs();
+        this.toastrService.success('Success', 'Song successfully created!');
+      }
     });
   }
 }

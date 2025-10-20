@@ -45,7 +45,6 @@ export class CreateAlbumDialogComponent {
   dialogRef = inject(MatDialogRef<CreateAlbumDialogComponent, string | null | undefined>);
   selectedArtistId = '';
   selectedGenreIds: string[] = [];
-  pictureFile?: File;
 
   selectedArtists: string[] = [];
   selectedGenres: string[] = [];

@@ -77,8 +77,8 @@ export class AllAlbumsComponent implements OnInit {
   }
 
   createNewAlbum() {
-    const dialogRef: MatDialogRef<CreateSingleDialogComponent, string> = this.dialog.open(CreateSingleDialogComponent, {
-      minWidth: '900px'
+    const dialogRef: MatDialogRef<CreateAlbumDialogComponent, string> = this.dialog.open(CreateAlbumDialogComponent, {
+      minWidth: '500px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
