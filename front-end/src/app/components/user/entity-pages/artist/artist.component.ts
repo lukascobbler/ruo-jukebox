@@ -30,7 +30,7 @@ export class ArtistComponent implements OnInit {
   router = inject(Router);
   auth = inject(AuthService);
 
-  artist: Artist = {id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: true};
+  artist: Artist = {id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: true, pictureKey: null, pictureUrl: null};
 
   singles: Song[] = [
     { id: '1', no: 1, title: 'Title', album: 'Album', albumId: '1', duration: 420, artist: 'Awesome Artist 123', artistId: '1', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },

@@ -22,6 +22,7 @@ import { CreateArtistDialogComponent } from '../dialogs/artist/create-artist-dia
 import { GenresService } from '../../../services/genres/genres.service';
 import { ToastrService } from '../../../services/toastr/toastr.service';
 import { GenreItem } from '../../../models/GenreItem';
+import { ArtistsService } from '../../../services/artists/artists.service';
 
 @Component({
   selector: 'app-all-artists',
@@ -48,244 +49,24 @@ export class AllArtistsComponent implements OnInit {
   displayedColumns = ['name', 'genres', 'biography', 'actions'];
   private genresService = inject(GenresService);
   private toast = inject(ToastrService);
-  artistsDataSource: Artist[] = [
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-    {
-      id: '1',
-      name: 'Awesome artist',
-      genres: [
-        { id: '1', name: 'jazz' },
-        { id: '2', name: 'country' },
-        { id: '3', name: 'rock' },
-      ],
-      biography:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non ante nisi. Duis luctus purus at quam cursus lobortis.',
-    },
-  ];
+  private artistsService = inject(ArtistsService);
+  artistsDataSource: Artist[] = [];
 
   genres: GenreItem[] = [];
 
   ngOnInit(): void {
+    this.fetchArtists();
     this.fetchGenres();
+  }
+
+  private fetchArtists(): void {
+    this.artistsService.getAll().subscribe({
+      next: (items) => { this.artistsDataSource = items ?? []; },
+      error: (err) => {
+        console.error('Failed to load artists', err);
+        this.toast.error('Artists error', this.extractError(err));
+      }
+    });
   }
 
   private fetchGenres(): void {

@@ -1,27 +1,29 @@
-import os
+import os, json
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
-from botocore.exceptions import ClientError
 from pre_authorize import pre_authorize
 
 dynamodb = boto3.resource("dynamodb")
-s3 = boto3.client("s3")
 
 CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+    "Access-Control-Allow-Methods": "OPTIONS,GET",
+    "Content-Type": "application/json",
 }
 
 artists_table        = dynamodb.Table(os.environ["ARTISTS_TABLE"])
 content_genres_table = dynamodb.Table(os.environ["CONTENT_GENRES_TABLE"])
 genres_table         = dynamodb.Table(os.environ["GENRES_TABLE"])
-images_bucket        = os.environ["IMAGES_BUCKET"]
 
 def _scan_all_artists() -> list[dict]:
     items, lek = [], None
     while True:
-        kwargs = {}
+        kwargs = {
+            # Only read what we need; we won’t return picture anyway
+            "ProjectionExpression": "artist_id, #n, Biography",
+            "ExpressionAttributeNames": {"#n": "Name"},
+        }
         if lek:
             kwargs["ExclusiveStartKey"] = lek
         resp = artists_table.scan(**kwargs)
@@ -29,10 +31,11 @@ def _scan_all_artists() -> list[dict]:
         lek = resp.get("LastEvaluatedKey")
         if not lek:
             break
+    # deterministic order (by name)
+    items.sort(key=lambda it: (it.get("Name") or "").lower())
     return items
 
 def _all_genre_names() -> dict[str, str]:
-    """Query all genres once and return {genre_id: Name}."""
     items, lek = [], None
     while True:
         kwargs = {
@@ -50,10 +53,6 @@ def _all_genre_names() -> dict[str, str]:
     return {it["genre_id"]: it.get("Name", "") for it in items}
 
 def _all_artist_genre_links() -> dict[str, list[str]]:
-    """
-    Scan ContentGenres once, keep only rows where entity starts with 'ARTIST~',
-    and build {artist_id: [genre_id, ...]} mapping.
-    """
     mapping: dict[str, list[str]] = {}
     lek = None
     while True:
@@ -66,48 +65,31 @@ def _all_artist_genre_links() -> dict[str, list[str]]:
             kwargs["ExclusiveStartKey"] = lek
         resp = content_genres_table.scan(**kwargs)
         for it in resp.get("Items", []):
-            aid = it["entity"]
-            gid = it["genre"]
-            mapping.setdefault(aid, []).append(gid)
+            mapping.setdefault(it["entity"], []).append(it["genre"])
         lek = resp.get("LastEvaluatedKey")
         if not lek:
             break
     return mapping
 
-def _presigned_picture_url(key: str | None) -> str | None:
-    if not key:
-        return None
-    try:
-        return s3.generate_presigned_url(
-            ClientMethod="get_object",
-            Params={"Bucket": images_bucket, "Key": key},
-            ExpiresIn=3600,  # 1h
-        )
-    except ClientError:
-        return None
-
 @pre_authorize(['Admin', 'LoggedInUser'])
 def lambda_handler(event, context):
     artist_items = _scan_all_artists()
-
     gid_to_name = _all_genre_names()
-
     artist_to_genres = _all_artist_genre_links()
 
     out = []
     for it in artist_items:
         aid = it["artist_id"]
-        picture_key = it.get("Picture")
         out.append({
             "id": aid,
             "name": it.get("Name", ""),
             "biography": it.get("Biography", "") or "",
-            "pictureKey": picture_key,
-            "pictureUrl": _presigned_picture_url(picture_key),
+            "pictureKey": None,         
+            "pictureUrl": None,        
             "genres": [
                 {"id": gid, "name": gid_to_name.get(gid, "")}
                 for gid in artist_to_genres.get(aid, [])
             ],
         })
 
-    return {"statusCode": 200, "headers": CORS_HEADERS, "body": out}
+    return {"statusCode": 200, "headers": CORS_HEADERS, "body": json.dumps(out)}

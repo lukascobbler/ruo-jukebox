@@ -21,14 +21,25 @@
     </div>
     <div>
       <p class="big-text">Discover artists</p>
-      <div class="discover-artists horizontal-scroller">
-        <div *ngFor="let artist of artists" class="single-artist">
-          <button class="icon-button" (click)="router.navigate(['artist', artist.id])">
-            <app-round-missing-icon-x-large [icon_name]="'artist'" />
-          </button>
-          <p class="artist-name">{{ artist.name }}</p>
-        </div>
-      </div>
+<div class="discover-artists horizontal-scroller">
+  <div *ngFor="let artist of artists" class="single-artist">
+    <button class="icon-button" (click)="router.navigate(['artist', artist.id])">
+      <ng-container *ngIf="artist.pictureUrl; else missingArtist">
+        <img
+          [src]="artist.pictureUrl!"
+          [alt]="artist.name"
+          class="artist-avatar"
+          width="192"
+          height="192"
+        />
+      </ng-container>
+      <ng-template #missingArtist>
+        <app-round-missing-icon-x-large [icon_name]="'artist'"></app-round-missing-icon-x-large>
+      </ng-template>
+    </button>
+    <p class="artist-name">{{ artist.name }}</p>
+  </div>
+</div>
     </div>
   </div>
 </div>

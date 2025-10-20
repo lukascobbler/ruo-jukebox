@@ -119,3 +119,8 @@ p {
     text-overflow: ellipsis;
   }
 }
+.artist-avatar {
+  border-radius: 4px;
+  object-fit: cover;
+  display: block;
+}

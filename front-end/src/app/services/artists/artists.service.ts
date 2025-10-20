@@ -1,12 +1,13 @@
-import {inject, Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Observable, map} from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+import { Artist } from '../../models/Artist';
 
 export interface CreateArtistRequest {
   name: string;
   biography: string;
-  genres: string[];     // array of GENRE~uuid
-  pictureKey?: string;  // usually omit; picture is attatched later via upload flow
+  genres: string[]; // array of GENRE~uuid
+  pictureKey?: string; // usually omit; picture is attatched later via upload flow
 }
 export interface CreateArtistResponse {
   id: string;
@@ -15,10 +16,18 @@ export interface CreateArtistResponse {
   pictureKey?: string | null;
   genres: { id: string; name: string }[];
 }
-export interface InitUploadResp { uploadUrl: string; key: string; expiresIn: number; }
-export interface CompleteUploadResp { id: string; pictureKey: string; saved: boolean; }
+export interface InitUploadResp {
+  uploadUrl: string;
+  key: string;
+  expiresIn: number;
+}
+export interface CompleteUploadResp {
+  id: string;
+  pictureKey: string;
+  saved: boolean;
+}
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class ArtistsService {
   private readonly API_URL = 'https://api.jb.moma.rs';
   private http = inject(HttpClient);
@@ -26,24 +35,85 @@ export class ArtistsService {
   create(req: CreateArtistRequest): Observable<CreateArtistResponse> {
     return this.http
       .post<CreateArtistResponse | string>(`${this.API_URL}/artists`, req)
-      .pipe(map(r => (typeof r === 'string' ? JSON.parse(r) : r)));
+      .pipe(map((r) => (typeof r === 'string' ? JSON.parse(r) : r)));
   }
 
-  initPictureUpload(artistId: string, contentType: string): Observable<InitUploadResp> {
+  initPictureUpload(
+    artistId: string,
+    contentType: string
+  ): Observable<InitUploadResp> {
     return this.http
-      .post<InitUploadResp | string>(`${this.API_URL}/artists/${encodeURIComponent(artistId)}/picture/init_upload`, {contentType})
-      .pipe(map(r => (typeof r === 'string' ? JSON.parse(r) : r)));
+      .post<InitUploadResp | string>(
+        `${this.API_URL}/artists/${encodeURIComponent(
+          artistId
+        )}/picture/init_upload`,
+        { contentType }
+      )
+      .pipe(map((r) => (typeof r === 'string' ? JSON.parse(r) : r)));
   }
 
-  completePictureUpload(artistId: string, key: string): Observable<CompleteUploadResp> {
+  completePictureUpload(
+    artistId: string,
+    key: string
+  ): Observable<CompleteUploadResp> {
     return this.http
-      .post<CompleteUploadResp | string>(`${this.API_URL}/artists/${encodeURIComponent(artistId)}/picture/complete_upload`, {key})
-      .pipe(map(r => (typeof r === 'string' ? JSON.parse(r) : r)));
+      .post<CompleteUploadResp | string>(
+        `${this.API_URL}/artists/${encodeURIComponent(
+          artistId
+        )}/picture/complete_upload`,
+        { key }
+      )
+      .pipe(map((r) => (typeof r === 'string' ? JSON.parse(r) : r)));
   }
 
   // PUT the file to the presigned URL (no auth headers needed)
-  uploadToS3(uploadUrl: string, file: File, contentType: string): Observable<void> {
-    const headers = new HttpHeaders({'Content-Type': contentType});
-    return this.http.put(uploadUrl, file, {headers, responseType: 'text'}).pipe(map(() => void 0));
+  uploadToS3(
+    uploadUrl: string,
+    file: File,
+    contentType: string
+  ): Observable<void> {
+    const headers = new HttpHeaders({ 'Content-Type': contentType });
+    return this.http
+      .put(uploadUrl, file, { headers, responseType: 'text' })
+      .pipe(map(() => void 0));
   }
+
+  getAll(): Observable<Artist[]> {
+    return this.http.get<Artist[] | string>(`${this.API_URL}/artists`).pipe(
+      map((res) =>
+        Array.isArray(res) ? res : (JSON.parse(res as string) as Artist[])
+      ),
+      map((items) =>
+        items.map((a) => ({
+          id: a.id,
+          name: a.name,
+          biography: a.biography,
+          genres: a.genres,
+          pictureKey: null,
+          pictureUrl: null,
+          isSubscribed: false,
+        }))
+      )
+    );
+  }
+  getByGenre(genreId: string) {
+    return this.http
+      .get<Artist[] | string>(
+        `${this.API_URL}/artists/by-genre/${encodeURIComponent(genreId)}`
+      )
+      .pipe(
+        map((res) =>
+          Array.isArray(res) ? res : (JSON.parse(res as string) as Artist[])
+        )
+      );
+  }
+
+  searchByName(q: string) {
+    const url = `${this.API_URL}/artists/search?q=${encodeURIComponent(q)}`;
+    return this.http.get<Artist[] | string>(url).pipe(
+      map(res => Array.isArray(res) ? res : JSON.parse(res as string) as Artist[])
+    );
+  }
+
+
 }
