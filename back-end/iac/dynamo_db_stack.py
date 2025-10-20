@@ -38,11 +38,29 @@ class DynamoDbStack(Stack):
             write_capacity=1
         )
 
-        # fast lookup by artist
         self.albums.add_global_secondary_index(
-            index_name="byArtist",
-            partition_key=ddb.Attribute(name="primary_artist_id", type=ddb.AttributeType.STRING),
+            index_name="byReleased",
+            partition_key=ddb.Attribute(name="released", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="created_at", type=ddb.AttributeType.NUMBER),
+        )
+
+        # many to many artists on albums
+        self.album_artists = ddb.Table(
+            self, "AlbumArtists",
+            table_name=PhysicalName.GENERATE_IF_NEEDED,
+            partition_key=ddb.Attribute(name="album_id", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
+            removal_policy=RemovalPolicy.DESTROY,
+            billing_mode=ddb.BillingMode.PROVISIONED,
+            read_capacity=1,
+            write_capacity=1
+        )
+
+        # getting all tracks for an artist
+        self.album_artists.add_global_secondary_index(
+            index_name="byArtist",
+            partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="album_id", type=ddb.AttributeType.STRING),
         )
 
         self.songs = ddb.Table(

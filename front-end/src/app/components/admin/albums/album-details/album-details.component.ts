@@ -12,11 +12,12 @@ import {
   MatRow, MatRowDef, MatTable
 } from "@angular/material/table";
 import {MatIconButton} from "@angular/material/button";
-import {Album} from '../../../../models/Album';
+import {Album} from '../../../../models/album/Album';
 import {Song} from '../../../../models/Song';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {CreateAlbumDialogComponent} from '../../dialogs/album/create-album-dialog.component';
 import {CreateSongDialogComponent} from '../../dialogs/song/create-song-dialog.component';
+import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-album-details',
@@ -33,7 +34,8 @@ import {CreateSongDialogComponent} from '../../dialogs/song/create-song-dialog.c
     MatRow,
     MatRowDef,
     MatTable,
-    MatHeaderCellDef
+    MatHeaderCellDef,
+    NgIf
   ],
   templateUrl: './album-details.component.html',
   styleUrl: './album-details.component.scss'
@@ -48,6 +50,7 @@ export class AlbumDetailsComponent {
     name: 'Awesome album',
     artist: 'Awesome artist',
     artistId: '1',
+    released: false,
     genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}],
     songs: [
       { id: '1', no: 1, title: 'Title', album: 'Album', albumId: '1', duration: 420, artist: 'Awesome Artist 123', artistId: '1', lyrics: 'No lyrics found', genres: [{id: '1', name: 'rock'}, {id: '1', name: 'jazz'}, {id: '1', name: 'conutry'}] },
@@ -77,7 +80,7 @@ export class AlbumDetailsComponent {
   }
 
   createNewSong() {
-    const dialogRef: MatDialogRef<CreateAlbumDialogComponent, null> = this.dialog.open(CreateSongDialogComponent, {
+    const dialogRef: MatDialogRef<CreateSongDialogComponent, null> = this.dialog.open(CreateSongDialogComponent, {
       width: '250px',
       minWidth: '22vw'
     });

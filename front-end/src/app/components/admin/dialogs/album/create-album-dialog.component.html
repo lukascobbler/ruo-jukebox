@@ -6,28 +6,29 @@
   <div class="info-and-picture">
     <mat-form-field appearance="outline">
       <mat-label>Name</mat-label>
-      <input matInput/>
+      <input matInput [(ngModel)]="name" />
     </mat-form-field>
+
     <mat-form-field appearance="outline">
-      <mat-select placeholder="Artist">
-        <mat-option [value]="'artist1'">Awesome artist 1</mat-option>
-        <mat-option [value]="'artist2'">Awesome artist 2</mat-option>
-        <mat-option [value]="'artist3'">Awesome artist 3</mat-option>
-        <mat-option [value]="'artist4'">Awesome artist 4</mat-option>
+      <mat-label>Artist</mat-label>
+      <mat-select [(ngModel)]="selectedArtistId" placeholder="Select artist">
+        <mat-option *ngFor="let artist of availableArtists" [value]="artist.id">
+          {{ artist.name }}
+        </mat-option>
       </mat-select>
     </mat-form-field>
+
     <mat-form-field appearance="outline">
-      <mat-select placeholder="Genres">
-        <mat-option [value]="'rock'">Rock</mat-option>
-        <mat-option [value]="'jazz'">Jazz</mat-option>
-        <mat-option [value]="'classical'">Classical</mat-option>
-        <mat-option [value]="'pop'">Pop</mat-option>
+      <mat-label>Genres</mat-label>
+      <mat-select [(ngModel)]="selectedGenreIds" multiple placeholder="Select genres">
+        <mat-option *ngFor="let genre of availableGenres" [value]="genre.id">
+          {{ genre.name }}
+        </mat-option>
       </mat-select>
     </mat-form-field>
+
     <app-upload-image-box class="picture"></app-upload-image-box>
   </div>
 
-  <button (click)="closeDialog()" [disabled]="false" class="orange-button finish">
-    Create
-  </button>
+  <button (click)="confirm()" class="orange-button finish">Create</button>
 </div>

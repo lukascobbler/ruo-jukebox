@@ -22,6 +22,7 @@ class AlbumsStack(Stack):
             "AlbumsList": "services/albums/list",
             "AlbumsGet": "services/albums/get",
             "AlbumsUpdate": "services/albums/update",
+            "AlbumsRelease": "services/albums/release",
             "AlbumsDelete": "services/albums/delete",
             "AlbumsCoverInit": "services/albums/init_cover_upload",
             "AlbumsCoverDone": "services/albums/complete_cover"
@@ -36,9 +37,10 @@ class AlbumsStack(Stack):
         albums.add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsCreate"]), **api.auth_kwargs)
         albums.add_method("GET", apigw.LambdaIntegration(self.lambdas["AlbumsList"]), **api.auth_kwargs)
 
-        albums.add_resource("init-cover-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsCoverInit"]), **api.auth_kwargs)
-        albums.add_resource("complete-cover").add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsCoverDone"]), **api.auth_kwargs)
+        albums.add_resource("init-cover-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsCoverInit"]), **api.auth_kwargs)  # todo
+        albums.add_resource("complete-cover").add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsCoverDone"]), **api.auth_kwargs)  # todo
 
         album_id.add_method("GET", apigw.LambdaIntegration(self.lambdas["AlbumsGet"]), **api.auth_kwargs)
-        album_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["AlbumsUpdate"]), **api.auth_kwargs)
-        album_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["AlbumsDelete"]), **api.auth_kwargs)
+        album_id.add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsRelease"]), **api.auth_kwargs)  # todo
+        album_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["AlbumsUpdate"]), **api.auth_kwargs)  # todo
+        album_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["AlbumsDelete"]), **api.auth_kwargs)  # todo

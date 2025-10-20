@@ -1,5 +1,5 @@
-import {Song} from './Song';
-import {GenreItem} from './GenreItem';
+import {Song} from '../Song';
+import {GenreItem} from '../GenreItem';
 
 export interface Album {
   id: string;
@@ -7,6 +7,7 @@ export interface Album {
   picture?: Blob;
   artist: string;
   artistId: string;
+  released: boolean;
   genres: GenreItem[];
   songs?: Song[]; // this field should be missing when an album is
                   // requested as an entity not on the individual album page
