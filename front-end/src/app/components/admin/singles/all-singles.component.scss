@@ -24,6 +24,14 @@
 .cover-picture {
   margin-top: 6px;
   margin-bottom: 6px;
+  width: 52.5px;
+  height: 52.5px;
+  border-radius: 5px;
+}
+
+.cover-no-picture {
+  margin-top: 6px;
+  margin-bottom: 6px;
 }
 
 .nowrap-text {
@@ -36,27 +44,44 @@
   font-variation-settings: "FILL" 1;
 }
 
+.picture {
+  width: 35px;
+  height: 35px;
+  border-radius: 4px;
+  background: $white2 none;
+  color: $white4;
+  transform-origin: top left;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  transform: scale(1.5);
+}
+
+
 mat-header-cell.cover,
 mat-cell.cover {
   flex: 0 0 7%;
+  min-width: 80px;
+  justify-content: center !important;
 }
 
 mat-header-cell.name,
 mat-cell.name {
-  flex: 0 0 24%;
+  flex: 1 1 24%;
 }
 
-mat-header-cell.artist,
-mat-cell.artist {
-  flex: 0 0 24%;
+mat-header-cell.artists,
+mat-cell.artists {
+  flex: 1 1 24%;
 }
 
 mat-header-cell.genres,
 mat-cell.genres {
-  flex: 0 0 30%;
+  flex: 1 1 30%;
 }
 
 mat-header-cell.actions,
 mat-cell.actions {
   flex: 0 0 15%;
+  min-width: 150px;
 }

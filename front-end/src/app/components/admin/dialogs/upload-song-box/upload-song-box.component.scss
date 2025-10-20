@@ -6,26 +6,39 @@
   justify-content: center;
   align-items: center;
   height: 100%;
+  border: 3px solid $edge;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: $card;
+
+    .icon {
+      color: $card;
+    }
+  }
 }
 
 .selected-file {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 8px;
 }
 
 .file-name {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
   font-size: 14px;
   color: $white;
   text-align: center;
-  max-width: 200px;
-
+  max-width: 300px;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;
-
   -webkit-line-clamp: 3;
-
   white-space: normal;
   word-break: break-word;
   overflow-wrap: anywhere;
@@ -34,4 +47,5 @@
 .icon {
   transform: scale(3);
   color: $edge;
+  transition: color 0.2s;
 }

@@ -63,6 +63,13 @@ class DynamoDbStack(Stack):
             sort_key=ddb.Attribute(name="song_no", type=ddb.AttributeType.NUMBER)
         )
 
+        # fast lookup for singles
+        self.songs.add_global_secondary_index(
+            index_name="byHasAlbum",
+            partition_key=ddb.Attribute(name="has_album", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="created_at", type=ddb.AttributeType.NUMBER),
+        )
+
         self.genres = ddb.Table(
             self, "Genres",
             table_name=PhysicalName.GENERATE_IF_NEEDED,

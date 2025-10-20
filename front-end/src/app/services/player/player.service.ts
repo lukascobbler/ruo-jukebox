@@ -1,0 +1,75 @@
+import {Injectable} from '@angular/core';
+import {BehaviorSubject} from 'rxjs';
+import {Song} from '../../models/Song';
+
+@Injectable({providedIn: 'root'})
+export class PlayerService {
+  private audio = new Audio();
+  private playlist: Song[] = [];
+  private index = 0;
+
+  private currentSongSubject = new BehaviorSubject<Song | null>(null);
+  currentSong$ = this.currentSongSubject.asObservable();
+
+  loadPlaylist(songs: Song[]) {
+    this.playlist = songs;
+  }
+
+  play(song?: Song) {
+    if (song) {
+      this.index = this.playlist.findIndex(s => s.song_id === song.song_id);
+      this.audio.src = song.audio_url;
+      this.audio.load();
+      this.audio.play();
+      console.log(song)
+      this.currentSongSubject.next(song);
+    } else if (this.audio.paused) {
+      this.audio.play();
+    } else {
+      this.audio.pause();
+    }
+  }
+
+  pause() {
+    this.audio.pause();
+  }
+
+  next() {
+    if (this.playlist.length === 0) return;
+    this.index = (this.index + 1) % this.playlist.length;
+    this.play(this.playlist[this.index]);
+  }
+
+  previous() {
+    if (this.playlist.length === 0) return;
+    this.index = (this.index - 1 + this.playlist.length) % this.playlist.length;
+    this.play(this.playlist[this.index]);
+  }
+
+  seekTo(percent: number) {
+    if (this.audio.duration) {
+      this.audio.currentTime = (percent / 100) * this.audio.duration;
+    }
+  }
+
+  getProgressPercent(): number {
+    if (!this.audio.duration) return 0;
+    return (this.audio.currentTime / this.audio.duration) * 100;
+  }
+
+  onTimeUpdate(callback: (progress: number) => void) {
+    this.audio.ontimeupdate = () => callback(this.getProgressPercent());
+  }
+
+  isPlaying(): boolean {
+    return !this.audio.paused;
+  }
+
+  getCurrentTime(): number {
+    return this.audio.currentTime || 0;
+  }
+
+  getDuration(): number {
+    return this.audio.duration || 0;
+  }
+}

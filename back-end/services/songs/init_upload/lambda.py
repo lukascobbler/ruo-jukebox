@@ -1,12 +1,15 @@
-from datetime import datetime, timezone
-import json, os, uuid, boto3
+from boto3.dynamodb.conditions import Key
+import json, os, boto3
 
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client("s3")
 
-SONGS_TABLE = os.environ["SONGS_TABLE"]
+SONGS_TABLE = dynamodb.Table(os.environ["SONGS_TABLE"])
+SONG_ARTISTS_TABLE = dynamodb.Table(os.environ["SONG_ARTISTS_TABLE"])
+CONTENT_GENRES_TABLE = dynamodb.Table(os.environ["CONTENT_GENRES_TABLE"])
 AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
 IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
+TRANSCRIPTS_BUCKET = os.environ.get("TRANSCRIPTS_BUCKET", "")
 
 CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*",
@@ -14,43 +17,58 @@ CORS_HEADERS = {
     "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE"
 }
 
+
 def lambda_handler(event, context):
-    body = json.loads(event.get("body", "{}"))
-    song_id = str(uuid.uuid4())
-    filename = body.get("filename")
-    cover_filename = body.get("cover_filename")
+    try:
+        song_id = event.get("pathParameters", {}).get("id")
+        if not song_id:
+            return _response(400, {"error": "Missing song ID"})
 
-    if not filename:
-        return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Missing filename"})}
+        res = SONGS_TABLE.get_item(Key={"song_id": song_id})
+        item = res.get("Item")
+        if not item:
+            return _response(404, {"error": "Song not found"})
 
-    audio_url = s3.generate_presigned_url(
-        "put_object",
-        Params={"Bucket": AUDIO_BUCKET, "Key": f"songs/{song_id}/{filename}"},
-        ExpiresIn=3600
-    )
+        # 1. Delete related records from SONG_ARTISTS_TABLE
+        _delete_related_items(SONG_ARTISTS_TABLE, "song_id", song_id, "artist_id")
 
-    response = {
-        "song_id": song_id,
-        "upload_url": audio_url
-    }
+        # 2. Delete related records from CONTENT_GENRES_TABLE
+        _delete_related_items(CONTENT_GENRES_TABLE, "entity", song_id, "genre")
 
-    if cover_filename:
-        cover_url = s3.generate_presigned_url(
-            "put_object",
-            Params={"Bucket": IMAGES_BUCKET, "Key": f"songs/{song_id}/cover/{cover_filename}"},
-            ExpiresIn=3600
-        )
-        response["cover_upload_url"] = cover_url
+        # 3. Delete from DynamoDB main SONGS_TABLE
+        SONGS_TABLE.delete_item(Key={"song_id": song_id})
 
-    dynamodb.Table(SONGS_TABLE).put_item(
-        Item={
-            "song_id": song_id,
-            "name": body.get("name"),
-            "artist_ids": body.get("artist_ids", []),
-            "genre_ids": body.get("genre_ids", []),
-            "status": "UPLOADING",
-            "created_at": datetime.now(timezone.utc).isoformat()
-        }
-    )
+        # 4. Delete S3 files if keys exist
+        for bucket, key in [
+            (AUDIO_BUCKET, item.get("audio_key")),
+            (IMAGES_BUCKET, item.get("cover_key")),
+            (TRANSCRIPTS_BUCKET, item.get("transcription_key")),
+        ]:
+            if key:
+                _safe_delete_s3(bucket, key)
 
-    return {"statusCode": 200, "headers": CORS_HEADERS, "body": json.dumps(response)}
+        return _response(200, {"message": "Song and related data deleted successfully"})
+
+    except Exception as e:
+        return _response(500, {"error": str(e)})
+
+
+def _delete_related_items(table, key_name, key_value, attr_name):
+    res = table.query(KeyConditionExpression=Key(key_name).eq(key_value))
+    items = res.get("Items", [])
+    if not items: return
+    with table.batch_writer() as batch:
+        for item in items:
+            batch.delete_item(Key={key_name: key_value, attr_name: item[attr_name]})
+
+
+def _safe_delete_s3(bucket, key):
+    if not bucket or not key: return
+    try:
+        s3.delete_object(Bucket=bucket, Key=key)
+    except Exception:
+        pass
+
+
+def _response(status, body):
+    return {"statusCode": status, "headers": CORS_HEADERS, "body": json.dumps(body, default=str)}

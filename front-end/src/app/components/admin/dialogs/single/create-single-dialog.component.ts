@@ -10,6 +10,7 @@ import {MatInput} from '@angular/material/input';
 import {MatOption} from '@angular/material/core';
 import {FormsModule} from '@angular/forms';
 import {lastValueFrom} from 'rxjs';
+import {ToastrService} from '../../../../services/toastr/toastr.service';
 
 @Component({
   selector: 'app-single',
@@ -31,6 +32,7 @@ import {lastValueFrom} from 'rxjs';
 export class CreateSingleDialogComponent {
   dialogRef = inject(MatDialogRef<CreateSingleDialogComponent, string | null>);
   songsService = inject(SongsService);
+  toast = inject(ToastrService);
 
   @ViewChild(UploadSongBoxComponent) songBox!: UploadSongBoxComponent;
   @ViewChild(UploadImageBoxComponent) coverBox!: UploadImageBoxComponent;
@@ -48,35 +50,25 @@ export class CreateSingleDialogComponent {
     const coverFile = this.coverBox.image?.file;
 
     if (!mp3File) {
-      alert('Please select a song file.');
+      this.toast.error('Error', 'Please select a song file');
       return;
     }
 
     try {
-      // 1️⃣ Init upload (song + optional cover)
       const initRes = await lastValueFrom(this.songsService.initUpload({
         name: this.name,
-        artist_ids: this.selectedArtists,
-        genre_ids: this.selectedGenres,
+        artists: this.selectedArtists,
+        genres: this.selectedGenres,
         filename: mp3File.name,
         cover_filename: coverFile?.name
       }));
-
-      // 2️⃣ Upload MP3 to S3
-      await fetch(initRes.upload_url, { method: 'PUT', body: mp3File });
-
-      // 3️⃣ Upload cover if provided
-      if (coverFile && initRes.cover_upload_url) {
-        await fetch(initRes.cover_upload_url, { method: 'PUT', body: coverFile });
-      }
-
-      // 4️⃣ Complete upload
+      await fetch(initRes.upload_url, {method: 'PUT', body: mp3File});
+      if (coverFile && initRes.cover_upload_url)
+        await fetch(initRes.cover_upload_url, {method: 'PUT', body: coverFile});
       await lastValueFrom(this.songsService.completeUpload(initRes.song_id));
-
       this.dialogRef.close(initRes.song_id);
     } catch (err) {
-      console.error(err);
-      alert('Error uploading song.');
+      this.toast.error('Error', 'Unable to upload the song');
     }
   }
 }

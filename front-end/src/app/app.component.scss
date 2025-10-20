@@ -11,7 +11,7 @@
 }
 
 .sub_container_height {
-  height: 90%;
+  height: calc(100vh - 100px);
 }
 
 .content {
@@ -22,7 +22,7 @@
 }
 
 .player-height {
-  height: 10%;
+  height: 100px;
 }
 
 ::ng-deep .logout-button {
@@ -35,7 +35,7 @@
 
 ::ng-deep .bottom-right-button {
   border-radius: 48px !important;
-  box-shadow: 2px 2px 2px $edge2 !important;
+  box-shadow: 4px 4px 10px $edge2 !important;
   width: 240px;
   min-height: 65px;
   position: absolute;
@@ -46,18 +46,22 @@
   justify-content: center;
   gap: 14px;
   z-index: 1000;
+  font-size: 1em !important;
+  font-weight: 400 !important;
 }
 
 ::ng-deep .loading {
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 9999;
 }
 
 ::ng-deep .toast.success,
 ::ng-deep .toast.error,
 ::ng-deep .toast.info {
-  background-color: $background2 !important;
+  background-color: $background3 !important;
   border-radius: 12px !important;
   color: $whitish !important;
   margin-right: 0.4rem !important;
@@ -104,4 +108,8 @@
   transition: background-color 99999s ease 0s,
   color 99999s ease 0s, font-weight 99999s ease 0s,
   font-size 99999s ease 0s !important;
+}
+
+::ng-deep mat-label {
+  color: $white2 !important;
 }

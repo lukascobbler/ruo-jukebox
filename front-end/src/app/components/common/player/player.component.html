@@ -1,32 +1,46 @@
 <div class="player-container">
   <div class="song-info">
-    <app-box-missing-icon-small [icon_name]="'music_note'" />
+    <img *ngIf="currentlyPlayingSong.cover_url; else missingCover" [src]="currentlyPlayingSong.cover_url" alt="cover" class="picture"/>
+    <ng-template #missingCover>
+      <app-box-missing-icon-small [icon_name]="'music_note'" class="picture"></app-box-missing-icon-small>
+    </ng-template>
     <div class="song-details">
       <div class="song-title">{{ currentlyPlayingSong.title }}</div>
-      <div class="song-artist">{{ currentlyPlayingSong.artist }}</div>
+      <div class="song-artist">{{ getArtistNames(currentlyPlayingSong) }}</div>
     </div>
   </div>
 
   <div class="controls-and-progress">
     <div class="controls">
-      <button class="control-btn">
+      <button class="control-btn" (click)="skipPrevious()">
         <span class="material-symbols-rounded">skip_previous</span>
       </button>
-      <button class="control-btn play">
-        <span class="material-symbols-rounded">play_arrow</span>
+
+      <button class="control-btn play" (click)="togglePlay()">
+      <span class="material-symbols-rounded">
+        {{ player.isPlaying() ? 'pause' : 'play_arrow' }}
+      </span>
       </button>
-      <button class="control-btn">
+
+      <button class="control-btn" (click)="skipNext()">
         <span class="material-symbols-rounded">skip_next</span>
       </button>
     </div>
 
-    <input
-      type="range"
-      min="0"
-      max="100"
-      value="20"
-      (input)="updateProgress($event)"
-      class="progress">
+    <div class="progress-wrapper">
+      <span class="time">{{ formatTime(currentTime) }}</span>
+
+      <input
+        type="range"
+        min="0"
+        max="100"
+        [value]="progress"
+        (input)="updateProgress($event)"
+        class="progress"
+      />
+
+      <span class="time">-{{ formatTime(duration - currentTime) }}</span>
+    </div>
   </div>
 
   <div class="rating-and-lyrics">
