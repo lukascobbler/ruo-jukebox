@@ -68,8 +68,8 @@ export class AllSinglesComponent {
 
   createNewSingle() {
     const dialogRef: MatDialogRef<CreateSingleDialogComponent, null> = this.dialog.open(CreateSingleDialogComponent, {
-      width: '500px',
-      minWidth: '50vw'
+      width: '100vw',
+      minWidth: '1000px'
     });
   }
 }
