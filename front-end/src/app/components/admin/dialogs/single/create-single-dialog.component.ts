@@ -1,5 +1,6 @@
 import {UploadImageBoxComponent} from '../upload-image-box/upload-image-box.component';
 import {UploadSongBoxComponent} from '../upload-song-box/upload-song-box.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {Component, inject, ViewChild, Inject, OnInit} from '@angular/core';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -10,6 +11,7 @@ import {MatSelect} from '@angular/material/select';
 import {MatInput} from '@angular/material/input';
 import {MatOption} from '@angular/material/core';
 import {FormsModule} from '@angular/forms';
+import {NgIf} from '@angular/common';
 import {lastValueFrom} from 'rxjs';
 
 @Component({
@@ -25,7 +27,9 @@ import {lastValueFrom} from 'rxjs';
     MatIconButton,
     UploadSongBoxComponent,
     UploadImageBoxComponent,
-    FormsModule
+    FormsModule,
+    MatProgressSpinnerModule,
+    NgIf
   ],
   styleUrls: ['./create-single-dialog.component.scss']
 })
@@ -42,6 +46,7 @@ export class CreateSingleDialogComponent implements OnInit {
   selectedGenres: string[] = [];
   name = '';
   isEditMode = false;
+  loading = false;
 
   ngOnInit() {
     if (this.data) {
@@ -70,6 +75,7 @@ export class CreateSingleDialogComponent implements OnInit {
       return;
     }
 
+    this.loading = true;
     try {
       const initRes = await lastValueFrom(this.songsService.initUpload({
         name: this.name,
@@ -87,10 +93,13 @@ export class CreateSingleDialogComponent implements OnInit {
       this.dialogRef.close(initRes.song_id);
     } catch {
       this.toast.error('Error', 'Unable to upload the song');
+    } finally {
+      this.loading = false;
     }
   }
 
   private async updateSong() {
+    this.loading = true;
     try {
       const newCoverFile = this.coverBox.image?.file;
       const newAudioFile = this.songBox.file;
@@ -118,6 +127,8 @@ export class CreateSingleDialogComponent implements OnInit {
       this.dialogRef.close(this.data.song_id);
     } catch {
       this.toast.error('Error', 'Failed to update song');
+    } finally {
+      this.loading = false;
     }
   }
 }

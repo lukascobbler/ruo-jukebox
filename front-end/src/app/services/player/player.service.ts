@@ -11,6 +11,10 @@ export class PlayerService {
   private currentSongSubject = new BehaviorSubject<Song | null>(null);
   currentSong$ = this.currentSongSubject.asObservable();
 
+  constructor() {
+    this.audio.addEventListener('ended', () => this.next());
+  }
+
   loadPlaylist(songs: Song[]) {
     this.playlist = songs;
   }
@@ -21,7 +25,6 @@ export class PlayerService {
       this.audio.src = song.audio_url;
       this.audio.load();
       this.audio.play();
-      console.log(song)
       this.currentSongSubject.next(song);
     } else if (this.audio.paused) {
       this.audio.play();
