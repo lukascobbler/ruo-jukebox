@@ -54,7 +54,7 @@ export class AllAlbumsComponent implements OnInit {
   toast = inject(ToastrService);
   loading = true;
 
-  displayedColumns = ['cover', 'name', 'artist', 'genres', 'actions'];
+  displayedColumns = ['cover', 'name', 'artists', 'genres', 'actions'];
   albumsDataSource: Album[] = [];
 
   ngOnInit() {

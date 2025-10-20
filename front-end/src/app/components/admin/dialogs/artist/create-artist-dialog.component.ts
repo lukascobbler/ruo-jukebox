@@ -6,12 +6,13 @@ import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
 import { MatIconButton } from '@angular/material/button';
 import { UploadImageBoxComponent } from '../upload-image-box/upload-image-box.component';
-import { NgForOf } from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 import { GenreItem } from '../../../../models/GenreItem';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ArtistsService } from '../../../../services/artists/artists.service';
 import { ToastrService } from '../../../../services/toastr/toastr.service';
 import { firstValueFrom } from 'rxjs';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 const ALLOWED_CT = new Set([
   'image/jpeg',
@@ -33,6 +34,8 @@ const ALLOWED_CT = new Set([
     MatLabel,
     UploadImageBoxComponent,
     NgForOf,
+    MatProgressSpinner,
+    NgIf,
   ],
   templateUrl: './create-artist-dialog.component.html',
   styleUrl: './create-artist-dialog.component.scss',

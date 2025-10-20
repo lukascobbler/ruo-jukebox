@@ -1,10 +1,9 @@
 <div class="container">
-  <button
-    (click)="onNoClick()"
-    class="close-button"
-    mat-icon-button
-    tabindex="-1"
-  >
+  <div *ngIf="busy" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <button (click)="onNoClick()" class="close-button" mat-icon-button tabindex="-1">
     <span class="material-symbols-rounded">close</span>
   </button>
 
@@ -12,20 +11,13 @@
     <div class="info">
       <mat-form-field appearance="outline">
         <mat-label>Name</mat-label>
-        <input matInput [formControl]="form.controls.name" />
+        <input matInput [formControl]="form.controls.name"/>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Genres</mat-label>
-        <mat-select
-          [(value)]="selectedGenreIds"
-          [multiple]="true"
-          placeholder="Select genres"
-        >
-          <mat-option
-            *ngFor="let g of genres; trackBy: trackByGenreId"
-            [value]="g.id"
-          >
+        <mat-select [(value)]="selectedGenreIds" [multiple]="true" placeholder="Select genres">
+          <mat-option *ngFor="let g of genres; trackBy: trackByGenreId" [value]="g.id">
             {{ g.name }}
           </mat-option>
         </mat-select>
@@ -43,17 +35,14 @@
       </mat-form-field>
     </div>
 
-<div class="picture">
-  <app-upload-image-box
-    #imgBox>
-  </app-upload-image-box>
-</div>
+    <div class="picture">
+      <app-upload-image-box
+        #imgBox>
+      </app-upload-image-box>
+    </div>
 
-</div>
-  <button
-    (click)="onCreateClicked()"
-    [disabled]="busy"
-    class="orange-button finish"
-  >
-    {{ busy ? "Creating…" : "Create" }}
+  </div>
+  <button (click)="onCreateClicked()" [disabled]="busy" class="orange-button finish">
+    Create
   </button>
+</div>

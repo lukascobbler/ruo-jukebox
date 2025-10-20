@@ -9,6 +9,7 @@
 
 .table-container {
   width: 100%;
+  min-width: 500px;
   background-color: $background2;
   padding: 24px 24px 40px 24px;
   border-radius: 24px;
@@ -29,20 +30,23 @@
 
 mat-header-cell.name,
 mat-cell.name {
-  flex: 0 0 15%;
+  flex: 0 0 20%;
+  min-width: 120px;
 }
 
 mat-header-cell.genres,
 mat-cell.genres {
-  flex: 0 0 15%;
+  flex: 0 0 20%;
+  min-width: 120px;
 }
 
 mat-header-cell.biography,
 mat-cell.biography {
-  flex: 0 0 60%;
+  flex: 1 1 50%;
 }
 
 mat-header-cell.actions,
 mat-cell.actions {
   flex: 0 0 10%;
+  min-width: 100px;
 }
