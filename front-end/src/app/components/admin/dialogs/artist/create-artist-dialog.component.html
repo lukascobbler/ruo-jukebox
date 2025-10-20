@@ -43,12 +43,13 @@
       </mat-form-field>
     </div>
 
-    <div class="picture">
-      <app-upload-image-box
-        (fileSelected)="onFileChosen($event)"
-      ></app-upload-image-box>
-    </div>
-  </div>
+<div class="picture">
+  <app-upload-image-box
+    #imgBox>
+  </app-upload-image-box>
+</div>
+
+</div>
   <button
     (click)="onCreateClicked()"
     [disabled]="busy"
@@ -56,4 +57,3 @@
   >
     {{ busy ? "Creating…" : "Create" }}
   </button>
-</div>
