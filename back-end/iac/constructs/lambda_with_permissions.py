@@ -1,7 +1,7 @@
-from iac.auth_layer_stack import AuthLayerStack
 from iac.shared_layer_stack import SharedLayerStack
+from iac.auth_layer_stack import AuthLayerStack
+from aws_cdk import Duration, aws_lambda, Stack
 from iac.dynamo_db_stack import DynamoDbStack
-from aws_cdk import Duration, aws_lambda
 from aws_cdk.aws_dynamodb import Table
 from aws_cdk import aws_iam as iam
 from constructs import Construct
@@ -29,6 +29,8 @@ class LambdaWithPermissions(Construct):
             memory_size=256,
             role=role,
         )
+
+
         # grants TODO right now everyone gets everything
         s3.audio_bucket.grant_read_write(self.fn)
         s3.images_bucket.grant_read_write(self.fn)
