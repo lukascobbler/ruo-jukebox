@@ -1,6 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {map, Observable, shareReplay} from 'rxjs';
+import { GenreItem } from '../../models/GenreItem';
 
 export interface GenreCreateRequest {
   name: string;
@@ -9,12 +10,6 @@ export interface GenreCreateRequest {
 export interface GenreCreateResponse {
   id: string;
   name: string;
-}
-
-export interface GenreListItem {
-  id: string;
-  name: string;
-  isSubscribed: boolean | null;
 }
 
 export interface GenreDetail {
@@ -33,10 +28,6 @@ export class GenresService {
     return this.http.post<GenreCreateResponse>(`${this.API_URL}/genres`, body);
   }
 
-  list(): Observable<GenreListItem[]> {
-    return this.http.get<GenreListItem[]>(`${this.API_URL}/genres`);
-  }
-
   get(id: string): Observable<GenreDetail> {
     return this.http.get<GenreDetail>(`${this.API_URL}/genres/${encodeURIComponent(id)}`);
   }
@@ -52,4 +43,14 @@ export class GenresService {
       `${this.API_URL}/genres/${encodeURIComponent(id)}`
     );
   }
+
+  list(): Observable<GenreItem[]> {
+    const url = `${this.API_URL}/genres`;
+    return this.http
+      .get<GenreItem[] | string>(url)
+      .pipe(
+        map(res => Array.isArray(res) ? res : JSON.parse(res as string) as GenreItem[])
+      );
+  }
+
 }

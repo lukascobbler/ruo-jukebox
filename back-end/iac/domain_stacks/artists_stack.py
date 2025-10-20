@@ -26,6 +26,8 @@ class ArtistsStack(Stack):
             "ArtistsDelete": "services/artists/delete",
             "ArtistsPicInit": "services/artists/picture/init_upload",
             "ArtistsPicComplete": "services/artists/picture/complete_upload",
+            "ArtistsListByGenre": "services/artists/list_by_genre",
+            "ArtistsSearch": "services/artists/search",
         }
         for key, path in lambda_defs.items():
             self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, shared_layer_stack, auth_layer_stack).fn
@@ -47,4 +49,12 @@ class ArtistsStack(Stack):
         )
         picture.add_resource("complete_upload").add_method(
             "POST", apigw.LambdaIntegration(self.lambdas["ArtistsPicComplete"]), **api_gateway.auth_kwargs
+        )
+        by_genre = artists.add_resource("by-genre").add_resource("{id}")
+        by_genre.add_method("GET", apigw.LambdaIntegration(self.lambdas["ArtistsListByGenre"]), **api_gateway.auth_kwargs)
+        search = artists.add_resource("search")
+        search.add_method(
+            "GET",
+            apigw.LambdaIntegration(self.lambdas["ArtistsSearch"]),
+            **api_gateway.auth_kwargs
         )

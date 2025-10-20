@@ -88,3 +88,8 @@ p {
     text-overflow: ellipsis;
   }
 }
+.artist-avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}

@@ -133,7 +133,7 @@ transcriptions
 
 ```json
 {
-  "topic": "ARTIST#ART_9c42",      // moze i na GENRE#, mozda visak
+  "topic": "ARTIST#ART_9c42",      // moze i na GENRE#
   "user_id": "SUB_3c0f1a",
   "since": 1760707500
 }

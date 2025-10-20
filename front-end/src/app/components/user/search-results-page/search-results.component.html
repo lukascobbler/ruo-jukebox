@@ -34,7 +34,18 @@
       <div class="found-artists horizontal-scroller">
         <div *ngFor="let artist of foundArtists" class="single-artist">
           <button class="icon-button" (click)="router.navigate(['artist', artist.id])">
-            <app-round-missing-icon-large [icon_name]="'artist'" />
+        <ng-container *ngIf="artist.pictureUrl; else missingArtist">
+          <img
+            [src]="artist.pictureUrl!"
+            [alt]="artist.name"
+            class="artist-avatar"
+            width="140"
+            height="140"
+          />
+        </ng-container>
+        <ng-template #missingArtist>
+          <app-round-missing-icon-large [icon_name]="'artist'"></app-round-missing-icon-large>
+        </ng-template>
           </button>
           <p class="artist-name">{{ artist.name }}</p>
         </div>
