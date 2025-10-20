@@ -19,7 +19,7 @@
         <ng-container matColumnDef="actions">
           <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>
           <mat-cell class="actions" *matCellDef="let subscription">
-            <button mat-icon-button>
+            <button mat-icon-button  (click)="onUnsubscribe(subscription)" [disabled]="busyTopics.has(subscription.topic)">
               <span class="material-symbols-rounded icon-full">circle_notifications</span>
             </button>
           </mat-cell>

@@ -17,8 +17,6 @@
   class="subscribe-button"
   (click)="toggleGenreSubscription($event, genre)"
   [disabled]="busyIds.has(genre.id)"
-  aria-label="{{ genre.isSubscribed ? 'Unsubscribe' : 'Subscribe' }}"
-  title="{{ genre.isSubscribed ? 'Unsubscribe' : 'Subscribe' }}"
 >
   <span class="material-symbols-rounded icon" [ngClass]="{ 'full': genre.isSubscribed }">
     circle_notifications

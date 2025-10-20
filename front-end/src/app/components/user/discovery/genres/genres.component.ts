@@ -69,13 +69,11 @@ export class GenresComponent implements OnInit {
   }
 
 async toggleGenreSubscription(event: Event, genre: GenreItem) {
-  console.log('a')
   event.stopPropagation();
   if (this.busyIds.has(genre.id)) return;
 
   const topic = genre.id;          
   const prev = !!genre.isSubscribed;
-  console.log('b')
 
   genre.isSubscribed = !prev;
   this.busyIds.add(genre.id);
