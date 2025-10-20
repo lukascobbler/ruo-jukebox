@@ -7,6 +7,7 @@ from iac.s3_stack import S3Stack
 from constructs import Construct
 from aws_cdk import (
     aws_lambda_event_sources as lambda_events,
+    aws_apigateway as apigw,
     aws_lambda as _lambda, Duration,
     aws_sqs as sqs,
     Stack
@@ -20,6 +21,7 @@ class SubscriptionsStack(Stack):
         super().__init__(scope, id, **kwargs)
         self.lambdas = {}
         self._create_lambdas(dynamo_db, s3, shared_layer_stack, auth_layer_stack, environment)
+        self._attach_to_api(api_stack)
         self._init_subscription_processing(dynamo_db, environment)
 
     def _create_lambdas(self, dynamo_db, s3, shared_layer_stack, auth_layer_stack, env):
@@ -30,7 +32,6 @@ class SubscriptionsStack(Stack):
         }
         for key, path in lambda_defs.items():
             self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, shared_layer_stack, auth_layer_stack).fn
-        # todo završiti endpointove za subskripcije
 
     def _init_subscription_processing(self, dynamo_db, env):
         subs_feed_fn = _lambda.Function(
@@ -55,3 +56,14 @@ class SubscriptionsStack(Stack):
             on_failure=lambda_events.SqsDlq(subs_stream_dlq),
             report_batch_item_failures=True,
         ))
+    
+
+    def attach_to_api(self, api: ApiGatewayStack):
+        subs = api.api.root.add_resource("subscriptions")
+        subs.add_method("POST", apigw.LambdaIntegration(self.lambdas["SubsCreate"]), **api.auth_kwargs)
+
+        mine = subs.add_resource("mine")
+        mine.add_method("GET", apigw.LambdaIntegration(self.lambdas["SubsListMine"]), **api.auth_kwargs)
+
+        topic = subs.add_resource("{topic}")
+        topic.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["SubsDelete"]), **api.auth_kwargs)
