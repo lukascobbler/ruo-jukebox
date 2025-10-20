@@ -7,6 +7,9 @@ import {SearchComponent} from '../../search/search.component';
 import {AuthService} from '../../../../services/auth/auth.service';
 import { GenresService } from '../../../../services/genres/genres.service';
 import { ToastrService } from '../../../../services/toastr/toastr.service';
+import { SubscriptionsService } from '../../../../services/subscriptions/subscriptions.service';
+import { map } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-genres',
@@ -23,10 +26,12 @@ import { ToastrService } from '../../../../services/toastr/toastr.service';
 })
 export class GenresComponent implements OnInit {
   private genresService = inject(GenresService);
+  private subsService = inject(SubscriptionsService);
   private router = inject(Router);
   auth = inject(AuthService);
   toast = inject(ToastrService);
   genres: GenreItem[] = [];
+  busyIds = new Set<string>();
 
   ngOnInit(): void {
     this.fetchGenres();
@@ -62,4 +67,34 @@ export class GenresComponent implements OnInit {
       'Unexpected error. Please try again.';
     return typeof msg === 'string' ? msg : 'Unexpected error. Please try again.';
   }
+
+async toggleGenreSubscription(event: Event, genre: GenreItem) {
+  console.log('a')
+  event.stopPropagation();
+  if (this.busyIds.has(genre.id)) return;
+
+  const topic = genre.id;          
+  const prev = !!genre.isSubscribed;
+  console.log('b')
+
+  genre.isSubscribed = !prev;
+  this.busyIds.add(genre.id);
+
+  try {
+    if (prev) {
+      await firstValueFrom(this.subsService.delete(topic)); 
+    } else {
+      await firstValueFrom(this.subsService.create(topic));
+    }
+    this.toast.success(prev ? 'Unsubscribed' : 'Subscribed', genre.name);
+  } catch (err: any) {
+    genre.isSubscribed = prev;
+    const msg = this.extractError(err);
+    this.toast.error(prev ? 'Unsubscribe error' : 'Subscribe error', msg);
+  } finally {
+    this.busyIds.delete(genre.id);
+  }
+}
+
+
 }
