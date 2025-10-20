@@ -1,9 +1,9 @@
+from pre_authorize import pre_authorize
 import os, json
 import boto3
-from pre_authorize import pre_authorize
 
 dynamodb = boto3.resource("dynamodb")
-s3 = boto3.client("s3")
+s3 = boto3.client('s3', os.environ["REGION"], endpoint_url=os.environ["S3_ENDPOINT_URL"])
 
 artists = dynamodb.Table(os.environ["ARTISTS_TABLE"])
 images_bucket = os.environ["IMAGES_BUCKET"]

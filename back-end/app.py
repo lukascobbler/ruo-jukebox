@@ -1,6 +1,6 @@
-from iac.domain_stacks.email_test_stack import EmailTestStack
 from iac.domain_stacks.subscriptions_stack import SubscriptionsStack
 from iac.domain_stacks.interactions_stack import InteractionsStack
+from iac.domain_stacks.email_test_stack import EmailTestStack
 from iac.domain_stacks.playlists_stack import PlaylistsStack
 from iac.domain_stacks.artists_stack import ArtistsStack
 from iac.domain_stacks.albums_stack import AlbumsStack
@@ -48,6 +48,8 @@ env_vars = {
     "TRANSCRIPTIONS_TABLE": dynamo_db_stack.transcriptions.table_name,
     "USER_POOL_ID": cognito_stack.user_pool.user_pool_id,
     "USER_POOL_CLIENT_ID": cognito_stack.app_client.user_pool_client_id,
+    "REGION": str(os.getenv("CDK_DEFAULT_REGION")),
+    "S3_ENDPOINT_URL": 'https://s3.' + str(os.getenv("CDK_DEFAULT_REGION")) + '.amazonaws.com',
     "FROM_EMAIL": "noreply@jb.moma.rs",
 }
 

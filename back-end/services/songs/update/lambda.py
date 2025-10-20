@@ -2,7 +2,7 @@ from boto3.dynamodb.conditions import Key
 import json, boto3, os
 
 dynamodb = boto3.resource("dynamodb")
-s3 = boto3.client("s3")
+s3 = boto3.client('s3', os.environ["REGION"], endpoint_url=os.environ["S3_ENDPOINT_URL"])
 
 SONGS_TABLE = dynamodb.Table(os.environ["SONGS_TABLE"])
 SONG_ARTISTS_TABLE = dynamodb.Table(os.environ["SONG_ARTISTS_TABLE"])

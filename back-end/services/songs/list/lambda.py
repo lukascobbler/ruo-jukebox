@@ -2,7 +2,7 @@ from boto3.dynamodb.conditions import Key
 import boto3, os, json
 
 dynamodb = boto3.resource("dynamodb")
-s3 = boto3.client("s3")
+s3 = boto3.client('s3', os.environ["REGION"], endpoint_url=os.environ["S3_ENDPOINT_URL"])
 
 AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
 IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
