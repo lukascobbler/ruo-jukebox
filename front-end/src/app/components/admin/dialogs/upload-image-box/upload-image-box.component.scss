@@ -1,20 +1,56 @@
 @import "colors";
 
-.drop-zone {
-  background: transparent;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.upload-box {
+  width: 100%;
   height: 100%;
-}
-
-.selected-file {
+  border: 3px solid $edge;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
 
-.icon {
-  transform: scale(5);
-  color: $edge;
+  &:hover {
+    border-color: $card;
+
+    .icon {
+      color: $card;
+    }
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .icon {
+    transition: color 0.2s;
+    transform: scale(5);
+    color: $edge;
+  }
+
+  .text {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #888;
+  }
+
+  .remove-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }

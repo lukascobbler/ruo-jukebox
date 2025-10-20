@@ -10,11 +10,11 @@ pay_per_request - TODO da opet ne bankrotiramo
 indeksi:
 artists.byName(name_lc -> created_at) - pretraga
 albums.byArtist(primary_artist_id -> created_at) - prikaz albuma izabranog artista
-tracks.byAlbum(album_id -> track_no) - pesme albuma po odgovarajucem redosledu
+songs.byAlbum(album_id -> song_no) - pesme albuma po odgovarajucem redosledu
 playlists.byOwner(owner_user_id -> created_at) - plejliste usera
 playlistItems - sortirane po pozicijama za uredjen prikaz (+ trik sa razmacima od 10)
 ratings.byUser(user_id -> content_key) - rejtinzi usera
-trackArtists.byArtist(artist_id -> track_id) - pesme datog artista
+songArtists.byArtist(artist_id -> song_id) - pesme datog artista
 contentGenres.byEntity(entity -> genre) - svi zanrovi za content i obrnuto preko PK
 ---
 ttl za feed i interakcije, aws sam brise

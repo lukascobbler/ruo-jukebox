@@ -9,13 +9,13 @@ audio_bucket, images_bucket, transcripts_bucket (jedini blobovi)
 ```
 artists (byName)
 albums (byArtist)
-tracks (byAlbum - za album trazi pesme u odgovarajucem redosledu)
+songs (byAlbum - za album trazi pesme u odgovarajucem redosledu)
 genres
-trackArtists(byArtist)
-contentGenres(genericno da se veze za artist/track/album) (byEntity)
+songArtists(byArtist)
+contentGenres(genericno da se veze za artist/song/album) (byEntity)
 users(cognito useri)
 playlists(byOwner)
-playlistsItems(byTrack - mozda visak)
+playlistsItems(bySong - mozda visak)
 ratings(byUser)
 subscriptions(byUser)
 interactions
@@ -50,16 +50,16 @@ transcriptions
 }
 ```
 
-### track:
+### song:
 
 ```json
 {
-  "track_id": "TRK_a1f0",
+  "song_id": "SNG_a1f0",
   "title": "Starlight",
   "album_id": "ALB_8b11",             // ako nema album_id znaci da je singl
-  "track_no": 2,                      // redosled unutar albuma, isto preskociti ako je singl
+  "song_no": 2,                      // redosled unutar albuma, isto preskociti ako je singl
   "duration_sec": 241,
-  "audio_key": "audio/TRK_a1f0.mp3",
+  "audio_key": "audio/SNG_a1f0.mp3",
   "created_at": 1760704200,
   "stats": { "rating_sum": 9, "rating_cnt": 4 } // agregator workeri sredjuju
 }
@@ -76,11 +76,11 @@ transcriptions
 }
 ```
 
-### trackArtist:
+### songArtist:
 
 ```json
 {
-  "track_id": "TRK_a1f0",
+  "song_id": "SNG_a1f0",
   "artist_id": "ART_9c42",
 }
 ```
@@ -88,9 +88,9 @@ transcriptions
 ### contentGenre (generic):
 
 ```json
-{ "genre": "GNR_1b17", "entity": "ARTIST#ART_9c42", "created_at": 1760701200 }
-{ "genre": "GNR_1b17", "entity": "ALBUM#ALB_8b11",  "created_at": 1760703600 }
-{ "genre": "GNR_1b17", "entity": "TRACK#TRK_a1f0",  "created_at": 1760704200 }
+{ "genre": "GNR_1b17", "entity": "ART_9c42", "created_at": 1760701200 }
+{ "genre": "GNR_1b17", "entity": "ALB_8b11",  "created_at": 1760703600 }
+{ "genre": "GNR_1b17", "entity": "SNG_a1f0",  "created_at": 1760704200 }
 ```
 
 ### user: (cognito za autorizaciju, ovo sluzi za biznis logiku)
@@ -113,16 +113,16 @@ transcriptions
 {
   "playlist_id": "PL_7d44",
   "position": 10,               
-  "track_id": "TRK_a1f0",
+  "song_id": "SNG_a1f0",
   "added_at": 1760707300
 }
 ```
 
-### rating (genericno):
+### rating:
 
 ```json
 {
-  "content_key": "TRACK#TRK_a1f0",   // takodje ALBUM#/ARTIST#/PLAYLIST# (plejlista mozda visak)
+  "song_id": "SNG_a1f0",
   "user_id": "SUB_3c0f1a",
   "value": 3,                        // 1..3
   "rated_at": 1760707400
@@ -146,7 +146,7 @@ transcriptions
   "user_id": "SUB_3c0f1a",
   "ts": 1760707601,
   "type": "PLAY",                   // PLAY | RATE | ADD_TO_PLAYLIST | ...
-  "track_id": "TRK_a1f0",
+  "song_id": "SNG_a1f0",
   "ms_listened": 241000
 }
 ```
@@ -166,9 +166,9 @@ transcriptions
 
 ```json
 {
-  "track_id": "TRK_a1f0",
+  "song_id": "SNG_a1f0",
   "status": "READY",          // PENDING | READY | FAILED ovo jos videti jer ima ona fora retry nesto pise na specifikaciji TODO
-  "transcript_key": "transcripts/TRK_a1f0.json",
+  "transcript_key": "transcripts/SNG_a1f0.json",
   "updated_at": 1760708000
 }
 ```

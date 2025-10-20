@@ -1,30 +1,25 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  Output,
-} from '@angular/core';
-import { MatIconButton } from '@angular/material/button';
-import { NgIf, NgStyle } from '@angular/common';
-import { ToastrService } from '../../../../services/toastr/toastr.service';
+import {ChangeDetectorRef, Component, inject, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {NgIf} from '@angular/common';
+import {MatIconButton} from '@angular/material/button';
 
 @Component({
   selector: 'app-upload-image-box',
   standalone: true,
-  imports: [MatIconButton, NgIf, NgStyle],
+  imports: [NgIf, MatIconButton],
   templateUrl: './upload-image-box.component.html',
-  styleUrl: './upload-image-box.component.scss',
+  styleUrls: ['./upload-image-box.component.scss']
 })
-export class UploadImageBoxComponent {
-  cd = inject(ChangeDetectorRef);
+export class UploadImageBoxComponent implements OnChanges {
+  private cd = inject(ChangeDetectorRef);
+  @Input() imageUrl?: string; // prefilled cover URL
+  image: { file: File | null; url: string } | null = null;
 
-  image: { file: File; url: string } | null = null;
-  @Input() accept = '.jpg,.jpeg,.png,.webp,.avif';
-  @Output() fileSelected = new EventEmitter<File | null>();
-
-  constructor(private toast: ToastrService) {}
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['imageUrl'] && this.imageUrl) {
+      this.image = { file: null, url: this.imageUrl };
+      this.cd.detectChanges();
+    }
+  }
 
   onSelectNewImage(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -32,40 +27,19 @@ export class UploadImageBoxComponent {
     if (!file) return;
 
     const objectUrl = URL.createObjectURL(file);
-    const img = new Image();
-
-    img.onload = () => {
-      if (img.naturalWidth === 512 && img.naturalHeight === 512) {
-        this.image = { file, url: objectUrl };
-        this.fileSelected.emit(file);
-        this.cd.detectChanges();
-      } else {
-        // todo toastr error
-        this.toast.error('Image error', 'the image must be 512x512');
-        console.log('the image must be 512x512');
-        URL.revokeObjectURL(objectUrl);
-        input.value = '';
-      }
-    };
-
-    img.src = objectUrl;
+    this.image = { file, url: objectUrl };
+    this.cd.detectChanges();
   }
 
   onRemoveImage(event: Event, fileInput: HTMLInputElement) {
     event.stopPropagation();
-    if (this.image) {
-      URL.revokeObjectURL(this.image.url);
-    }
+    if (this.image && this.image.file) URL.revokeObjectURL(this.image.url);
     this.image = null;
     fileInput.value = '';
+    this.cd.detectChanges();
   }
 
-  handleBoxClick(fileInput: HTMLInputElement) {
-    if (!this.image) {
-      fileInput.click();
-    }
-  }
-  ngOnDestroy(): void {
-    if (this.image) URL.revokeObjectURL(this.image.url);
+  onBoxClick(fileInput: HTMLInputElement) {
+    if (!this.image) fileInput.click();
   }
 }

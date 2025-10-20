@@ -56,11 +56,18 @@ class DynamoDbStack(Stack):
             write_capacity=1
         )
 
-        # fast lookup for album and track order
+        # fast lookup for album and song order
         self.songs.add_global_secondary_index(
             index_name="byAlbum",
             partition_key=ddb.Attribute(name="album_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="song_no", type=ddb.AttributeType.NUMBER)
+        )
+
+        # fast lookup for singles
+        self.songs.add_global_secondary_index(
+            index_name="byHasAlbum",
+            partition_key=ddb.Attribute(name="has_album", type=ddb.AttributeType.STRING),
+            sort_key=ddb.Attribute(name="created_at", type=ddb.AttributeType.NUMBER),
         )
 
         self.genres = ddb.Table(
@@ -74,7 +81,7 @@ class DynamoDbStack(Stack):
             write_capacity=1
         )
 
-        # many to many artists on tracks
+        # many to many artists on songs
         self.song_artists = ddb.Table(
             self, "SongArtists",
             table_name=PhysicalName.GENERATE_IF_NEEDED,
@@ -86,14 +93,14 @@ class DynamoDbStack(Stack):
             write_capacity=1
         )
 
-        # getting all tracks for an artist
+        # getting all songs for an artist
         self.song_artists.add_global_secondary_index(
             index_name="byArtist",
             partition_key=ddb.Attribute(name="artist_id", type=ddb.AttributeType.STRING),
             sort_key=ddb.Attribute(name="song_id", type=ddb.AttributeType.STRING),
         )
 
-        # keeps track of genres for tracks/albums/artists
+        # keeps track of genres for songs/albums/artists
         self.content_genres = ddb.Table(
             self, "ContentGenres",
             table_name=PhysicalName.GENERATE_IF_NEEDED,

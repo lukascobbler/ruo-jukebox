@@ -45,19 +45,24 @@
   }
 }
 
+.resize-banner {
+  height: 100% !important;
+  width: 100% !important;
+}
+
 .sidebar-banner {
-  width: 15rem;
-  height: 3rem;
-  margin-top: 2.6rem;
-  margin-left: 0.4rem;
   position: absolute;
+  margin-left: 30px;
+  margin-top: 28px;
+  height: 96px;
+  width: 240px;
 }
 
 .sidebar-line {
   width: 100%;
   border: 1px solid $edge;
   border-radius: 1rem;
-  margin-top: 8rem;
+  margin-top: 9rem;
   margin-bottom: 1.5rem;
   opacity: 50%;
 }
@@ -69,10 +74,6 @@
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
   opacity: 50%;
-}
-
-.resize-banner {
-  width: 75%;
 }
 
 .material-symbols-rounded {

@@ -1,14 +1,17 @@
 import {GenreItem} from './GenreItem';
+import {Artist} from './Artist';
 
 export interface Song {
-  id: string;
+  song_id: string;
   no?: number;
   title: string;
   album: string;
   albumId: string;
-  artist: string;
   artistId: string;
   duration: number;
   lyrics: string;
   genres: GenreItem[];
+  artists: Artist[];
+  cover_url: string;
+  audio_url: string;
 }
