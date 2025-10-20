@@ -60,7 +60,7 @@ class SongsStack(Stack):
         rating.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["SongRatingDelete"]), **api.auth_kwargs)
 
     def _init_song_processing(self, cognito, dynamo_db, s3, env):
-        # 1 New content (Albums + Tracks) -> notify subscribers, add feed cards, start transcription for tracks
+        # 1 New content (Albums + Songs) -> notify subscribers, add feed cards, start transcription for songs
         song_events_role = iam.Role(
             self, "ContentEventsRole",
             role_name="ContentEventsLambdaRole",
