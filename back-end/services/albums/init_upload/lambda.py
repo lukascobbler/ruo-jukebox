@@ -2,19 +2,14 @@ from datetime import datetime, timezone
 import json, os, uuid, boto3
 
 dynamodb = boto3.resource("dynamodb")
-s3 = boto3.client("s3")
+s3 = boto3.client('s3', os.environ["REGION"], endpoint_url=os.environ["S3_ENDPOINT_URL"])
 
 IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
 ALBUMS_TABLE = dynamodb.Table(os.environ["ALBUMS_TABLE"])
 ALBUM_ARTISTS_TABLE = dynamodb.Table(os.environ["ALBUM_ARTISTS_TABLE"])
 CONTENT_GENRES_TABLE = dynamodb.Table(os.environ["CONTENT_GENRES_TABLE"])
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
-
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE"
-}
 
 def _generate_presigned_url(bucket, key):
     return s3.generate_presigned_url("put_object", Params={"Bucket": bucket, "Key": key}, ExpiresIn=3600)

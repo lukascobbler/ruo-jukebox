@@ -9,12 +9,7 @@ IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
 SONGS_TABLE = dynamodb.Table(os.environ["SONGS_TABLE"])
 SONG_ARTISTS_TABLE = dynamodb.Table(os.environ["SONG_ARTISTS_TABLE"])
 CONTENT_GENRES_TABLE = dynamodb.Table(os.environ["CONTENT_GENRES_TABLE"])
-
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE"
-}
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
 
 def _generate_download_url(bucket, key):
@@ -39,10 +34,10 @@ def _get_genres(song_id):
 
 def lambda_handler(event, context):
     try:
-        # Query only songs where has_album = "false"
+        # Query only singles (album_id = "SINGLE")
         data = SONGS_TABLE.query(
-            IndexName="byHasAlbum",
-            KeyConditionExpression=Key("has_album").eq("false")
+            IndexName="byAlbum",
+            KeyConditionExpression=Key("album_id").eq("SINGLE")
         )
 
         items = data.get("Items", [])

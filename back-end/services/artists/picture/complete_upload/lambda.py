@@ -1,17 +1,11 @@
-import os, json, time
-import boto3
 from botocore.exceptions import ClientError
 from pre_authorize import pre_authorize
+import os, json, time, boto3
 
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client('s3', os.environ["REGION"], endpoint_url=os.environ["S3_ENDPOINT_URL"])
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-}
-
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 artists = dynamodb.Table(os.environ["ARTISTS_TABLE"])
 images_bucket = os.environ["IMAGES_BUCKET"]
 

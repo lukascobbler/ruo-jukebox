@@ -1,16 +1,11 @@
-import os, json, time
-import boto3
 from botocore.exceptions import ClientError
 from pre_authorize import pre_authorize
+import os, json, time, boto3
 
 dynamodb = boto3.resource("dynamodb")
 genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-}
 
 @pre_authorize(['Admin', 'LoggedInUser'])
 def lambda_handler(event, context):
@@ -23,7 +18,6 @@ def lambda_handler(event, context):
         body = json.loads(event.get("body") or "{}")
     except json.JSONDecodeError:
         return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Invalid JSON body"})}
-
 
     if "name" not in body:
         return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Nothing to update (provide 'name')"})}

@@ -1,16 +1,11 @@
-import os, json, time, uuid
-import boto3
 from botocore.exceptions import ClientError
 from pre_authorize import pre_authorize
+import os, json, time, uuid, boto3
 
 dynamodb = boto3.resource("dynamodb")
 genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-}
 
 @pre_authorize(['Admin'])
 def lambda_handler(event, context):

@@ -1,16 +1,10 @@
 from botocore.exceptions import ClientError
-import boto3
-import json
-import os
+import boto3, json, os
 
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 COGNITO_USER_POOL_ID = os.environ["USER_POOL_ID"]
 cognito = boto3.client("cognito-idp")
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-}
 
 def lambda_handler(event, context):
     try:

@@ -5,19 +5,16 @@ import boto3, json, os
 dynamodb = boto3.resource("dynamodb")
 genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
 subs_table = dynamodb.Table(os.environ["SUBSCRIPTIONS_TABLE"])
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,GET",
-    "Content-Type": "application/json",
-}
 
 def _user_id(event) -> str:
     return (event["userId"] or "").strip()
 
+
 def _is_admin(event) -> bool:
     return (event["userRole"] or "").strip() == "Admin"
+
 
 @pre_authorize(["Admin", "LoggedInUser"])
 def lambda_handler(event, context):
@@ -63,7 +60,7 @@ def lambda_handler(event, context):
 
     out = []
     for it in items:
-        gid = it["genre_id"]          
+        gid = it["genre_id"]
         name = it.get("Name", "")
         is_sub = gid in user_topics
         out.append({"id": gid, "name": name, "isSubscribed": is_sub})

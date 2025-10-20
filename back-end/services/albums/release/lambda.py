@@ -1,16 +1,9 @@
-from datetime import datetime, timezone
-import json
-import os
-import boto3
 from botocore.exceptions import ClientError
+from datetime import datetime, timezone
+import json, os, boto3
 
 ALBUMS_TABLE = os.environ.get("ALBUMS_TABLE")
-
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PATCH,DELETE"
-}
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
 dynamodb = boto3.resource("dynamodb")
 albums_table = dynamodb.Table(ALBUMS_TABLE)

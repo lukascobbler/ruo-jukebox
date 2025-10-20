@@ -1,11 +1,9 @@
-import os
-from dataclasses import asdict
-import boto3
-import json
-from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 from model.model import Artist, GenreItem
+from boto3.dynamodb.conditions import Key
 from pre_authorize import pre_authorize
+from dataclasses import asdict
+import os, boto3, json
 
 dynamodb = boto3.resource("dynamodb")
 ddb = boto3.client("dynamodb")
@@ -15,12 +13,7 @@ artists = dynamodb.Table(os.environ["ARTISTS_TABLE"])
 genres_table_name = os.environ["GENRES_TABLE"]
 content_genres = dynamodb.Table(os.environ["CONTENT_GENRES_TABLE"])
 images_bucket = os.environ["IMAGES_BUCKET"]
-
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-}
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
 def _genre_names(ids: list[str]) -> dict[str, str]:
     if not ids:

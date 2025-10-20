@@ -10,12 +10,7 @@ CONTENT_GENRES_TABLE = dynamodb.Table(os.environ["CONTENT_GENRES_TABLE"])
 AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
 IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
 TRANSCRIPTS_BUCKET = os.environ.get("TRANSCRIPTS_BUCKET", "")
-
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE"
-}
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
 
 def lambda_handler(event, context):

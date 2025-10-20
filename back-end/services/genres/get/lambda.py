@@ -1,21 +1,14 @@
-import os
-from dataclasses import asdict
-import boto3
-import json
-from boto3.dynamodb.conditions import Key
 from model.model import Genre, AlbumFromGenre, ArtistFromGenre
+from boto3.dynamodb.conditions import Key
 from pre_authorize import pre_authorize
+from dataclasses import asdict
+import boto3, json, os
 
 dynamodb = boto3.resource("dynamodb")
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-}
-
-GENRES_TABLE = os.environ["GENRES_TABLE"]
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 CONTENT_GENRES_TABLE = os.environ["CONTENT_GENRES_TABLE"]
+GENRES_TABLE = os.environ["GENRES_TABLE"]
 ARTISTS_TABLE = os.environ["ARTISTS_TABLE"]
 ALBUMS_TABLE = os.environ["ALBUMS_TABLE"]
 

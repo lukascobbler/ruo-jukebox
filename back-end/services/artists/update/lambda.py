@@ -1,19 +1,12 @@
-import os, json, time
-import boto3
-from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
+from boto3.dynamodb.conditions import Key
 from pre_authorize import pre_authorize
+import os, json, time, boto3
 
 dynamodb = boto3.resource("dynamodb")
 ddb = boto3.client("dynamodb")
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-}
-
-
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 artists = dynamodb.Table(os.environ["ARTISTS_TABLE"])
 genres_table_name = os.environ["GENRES_TABLE"]
 content_genres = dynamodb.Table(os.environ["CONTENT_GENRES_TABLE"])

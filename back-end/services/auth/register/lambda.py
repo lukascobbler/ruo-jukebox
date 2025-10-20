@@ -1,22 +1,16 @@
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 from passlib.hash import pbkdf2_sha256
-import boto3
-import json
-import os
+import boto3, json, os
 
 USERS_TABLE = os.environ["USERS_TABLE"]
 COGNITO_USER_POOL_ID = os.environ["USER_POOL_ID"]
 DEFAULT_GROUP = os.environ.get("DEFAULT_GROUP", "LoggedInUser")
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
 dynamodb = boto3.resource("dynamodb")
 cognito = boto3.client("cognito-idp")
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE"
-}
 
 def lambda_handler(event, context):
     try:

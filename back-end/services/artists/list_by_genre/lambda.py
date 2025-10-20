@@ -1,27 +1,22 @@
-import os, json
-import boto3
-from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError
+from boto3.dynamodb.conditions import Key
 from pre_authorize import pre_authorize
+import os, json, boto3
 
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client('s3', os.environ["REGION"], endpoint_url=os.environ["S3_ENDPOINT_URL"])
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,GET",
-    "Content-Type": "application/json",
-}
-
-artists_table        = dynamodb.Table(os.environ["ARTISTS_TABLE"])
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
+artists_table = dynamodb.Table(os.environ["ARTISTS_TABLE"])
 content_genres_table = dynamodb.Table(os.environ["CONTENT_GENRES_TABLE"])
-genres_table         = dynamodb.Table(os.environ["GENRES_TABLE"])
-images_bucket        = os.environ["IMAGES_BUCKET"]
+genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
+images_bucket = os.environ["IMAGES_BUCKET"]
+
 
 def _ensure_genre_exists(genre_id: str) -> bool:
     resp = genres_table.get_item(Key={"PK": "genres", "genre_id": genre_id})
     return bool(resp.get("Item"))
+
 
 def _artist_ids_for_genre(genre_id: str) -> list[str]:
     """
@@ -48,8 +43,10 @@ def _artist_ids_for_genre(genre_id: str) -> list[str]:
     uniq = []
     for a in ids:
         if a not in seen:
-            seen.add(a); uniq.append(a)
+            seen.add(a);
+            uniq.append(a)
     return uniq
+
 
 def _batch_get_artists(artist_ids: list[str]) -> dict[str, dict]:
     if not artist_ids: return {}
@@ -57,9 +54,9 @@ def _batch_get_artists(artist_ids: list[str]) -> dict[str, dict]:
     ddb = boto3.client("dynamodb")
     out = {}
     for i in range(0, len(artist_ids), 100):
-        keys = [{"artist_id": {"S": aid}} for aid in artist_ids[i:i+100]]
+        keys = [{"artist_id": {"S": aid}} for aid in artist_ids[i:i + 100]]
         resp = ddb.batch_get_item(
-            RequestItems={ artists_table.name: {"Keys": keys} }
+            RequestItems={artists_table.name: {"Keys": keys}}
         )
         items = [
             {k: list(v.values())[0] for k, v in it.items()}
@@ -68,6 +65,7 @@ def _batch_get_artists(artist_ids: list[str]) -> dict[str, dict]:
         for it in items:
             out[it["artist_id"]] = it
     return out
+
 
 def _genre_names_map() -> dict[str, str]:
     """Query all genres once to map id -> Name."""
@@ -84,6 +82,7 @@ def _genre_names_map() -> dict[str, str]:
         lek = resp.get("LastEvaluatedKey")
         if not lek: break
     return {it["genre_id"]: it.get("Name", "") for it in items}
+
 
 def _all_genres_for_artists(artist_ids: list[str]) -> dict[str, list[str]]:
     """
@@ -106,6 +105,7 @@ def _all_genres_for_artists(artist_ids: list[str]) -> dict[str, list[str]]:
             if not lek: break
     return mapping
 
+
 def _presign(key: str | None) -> str | None:
     if not key: return None
     try:
@@ -116,6 +116,7 @@ def _presign(key: str | None) -> str | None:
         )
     except ClientError:
         return None
+
 
 @pre_authorize(['Admin', 'LoggedInUser'])
 def lambda_handler(event, context):
@@ -140,7 +141,7 @@ def lambda_handler(event, context):
     for aid in artist_ids:  # keep stable order
         it = artists.get(aid) or {}
         name = it.get("Name", "")
-        bio  = it.get("Biography", "") or ""
+        bio = it.get("Biography", "") or ""
         picture_key = it.get("Picture")
 
         out.append({

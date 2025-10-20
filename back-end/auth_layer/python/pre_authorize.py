@@ -1,12 +1,8 @@
-import verify_role
-import inject_user_id
 from authorization_exception import AuthorizationException
+import inject_user_id
+import verify_role
+import os, json
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE"
-}
 
 def pre_authorize(allowed_groups: list):
     def decorator(handler):
@@ -16,10 +12,8 @@ def pre_authorize(allowed_groups: list):
                 inject_user_id.inject_user_id(event)
                 return handler(event, context)
             except AuthorizationException as e:
-                return {
-                    "statusCode": 401,
-                    "headers": CORS_HEADERS,
-                    "body": str(e)
-                }
+                return {"statusCode": 401, "headers": json.loads(os.environ.get("CORS_HEADERS", "{}")), "body": str(e)}
+
         return wrapper
+
     return decorator

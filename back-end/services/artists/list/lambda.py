@@ -1,20 +1,14 @@
-import os, json
-import boto3
 from boto3.dynamodb.conditions import Key, Attr
 from pre_authorize import pre_authorize
+import os, json, boto3
 
 dynamodb = boto3.resource("dynamodb")
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,GET",
-    "Content-Type": "application/json",
-}
-
-artists_table        = dynamodb.Table(os.environ["ARTISTS_TABLE"])
+artists_table = dynamodb.Table(os.environ["ARTISTS_TABLE"])
 content_genres_table = dynamodb.Table(os.environ["CONTENT_GENRES_TABLE"])
-genres_table         = dynamodb.Table(os.environ["GENRES_TABLE"])
+genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
+
 
 def _scan_all_artists() -> list[dict]:
     items, lek = [], None
@@ -35,6 +29,7 @@ def _scan_all_artists() -> list[dict]:
     items.sort(key=lambda it: (it.get("Name") or "").lower())
     return items
 
+
 def _all_genre_names() -> dict[str, str]:
     items, lek = [], None
     while True:
@@ -51,6 +46,7 @@ def _all_genre_names() -> dict[str, str]:
         if not lek:
             break
     return {it["genre_id"]: it.get("Name", "") for it in items}
+
 
 def _all_artist_genre_links() -> dict[str, list[str]]:
     mapping: dict[str, list[str]] = {}
@@ -71,6 +67,7 @@ def _all_artist_genre_links() -> dict[str, list[str]]:
             break
     return mapping
 
+
 @pre_authorize(['Admin', 'LoggedInUser'])
 def lambda_handler(event, context):
     artist_items = _scan_all_artists()
@@ -84,8 +81,8 @@ def lambda_handler(event, context):
             "id": aid,
             "name": it.get("Name", ""),
             "biography": it.get("Biography", "") or "",
-            "pictureKey": None,         
-            "pictureUrl": None,        
+            "pictureKey": None,
+            "pictureUrl": None,
             "genres": [
                 {"id": gid, "name": gid_to_name.get(gid, "")}
                 for gid in artist_to_genres.get(aid, [])

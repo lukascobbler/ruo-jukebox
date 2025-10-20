@@ -15,7 +15,7 @@ from iac.cognito_stack import CognitoStack
 from iac.email_stack import EmailStack
 from aws_cdk import App, Environment
 from iac.s3_stack import S3Stack
-import os
+import os, json
 
 app = App()
 ENV = Environment(account=os.getenv("CDK_DEFAULT_ACCOUNT"), region=os.getenv("CDK_DEFAULT_REGION"))
@@ -49,9 +49,14 @@ env_vars = {
     "TRANSCRIPTIONS_TABLE": dynamo_db_stack.transcriptions.table_name,
     "USER_POOL_ID": cognito_stack.user_pool.user_pool_id,
     "USER_POOL_CLIENT_ID": cognito_stack.app_client.user_pool_client_id,
-    "REGION": str(os.getenv("CDK_DEFAULT_REGION")),
     "S3_ENDPOINT_URL": 'https://s3.' + str(os.getenv("CDK_DEFAULT_REGION")) + '.amazonaws.com',
+    "REGION": str(os.getenv("CDK_DEFAULT_REGION")),
     "FROM_EMAIL": "noreply@jb.moma.rs",
+    "CORS_HEADERS": json.dumps({
+        "Access-Control-Allow-Methods": "OPTIONS,GET,POST,PUT,PATCH,DELETE",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Origin": "*"
+    })
 }
 
 # API Gateway

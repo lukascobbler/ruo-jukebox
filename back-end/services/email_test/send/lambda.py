@@ -2,13 +2,8 @@ from pre_authorize import pre_authorize
 import boto3, os, json
 
 ses = boto3.client("ses", region_name=os.environ.get("AWS_REGION", "eu-central-1"))
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 FROM_EMAIL = os.environ["FROM_EMAIL"]
-
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-}
 
 
 @pre_authorize(['Admin', 'LoggedInUser'])

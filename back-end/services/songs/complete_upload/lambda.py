@@ -3,12 +3,7 @@ import json, boto3, os
 
 dynamodb = boto3.resource("dynamodb")
 SONGS_TABLE = dynamodb.Table(os.environ["SONGS_TABLE"])
-
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE"
-}
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
 
 def lambda_handler(event, context):

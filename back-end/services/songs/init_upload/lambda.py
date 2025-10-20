@@ -1,7 +1,7 @@
+from botocore.exceptions import ClientError
+from boto3.dynamodb.conditions import Key
 from datetime import datetime, timezone
 import json, os, uuid, boto3
-from boto3.dynamodb.conditions import Key
-from botocore.exceptions import ClientError
 
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client('s3', os.environ["REGION"], endpoint_url=os.environ["S3_ENDPOINT_URL"])
@@ -12,12 +12,7 @@ ALBUMS_TABLE = dynamodb.Table(os.environ["ALBUMS_TABLE"])
 SONGS_TABLE = dynamodb.Table(os.environ["SONGS_TABLE"])
 SONG_ARTISTS_TABLE = dynamodb.Table(os.environ["SONG_ARTISTS_TABLE"])
 CONTENT_GENRES_TABLE = dynamodb.Table(os.environ["CONTENT_GENRES_TABLE"])
-
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE"
-}
+CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
 
 def _generate_presigned_url(bucket, key):
@@ -70,14 +65,13 @@ def lambda_handler(event, context):
 
         SONGS_TABLE.put_item(
             Item={
-                "song_id": song_id,
                 "title": name,
+                "song_id": song_id,
                 "status": "UPLOADING",
                 "audio_key": audio_key,
+                "song_no": song_no or 0,
                 "cover_key": cover_key or "",
-                "album_id": album_id or "",
-                "has_album": "true" if album_id else "false",
-                "song_no": song_no or "",
+                "album_id": album_id or "SINGLE",
                 "created_at": int(datetime.now(timezone.utc).timestamp()),
                 "stats": {"rating_sum": 0, "rating_cnt": 0},
             }
