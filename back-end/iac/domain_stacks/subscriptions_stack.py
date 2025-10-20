@@ -58,7 +58,7 @@ class SubscriptionsStack(Stack):
         ))
     
 
-    def attach_to_api(self, api: ApiGatewayStack):
+    def _attach_to_api(self, api: ApiGatewayStack):
         subs = api.api.root.add_resource("subscriptions")
         subs.add_method("POST", apigw.LambdaIntegration(self.lambdas["SubsCreate"]), **api.auth_kwargs)
 
