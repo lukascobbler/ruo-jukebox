@@ -1,8 +1,8 @@
-from iac.auth_layer_stack import AuthLayerStack
 from iac.constructs.lambda_with_permissions import LambdaWithPermissions
 from iac.shared_layer_stack import SharedLayerStack
 from aws_cdk import Stack, aws_apigateway as apigw
 from iac.api_gateway_stack import ApiGatewayStack
+from iac.auth_layer_stack import AuthLayerStack
 from iac.dynamo_db_stack import DynamoDbStack
 from constructs import Construct
 from iac.s3_stack import S3Stack
@@ -10,11 +10,12 @@ from iac.s3_stack import S3Stack
 
 class PlaylistsStack(Stack):
     def __init__(self, scope: Construct, id: str,
-                 dynamo_db: DynamoDbStack, s3: S3Stack, shared_layer_stack: SharedLayerStack, auth_layer_stack: AuthLayerStack,
+                 dynamo_db: DynamoDbStack, s3: S3Stack, shared_layer_stack: SharedLayerStack, auth_layer_stack: AuthLayerStack, api_stack: ApiGatewayStack,
                  environment, **kwargs):
         super().__init__(scope, id, **kwargs)
         self.lambdas = {}
         self._create_lambdas(dynamo_db, s3, shared_layer_stack, auth_layer_stack, environment)
+        self._attach_to_api(api_stack)
 
     def _create_lambdas(self, dynamo_db, s3, shared_layer_stack, auth_layer_stack, env):
         lambda_defs = {
@@ -29,7 +30,7 @@ class PlaylistsStack(Stack):
         for key, path in lambda_defs.items():
             self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, shared_layer_stack, auth_layer_stack).fn
 
-    def attach_to_api(self, api: ApiGatewayStack):
+    def _attach_to_api(self, api: ApiGatewayStack):
         playlists = api.api.root.add_resource("playlists")
         pl_id = playlists.add_resource("{id}")
         pl_songs = pl_id.add_resource("songs")
