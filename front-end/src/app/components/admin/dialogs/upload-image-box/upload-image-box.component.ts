@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, inject} from '@angular/core';
+import {ChangeDetectorRef, Component, inject, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {NgIf} from '@angular/common';
 import {MatIconButton} from '@angular/material/button';
 
@@ -9,9 +9,17 @@ import {MatIconButton} from '@angular/material/button';
   templateUrl: './upload-image-box.component.html',
   styleUrls: ['./upload-image-box.component.scss']
 })
-export class UploadImageBoxComponent {
+export class UploadImageBoxComponent implements OnChanges {
   private cd = inject(ChangeDetectorRef);
-  image: { file: File; url: string } | null = null;
+  @Input() imageUrl?: string; // prefilled cover URL
+  image: { file: File | null; url: string } | null = null;
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['imageUrl'] && this.imageUrl) {
+      this.image = { file: null, url: this.imageUrl };
+      this.cd.detectChanges();
+    }
+  }
 
   onSelectNewImage(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -19,21 +27,16 @@ export class UploadImageBoxComponent {
     if (!file) return;
 
     const objectUrl = URL.createObjectURL(file);
-    const img = new Image();
-
-    img.onload = () => {
-      this.image = {file, url: objectUrl};
-      this.cd.detectChanges();
-    };
-
-    img.src = objectUrl;
+    this.image = { file, url: objectUrl };
+    this.cd.detectChanges();
   }
 
   onRemoveImage(event: Event, fileInput: HTMLInputElement) {
     event.stopPropagation();
-    if (this.image) URL.revokeObjectURL(this.image.url);
+    if (this.image && this.image.file) URL.revokeObjectURL(this.image.url);
     this.image = null;
     fileInput.value = '';
+    this.cd.detectChanges();
   }
 
   onBoxClick(fileInput: HTMLInputElement) {

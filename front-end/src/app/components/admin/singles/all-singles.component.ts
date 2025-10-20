@@ -84,7 +84,7 @@ export class AllSinglesComponent implements OnInit {
         song_id: song.song_id,
         name: song.title,
         cover_url: song.cover_url,
-        artists: song.artists.map(a => a.id),
+        artists: song.artists.map(a => a.name),
         genres: song.genres.map(g => g.name)
       }
     });

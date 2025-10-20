@@ -1,15 +1,14 @@
-from boto3.dynamodb.conditions import Key
-import json, os, boto3
+from datetime import datetime, timezone
+import json, os, uuid, boto3
 
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client("s3")
 
+AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
+IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
 SONGS_TABLE = dynamodb.Table(os.environ["SONGS_TABLE"])
 SONG_ARTISTS_TABLE = dynamodb.Table(os.environ["SONG_ARTISTS_TABLE"])
 CONTENT_GENRES_TABLE = dynamodb.Table(os.environ["CONTENT_GENRES_TABLE"])
-AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
-IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
-TRANSCRIPTS_BUCKET = os.environ.get("TRANSCRIPTS_BUCKET", "")
 
 CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*",
@@ -18,56 +17,61 @@ CORS_HEADERS = {
 }
 
 
+def _generate_presigned_url(bucket, key):
+    return s3.generate_presigned_url("put_object", Params={"Bucket": bucket, "Key": key}, ExpiresIn=3600)
+
+
 def lambda_handler(event, context):
-    try:
-        song_id = event.get("pathParameters", {}).get("id")
-        if not song_id:
-            return _response(400, {"error": "Missing song ID"})
+    body = json.loads(event.get("body", "{}"))
+    name = body.get("name")
+    filename = body.get("filename")
+    cover_filename = body.get("cover_filename")
 
-        res = SONGS_TABLE.get_item(Key={"song_id": song_id})
-        item = res.get("Item")
-        if not item:
-            return _response(404, {"error": "Song not found"})
+    if not name or not filename:
+        return _response(400, {"message": "Missing filename"})
 
-        # 1. Delete related records from SONG_ARTISTS_TABLE
-        _delete_related_items(SONG_ARTISTS_TABLE, "song_id", song_id, "artist_id")
+    song_id = str(uuid.uuid4())
 
-        # 2. Delete related records from CONTENT_GENRES_TABLE
-        _delete_related_items(CONTENT_GENRES_TABLE, "entity", song_id, "genre")
+    audio_key = f"songs/{song_id}.mp3"
+    cover_key = f"singles/{song_id}.jpg" if cover_filename else None
 
-        # 3. Delete from DynamoDB main SONGS_TABLE
-        SONGS_TABLE.delete_item(Key={"song_id": song_id})
+    audio_url = _generate_presigned_url(AUDIO_BUCKET, audio_key)
+    response = {"song_id": song_id, "upload_url": audio_url}
 
-        # 4. Delete S3 files if keys exist
-        for bucket, key in [
-            (AUDIO_BUCKET, item.get("audio_key")),
-            (IMAGES_BUCKET, item.get("cover_key")),
-            (TRANSCRIPTS_BUCKET, item.get("transcription_key")),
-        ]:
-            if key:
-                _safe_delete_s3(bucket, key)
+    if cover_key:
+        response["cover_upload_url"] = _generate_presigned_url(IMAGES_BUCKET, cover_key)
 
-        return _response(200, {"message": "Song and related data deleted successfully"})
+    SONGS_TABLE.put_item(
+        Item={
+            "song_id": song_id,
+            "title": name,
+            "status": "UPLOADING",
+            "audio_key": audio_key,
+            "has_album": "false",
+            "cover_key": cover_key or "",
+            "created_at": int(datetime.now(timezone.utc).timestamp()),
+            "stats": {"rating_sum": 0, "rating_cnt": 0},
+        }
+    )
 
-    except Exception as e:
-        return _response(500, {"error": str(e)})
+    _store_song_artists(song_id, body.get("artists", []))
+    _store_song_genres(song_id, body.get("genres", []))
 
-
-def _delete_related_items(table, key_name, key_value, attr_name):
-    res = table.query(KeyConditionExpression=Key(key_name).eq(key_value))
-    items = res.get("Items", [])
-    if not items: return
-    with table.batch_writer() as batch:
-        for item in items:
-            batch.delete_item(Key={key_name: key_value, attr_name: item[attr_name]})
+    return _response(200, response)
 
 
-def _safe_delete_s3(bucket, key):
-    if not bucket or not key: return
-    try:
-        s3.delete_object(Bucket=bucket, Key=key)
-    except Exception:
-        pass
+def _store_song_artists(song_id, artists):
+    if not artists: return
+    with SONG_ARTISTS_TABLE.batch_writer() as batch:
+        for artist_id in artists:
+            batch.put_item(Item={"song_id": song_id, "artist_id": artist_id})
+
+
+def _store_song_genres(song_id, genres):
+    if not genres: return
+    with CONTENT_GENRES_TABLE.batch_writer() as batch:
+        for genre in genres:
+            batch.put_item(Item={"entity": song_id, "genre": genre})
 
 
 def _response(status, body):

@@ -25,7 +25,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     audio_url: '',
     song_id: '',
     no: 0,
-    title: '---',
+    title: '',
     album: '',
     albumId: '',
     duration: 0,

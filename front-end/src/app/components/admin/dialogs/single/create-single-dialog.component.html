@@ -7,8 +7,9 @@
     <div class="info">
       <mat-form-field appearance="outline">
         <mat-label>Name</mat-label>
-        <input matInput [(ngModel)]="name"/>
+        <input matInput [(ngModel)]="name" />
       </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>Artists</mat-label>
         <mat-select [(ngModel)]="selectedArtists" multiple>
@@ -18,6 +19,7 @@
           <mat-option [value]="'artist4'">Awesome artist 4</mat-option>
         </mat-select>
       </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>Genres</mat-label>
         <mat-select [(ngModel)]="selectedGenres" multiple>
@@ -27,11 +29,16 @@
           <mat-option [value]="'pop'">Pop</mat-option>
         </mat-select>
       </mat-form-field>
+
       <app-upload-song-box class="file"></app-upload-song-box>
     </div>
+
     <div class="picture">
-      <app-upload-image-box></app-upload-image-box>
+      <app-upload-image-box [imageUrl]="data?.cover_url"></app-upload-image-box>
     </div>
   </div>
-  <button (click)="createSong()" class="orange-button finish">Create</button>
+
+  <button (click)="createSong()" class="orange-button finish">
+    {{ isEditMode ? 'Update' : 'Create' }}
+  </button>
 </div>

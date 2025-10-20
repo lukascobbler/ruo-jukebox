@@ -40,4 +40,20 @@ export class SongsService {
   listSongs(): Observable<any[]> {
     return this.http.get<any[]>(`${this.API_BASE}`);
   }
+
+  updateSong(
+    song_id: string,
+    payload: {
+      name?: string;
+      artist_ids?: string[];
+      genre_ids?: string[];
+      cover_filename?: string;
+      audio_filename?: string;
+    }
+  ): Observable<{ message: string; cover_upload_url?: string; audio_upload_url?: string }> {
+    return this.http.patch<{ message: string; cover_upload_url?: string; audio_upload_url?: string }>(
+      `${this.API_BASE}/${song_id}`,
+      { song_id, ...payload }
+    );
+  }
 }
