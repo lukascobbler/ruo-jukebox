@@ -30,7 +30,7 @@ def lambda_handler(event, context):
     if not name or not filename:
         return _response(400, {"message": "Missing filename"})
 
-    song_id = str(uuid.uuid4())
+    song_id = "SONG~" + str(uuid.uuid4())
 
     audio_key = f"songs/{song_id}.mp3"
     cover_key = f"singles/{song_id}.jpg" if cover_filename else None
