@@ -210,6 +210,9 @@ def update_playlist(table, user_id, playlist_id, name):
 def update_rating(table, user_id, song_id, rating):
     table.update_item(
         Key={"user_id": user_id, "SK": f"RATING~{song_id}"},
-        UpdateExpression="SET rating = :r",
-        ExpressionAttributeValues={":r": str(rating)}
+        UpdateExpression="SET rating = :r, rating_user = :ru",
+        ExpressionAttributeValues={
+            ":r": str(rating),
+            ":ru": f"{str(rating)}~{user_id}"
+        }
     )

@@ -139,6 +139,7 @@ def create_rating(table, user_id, song_id, rating):
     item = {
         "user_id": user_id,
         "SK": f"RATING~{song_id}",
+        "rating_user": f"{str(rating)}~{user_id}",
         "song_id": song_id,
         "rating": str(rating)
     }

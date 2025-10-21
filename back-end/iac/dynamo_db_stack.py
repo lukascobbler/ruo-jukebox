@@ -45,7 +45,7 @@ class DynamoDbStack(Stack):
         self.userdata.add_global_secondary_index(
             index_name="ratingBySong",
             partition_key=Attribute(name="song_id", type=AttributeType.STRING),
-            sort_key=Attribute(name="rating", type=AttributeType.STRING)
+            sort_key=Attribute(name="rating_user", type=AttributeType.STRING)
         )
 
         # subscriptions lookup by topic
@@ -55,7 +55,7 @@ class DynamoDbStack(Stack):
         )
 
         # Interactions Table
-        self.userdata = ddb.Table(
+        self.interactions = ddb.Table(
             self, "InteractionsTable",
             table_name="InteractionsTable",
             partition_key=Attribute(name="user_id", type=AttributeType.STRING),
@@ -67,7 +67,7 @@ class DynamoDbStack(Stack):
         )
 
         # Feed Table
-        self.userdata = ddb.Table(
+        self.feed = ddb.Table(
             self, "FeedTable",
             table_name="FeedTable",
             partition_key=Attribute(name="user_id", type=AttributeType.STRING),

@@ -48,10 +48,11 @@ user_id  =  {PK}
 ### GSI ratingBySong {PK} - {SK} (used for feed)
 
 ```
-{song_id} - {rating}
+{song_id} - {rating_user}
 
-song_id   =  SONG~{UUID}
-rating   =  1 | 2 | 3
+rating_user  =  {rating}~USER~{UUID}
+song_id      =  SONG~{UUID}
+rating       =  1 | 2 | 3
 ```
 
 ### GSI getSubscribed {PK} - {SK}

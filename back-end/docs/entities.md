@@ -228,6 +228,7 @@ user_table = {
 user_table = {
     "user_id": "USER~{UUID}",
     "SK": "RATING~SONG~{UUID}",
+    "rating_user": "{rating}~USER~{UUID}",
     "song_id": "SONG~{UUID}",
     "rating": "3"
 }

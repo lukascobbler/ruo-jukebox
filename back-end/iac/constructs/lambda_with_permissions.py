@@ -1,5 +1,6 @@
-from iac.auth_layer_stack import AuthLayerStack
 from iac.shared_layer_stack import SharedLayerStack
+from iac.utils_layer_stack import UtilsLayerStack
+from iac.auth_layer_stack import AuthLayerStack
 from iac.dynamo_db_stack import DynamoDbStack
 from aws_cdk import Duration, aws_lambda
 from aws_cdk.aws_dynamodb import Table
@@ -7,8 +8,10 @@ from aws_cdk import aws_iam as iam
 from constructs import Construct
 from iac.s3_stack import S3Stack
 
+
 class LambdaWithPermissions(Construct):
-    def __init__(self, scope: Construct, id: str, path: str, env: dict, dynamo_db: DynamoDbStack, s3: S3Stack, shared_layer_stack: SharedLayerStack, auth_layer_stack: AuthLayerStack, extra_env: dict | None = None):
+    def __init__(self, scope: Construct, id: str, path: str, env: dict, dynamo_db: DynamoDbStack, s3: S3Stack, shared_layer_stack: SharedLayerStack,
+                 auth_layer_stack: AuthLayerStack, utils_layer_stack: UtilsLayerStack, extra_env: dict | None = None):
         super().__init__(scope, id)
         env = {**env, **(extra_env or {})}
 
@@ -23,13 +26,13 @@ class LambdaWithPermissions(Construct):
             runtime=aws_lambda.Runtime.PYTHON_3_11,
             handler="lambda.lambda_handler",
             code=aws_lambda.Code.from_asset(path),
-            layers=[shared_layer_stack.shared_layer, auth_layer_stack.auth_layer],
+            layers=[shared_layer_stack.shared_layer, auth_layer_stack.auth_layer, utils_layer_stack.utils_layer],
             environment=env,
             timeout=Duration.seconds(15),
             memory_size=256,
             role=role,
         )
-        # grants TODO right now everyone gets everything
+
         s3.audio_bucket.grant_read_write(self.fn)
         s3.images_bucket.grant_read_write(self.fn)
         s3.transcripts_bucket.grant_read_write(self.fn)
