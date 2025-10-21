@@ -81,6 +81,6 @@ playlists = PlaylistsStack(app, "PlaylistsStack", dynamo_db_stack, s3_stack, sha
 
 songs = SongsStack(app, "SongsStack", cognito_stack, dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, api_gateway, env_vars, env=ENV)
 
-subscriptions = SubscriptionsStack(app, "SubscriptionsStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, api_gateway, env_vars, env=ENV)
+subscriptions = SubscriptionsStack(app, "SubscriptionsStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, api_gateway, email_stack, env_vars, env=ENV)
 
 app.synth()

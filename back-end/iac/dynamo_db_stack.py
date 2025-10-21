@@ -197,7 +197,7 @@ class DynamoDbStack(Stack):
             sort_key=ddb.Attribute(name="song_id", type=ddb.AttributeType.STRING),
         )
 
-        # also generic topic = ARTIST#id, GENRE#pop
+        # topic can be artist or genre id
         self.subscriptions = ddb.Table(
             self, "Subscriptions",
             table_name=PhysicalName.GENERATE_IF_NEEDED,

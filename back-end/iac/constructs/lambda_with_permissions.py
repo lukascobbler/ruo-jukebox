@@ -29,7 +29,6 @@ class LambdaWithPermissions(Construct):
             memory_size=256,
             role=role,
         )
-
         # grants TODO right now everyone gets everything
         s3.audio_bucket.grant_read_write(self.fn)
         s3.images_bucket.grant_read_write(self.fn)
