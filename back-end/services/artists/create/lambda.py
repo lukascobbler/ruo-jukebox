@@ -59,7 +59,7 @@ def lambda_handler(event, context):
         return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Unknown genre ids", "unknown": missing})}
 
     now = int(time.time())
-    artist_id = f"ARTIST~{uuid.uuid4().hex}"
+    artist_id = f"ARTIST~{uuid.uuid4()}"
 
     item = {
         "artist_id": artist_id,

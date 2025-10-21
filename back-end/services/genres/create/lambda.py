@@ -18,7 +18,7 @@ def lambda_handler(event, context):
     if not name:
         return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Field 'name' is required"})}
 
-    genre_id = f"GENRE~{uuid.uuid4().hex}"
+    genre_id = f"GENRE~{uuid.uuid4()}"
     now = int(time.time())
 
     item = {
