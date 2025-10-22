@@ -14,7 +14,7 @@ class SharedResourcesStack(NestedStack):
     def __init__(self, scope: Construct, stack_id: str, branch: str, **kwargs):
         super().__init__(scope, stack_id, **kwargs)
 
-        self.cognito_stack = CognitoStack(self, "CognitoStack")
+        self.cognito_stack = CognitoStack(self, "CognitoStack", branch)
         self.utils_layer_stack = UtilsLayerStack(self, "UtilsLayerStack")
         self.auth_layer_stack = AuthLayerStack(self, "AuthLayerStack")
         self.libs_layer_stack = LibsLayerStack(self, "LibsLayerStack")
