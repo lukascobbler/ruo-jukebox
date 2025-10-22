@@ -18,7 +18,7 @@ feed_table = dynamodb.Table(os.environ["FEED_TABLE"])
 #     "artists": artists,
 #     "genres": genres
 # }
-def create_songs(album_or_single_id, songs: list[dict]):
+def create_songs(album_or_single_id: str, songs: list[dict]):
     with content_table.batch_writer() as batch:
         for pos, song in enumerate(songs):
             song_id = song["content_id"]
