@@ -6,7 +6,7 @@ CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 FROM_EMAIL = os.environ["FROM_EMAIL"]
 
 
-@pre_authorize(['Admin', 'LoggedInUser'])
+@pre_authorize(['Admin', 'User'])
 def lambda_handler(event, context):
     body = json.loads(event.get("body", "{}"))
     recipient = body.get("to") or "test@example.com"

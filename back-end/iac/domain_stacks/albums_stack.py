@@ -1,5 +1,5 @@
 from iac.constructs.lambda_with_permissions import LambdaWithPermissions
-from iac.shared_layer_stack import SharedLayerStack
+from iac.libs_layer_stack import LibsLayerStack
 from aws_cdk import Stack, aws_apigateway as apigw
 from iac.api_gateway_stack import ApiGatewayStack
 from iac.utils_layer_stack import UtilsLayerStack
@@ -11,25 +11,24 @@ from constructs import Construct
 
 class AlbumsStack(Stack):
     def __init__(self, scope: Construct, id: str,
-                 dynamo_db: DynamoDbStack, s3: S3Stack, shared_layer_stack: SharedLayerStack, auth_layer_stack: AuthLayerStack,
+                 dynamo_db: DynamoDbStack, s3: S3Stack, libs_layer_stack: LibsLayerStack, auth_layer_stack: AuthLayerStack,
                  utils_layer_stack: UtilsLayerStack, api_stack: ApiGatewayStack, environment, **kwargs):
         super().__init__(scope, id, **kwargs)
         self.lambdas = {}
-        self._create_lambdas(dynamo_db, s3, shared_layer_stack, auth_layer_stack, utils_layer_stack, environment)
+        self._create_lambdas(dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, environment)
         self._attach_to_api(api_stack)
 
-    def _create_lambdas(self, dynamo_db, s3, shared_layer_stack, auth_layer_stack, utils_layer_stack, env):
+    def _create_lambdas(self, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, env):
         lambda_defs = {
             "AlbumsList": "services/albums/list",
             "AlbumsGet": "services/albums/get",
             "AlbumsUpdate": "services/albums/update",
-            "AlbumsRelease": "services/albums/release",
             "AlbumsDelete": "services/albums/delete",
             "AlbumsInitUpload": "services/albums/init_upload",
             "AlbumsCompleteUpload": "services/albums/complete_upload"
         }
         for key, path in lambda_defs.items():
-            self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, shared_layer_stack, auth_layer_stack, utils_layer_stack).fn
+            self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack).fn
 
     def _attach_to_api(self, api: ApiGatewayStack):
         albums = api.api.root.add_resource("albums")
@@ -41,6 +40,5 @@ class AlbumsStack(Stack):
         albums.add_resource("complete-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsCompleteUpload"]), **api.auth_kwargs)
 
         album_id.add_method("GET", apigw.LambdaIntegration(self.lambdas["AlbumsGet"]), **api.auth_kwargs)
-        album_id.add_method("POST", apigw.LambdaIntegration(self.lambdas["AlbumsRelease"]), **api.auth_kwargs)
         album_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["AlbumsUpdate"]), **api.auth_kwargs)  # todo
         album_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["AlbumsDelete"]), **api.auth_kwargs)  # todo

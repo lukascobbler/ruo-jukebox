@@ -5,7 +5,7 @@ import boto3, json, os, uuid
 
 USERS_TABLE = os.environ["USERS_TABLE"]
 COGNITO_USER_POOL_ID = os.environ["USER_POOL_ID"]
-DEFAULT_GROUP = os.environ.get("DEFAULT_GROUP", "LoggedInUser")
+DEFAULT_GROUP = os.environ.get("DEFAULT_GROUP", "User")
 CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
 dynamodb = boto3.resource("dynamodb")

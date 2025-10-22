@@ -16,7 +16,7 @@ def _is_admin(event) -> bool:
     return (event["userRole"] or "").strip() == "Admin"
 
 
-@pre_authorize(["Admin", "LoggedInUser"])
+@pre_authorize(["Admin", "User"])
 def lambda_handler(event, context):
     items, lek = [], None
     while True:

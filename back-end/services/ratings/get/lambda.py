@@ -1,14 +1,12 @@
 from pre_authorize import pre_authorize
-from create import create_subscription
 import json
+from read import get_rating
 from general_utils import response
 
 @pre_authorize(['Admin', 'User'])
 def lambda_handler(event, context):
-    user_id = event["userId"]
     body = json.loads(event.get("body"))
-    target_id = body.get("targetId")
-    result = create_subscription(user_id, target_id)
-    return response(201, result)
-
-
+    user_id = event["userId"]
+    song_id = body.get("songId").strip()
+    rating = get_rating(user_id,song_id)
+    return response(200, rating)

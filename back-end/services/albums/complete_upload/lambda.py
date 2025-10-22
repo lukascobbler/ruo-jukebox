@@ -1,34 +1,29 @@
-from datetime import datetime, timezone
-import json, boto3, os
+from general_utils import response, file_exists_on_s3, get_genre_objects, get_artists_objects
+from create import create_album, get_contents
+import json, os
 
-dynamodb = boto3.resource("dynamodb")
-ALBUMS_TABLE = dynamodb.Table(os.environ["ALBUMS_TABLE"])
-CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
+IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
+AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
 
 
 def lambda_handler(event, context):
-    try:
-        body = json.loads(event.get("body", "{}"))
-        album_id = body.get("album_id")
+    body = json.loads(event.get("body"))
 
-        if not album_id:
-            return _response(400, {"message": "Missing album_id"})
+    album_id = body.get("album_id").strip()
+    song_ids = body.get("song_ids")
+    name = body.get("name").strip()
+    artists = body.get("artists")
+    genres = body.get("genres")
 
-        ALBUMS_TABLE.update_item(
-            Key={"album_id": album_id},
-            UpdateExpression="SET #s = :s, uploaded_at = :t",
-            ExpressionAttributeNames={"#s": "status"},
-            ExpressionAttributeValues={
-                ":s": "UPLOADED",
-                ":t": int(datetime.now(timezone.utc).timestamp())
-            }
-        )
+    artists, message = get_artists_objects(artists)
+    if not artists: return response(400, error=message)
 
-        return _response(200, {"message": "Upload complete"})
+    genres, message = get_genre_objects(genres)
+    if not genres: return response(400, error=message)
 
-    except Exception as e:
-        return _response(500, {"message": str(e)})
+    # todo batch kreirati pesme nakon kreiranja albuma, nisam prosledjivao nikakve detalje u vezi samih pesama koje ce trebati da se azuriraju
+    #  pa je to malo zajebano, pogledati detaljnije
 
+    core_album = create_album(album_id, name, artists, genres)
 
-def _response(status, body):
-    return {"statusCode": status, "headers": CORS_HEADERS, "body": json.dumps(body, default=str)}
+    return response(200, core_album)

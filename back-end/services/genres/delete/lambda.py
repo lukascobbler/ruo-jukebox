@@ -11,7 +11,7 @@ CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 genres_table = dynamodb.Table(GENRES_TABLE)
 content_genres_table = dynamodb.Table(CONTENT_GENRES_TABLE)
 
-@pre_authorize(['Admin', 'LoggedInUser'])
+@pre_authorize(['Admin', 'User'])
 def lambda_handler(event, context):
     path = event.get("pathParameters") or {}
     genre_id = path.get("id")

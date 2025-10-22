@@ -7,5 +7,5 @@
 .idea/
 ../.idea/
 
-/shared_layer/python/**
-!/shared_layer/python/.keep
+/libs_layer/python/**
+!/libs_layer/python/.keep

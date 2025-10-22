@@ -1,64 +1,35 @@
-from datetime import datetime, timezone
-import json, os, uuid, boto3
-
-dynamodb = boto3.resource("dynamodb")
-s3 = boto3.client('s3', os.environ["REGION"], endpoint_url=os.environ["S3_ENDPOINT_URL"])
+from general_utils import response, generate_s3_upload_url
+import json, os, uuid
 
 IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
-ALBUMS_TABLE = dynamodb.Table(os.environ["ALBUMS_TABLE"])
-ALBUM_ARTISTS_TABLE = dynamodb.Table(os.environ["ALBUM_ARTISTS_TABLE"])
-CONTENT_GENRES_TABLE = dynamodb.Table(os.environ["CONTENT_GENRES_TABLE"])
-CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
-
-
-def _generate_presigned_url(bucket, key):
-    return s3.generate_presigned_url("put_object", Params={"Bucket": bucket, "Key": key}, ExpiresIn=3600)
-
+AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
 
 def lambda_handler(event, context):
-    body = json.loads(event.get("body", "{}"))
-    name = body.get("name")
-    cover_filename = body.get("cover_filename")
+    body = json.loads(event.get("body"))
 
-    if not name:
-        return _response(400, {"message": "Missing album name"})
+    try:
+        number_of_songs = int(body["numberOfSongs"])
+        wants_cover = bool(body["wantsCover"])
+    except Exception:
+        return response(400, error="Number of songs or cover request not defined correctly")
 
-    album_id = "ALBUM~" + str(uuid.uuid4())
-    cover_key = f"albums/{album_id}.jpg" if cover_filename else None
-    response = {"album_id": album_id}
+    album_id = f"ALBUM~{uuid.uuid4()}"
 
-    if cover_key:
-        response["cover_upload_url"] = _generate_presigned_url(IMAGES_BUCKET, cover_key)
+    response_body = {}
+    response_body["album_id"] = album_id
 
-    ALBUMS_TABLE.put_item(
-        Item={
-            "album_id": album_id,
-            "title": name,
-            "status": "UPLOADING",
-            "cover_key": cover_key or "",
-            "created_at": int(datetime.now(timezone.utc).timestamp())
-        }
-    )
+    if wants_cover:
+        cover_key = f"albums/{album_id}.jpg"
+        response_body["cover_url"] = generate_s3_upload_url(IMAGES_BUCKET, cover_key)
 
-    _store_album_artists(album_id, body.get("artists", []))
-    _store_album_genres(album_id, body.get("genres", []))
+    response_body["upload_urls"] = []
+    for _ in range(number_of_songs):
+        song_id = f"SONG~{uuid.uuid4()}"
+        audio_key = f"songs/{song_id}.mp3"
+        audio_url = generate_s3_upload_url(audio_key)
+        response_body["upload_urls"].append({
+            "id": song_id,
+            "url": generate_s3_upload_url(AUDIO_BUCKET, audio_url)
+        })
 
-    return _response(200, response)
-
-
-def _store_album_artists(album_id, artists):
-    if not artists: return
-    with ALBUM_ARTISTS_TABLE.batch_writer() as batch:
-        for artist_id in artists:
-            batch.put_item(Item={"album_id": album_id, "artist_id": artist_id})
-
-
-def _store_album_genres(album_id, genres):
-    if not genres: return
-    with CONTENT_GENRES_TABLE.batch_writer() as batch:
-        for genre in genres:
-            batch.put_item(Item={"entity": album_id, "genre": genre})
-
-
-def _response(status, body):
-    return {"statusCode": status, "headers": CORS_HEADERS, "body": json.dumps(body, default=str)}
+    return response(200, **response_body)

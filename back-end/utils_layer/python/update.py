@@ -1,25 +1,33 @@
 from boto3.dynamodb.conditions import Key
-from get import query_all
+from read import query_all
+import boto3
+import os
+
+dynamodb = boto3.resource("dynamodb")
+interactions_table = dynamodb.Table(os.environ["INTERACTIONS_TABLE"])
+userdata_table = dynamodb.Table(os.environ["USERDATA_TABLE"])
+content_table = dynamodb.Table(os.environ["CONTENT_TABLE"])
+feed_table = dynamodb.Table(os.environ["FEED_TABLE"])
 
 
-def update_genre(table, genre_id, name):
-    table.update_item(
+def update_genre(genre_id, name):
+    content_table.update_item(
         Key={"PK": genre_id, "SK": "META"},
         UpdateExpression="SET #n = :n",
         ExpressionAttributeNames={"#n": "name"},
         ExpressionAttributeValues={":n": name}
     )
 
-    items = query_all(table, KeyConditionExpression=Key("PK").eq(genre_id) & Key("SK").begins_with("CONTENT~"))
-    with table.batch_writer() as batch:
+    items = query_all(content_table, KeyConditionExpression=Key("PK").eq(genre_id) & Key("SK").begins_with("CONTENT~"))
+    with content_table.batch_writer() as batch:
         for i in items:
             if "genres" in i:
                 i["genres"] = [{**g, "name": name} if g["genre_id"] == genre_id else g for g in i["genres"]]
                 batch.put_item(Item=i)
 
 
-def update_artist(table, artist_id, name=None, biography=None, genres=None):
-    artist = table.get_item(Key={"PK": artist_id, "SK": "META"}).get("Item")
+def update_artist(artist_id, name=None, biography=None, genres=None):
+    artist = content_table.get_item(Key={"PK": artist_id, "SK": "META"}).get("Item")
     if not artist:
         return None
 
@@ -37,7 +45,7 @@ def update_artist(table, artist_id, name=None, biography=None, genres=None):
         artist["biography"] = biography
 
     if expr:
-        table.update_item(
+        content_table.update_item(
             Key={"PK": artist_id, "SK": "META"},
             UpdateExpression="SET " + ", ".join(expr),
             ExpressionAttributeNames=names,
@@ -45,8 +53,8 @@ def update_artist(table, artist_id, name=None, biography=None, genres=None):
         )
 
     if name:
-        linked = query_all(table, KeyConditionExpression=Key("PK").eq(artist_id) & Key("SK").begins_with("CONTENT~"))
-        with table.batch_writer() as batch:
+        linked = query_all(content_table, KeyConditionExpression=Key("PK").eq(artist_id) & Key("SK").begins_with("CONTENT~"))
+        with content_table.batch_writer() as batch:
             for i in linked:
                 if "artists" in i:
                     i["artists"] = [{**a, "name": name} if a["artist_id"] == artist_id else a for a in i["artists"]]
@@ -54,18 +62,18 @@ def update_artist(table, artist_id, name=None, biography=None, genres=None):
 
     if genres is not None:
         old = artist.get("genres", [])
-        with table.batch_writer() as batch:
+        with content_table.batch_writer() as batch:
             for g in old:
                 batch.delete_item(Key={"PK": g["genre_id"], "SK": f"CONTENT~{artist_id}"})
             for g in genres:
                 batch.put_item(Item={**artist, "PK": g["genre_id"], "SK": f"CONTENT~{artist_id}"})
         artist["genres"] = genres
-        table.put_item(Item=artist)
+        content_table.put_item(Item=artist)
     return artist
 
 
-def update_album(table, album_id, name=None, genres=None, artists=None):
-    album = table.get_item(Key={"PK": album_id, "SK": "META"}).get("Item")
+def update_album(album_id, name=None, genres=None, artists=None):
+    album = content_table.get_item(Key={"PK": album_id, "SK": "META"}).get("Item")
     if not album:
         return None
 
@@ -79,14 +87,14 @@ def update_album(table, album_id, name=None, genres=None, artists=None):
         album["name_lc"] = name.lower()
 
     if expr:
-        table.update_item(
+        content_table.update_item(
             Key={"PK": album_id, "SK": "META"},
             UpdateExpression="SET " + ", ".join(expr),
             ExpressionAttributeNames=names,
             ExpressionAttributeValues=vals
         )
 
-    with table.batch_writer() as batch:
+    with content_table.batch_writer() as batch:
         if genres is not None:
             for g in album.get("genres", []):
                 batch.delete_item(Key={"PK": g["genre_id"], "SK": f"CONTENT~{album_id}"})
@@ -103,8 +111,8 @@ def update_album(table, album_id, name=None, genres=None, artists=None):
     return album
 
 
-def update_single(table, single_id, name=None, genres=None, artists=None):
-    single = table.get_item(Key={"PK": single_id, "SK": "META"}).get("Item")
+def update_single(single_id, name=None, genres=None, artists=None):
+    single = content_table.get_item(Key={"PK": single_id, "SK": "META"}).get("Item")
     if not single:
         return None
 
@@ -118,14 +126,14 @@ def update_single(table, single_id, name=None, genres=None, artists=None):
         single["name_lc"] = name.lower()
 
     if expr:
-        table.update_item(
+        content_table.update_item(
             Key={"PK": single_id, "SK": "META"},
             UpdateExpression="SET " + ", ".join(expr),
             ExpressionAttributeNames=names,
             ExpressionAttributeValues=vals
         )
 
-    with table.batch_writer() as batch:
+    with content_table.batch_writer() as batch:
         if genres is not None:
             for g in single.get("genres", []):
                 batch.delete_item(Key={"PK": g["genre_id"], "SK": f"CONTENT~{single_id}"})
@@ -142,9 +150,9 @@ def update_single(table, single_id, name=None, genres=None, artists=None):
     return single
 
 
-def update_song(table, album_or_single_id, pos, song_id, name=None, genres=None, artists=None):
+def update_song(album_or_single_id, pos, song_id, name=None, genres=None, artists=None):
     key = {"PK": album_or_single_id, "SK": f"POS~{pos}~{song_id}"}
-    song = table.get_item(Key=key).get("Item")
+    song = content_table.get_item(Key=key).get("Item")
     if not song:
         return None
 
@@ -158,14 +166,14 @@ def update_song(table, album_or_single_id, pos, song_id, name=None, genres=None,
         song["name_lc"] = name.lower()
 
     if expr:
-        table.update_item(
+        content_table.update_item(
             Key=key,
             UpdateExpression="SET " + ", ".join(expr),
             ExpressionAttributeNames=names,
             ExpressionAttributeValues=vals
         )
 
-    with table.batch_writer() as batch:
+    with content_table.batch_writer() as batch:
         if genres is not None:
             for g in song.get("genres", []):
                 batch.delete_item(Key={"PK": g["genre_id"], "SK": f"CONTENT~{song_id}"})
@@ -182,7 +190,7 @@ def update_song(table, album_or_single_id, pos, song_id, name=None, genres=None,
     return song
 
 
-def update_user(table, user_id, updates: dict):
+def update_user(user_id, updates: dict):
     expr, names, vals = [], {}, {}
     for k, v in updates.items():
         names[f"#{k}"] = k
@@ -190,7 +198,7 @@ def update_user(table, user_id, updates: dict):
         expr.append(f"#{k} = :{k}")
     if not expr:
         return
-    table.update_item(
+    userdata_table.update_item(
         Key={"user_id": user_id, "SK": "META"},
         UpdateExpression="SET " + ", ".join(expr),
         ExpressionAttributeNames=names,
@@ -198,8 +206,8 @@ def update_user(table, user_id, updates: dict):
     )
 
 
-def update_playlist(table, user_id, playlist_id, name):
-    table.update_item(
+def update_playlist(user_id, playlist_id, name):
+    userdata_table.update_item(
         Key={"user_id": user_id, "SK": f"{playlist_id}~CONTENT"},
         UpdateExpression="SET #n = :n",
         ExpressionAttributeNames={"#n": "name"},
@@ -207,8 +215,8 @@ def update_playlist(table, user_id, playlist_id, name):
     )
 
 
-def update_rating(table, user_id, song_id, rating):
-    table.update_item(
+def update_rating(user_id, song_id, rating):
+    userdata_table.update_item(
         Key={"user_id": user_id, "SK": f"RATING~{song_id}"},
         UpdateExpression="SET rating = :r, rating_user = :ru",
         ExpressionAttributeValues={

@@ -3,10 +3,11 @@ from iac.domain_stacks.interactions_stack import InteractionsStack
 from iac.domain_stacks.email_test_stack import EmailTestStack
 from iac.domain_stacks.playlists_stack import PlaylistsStack
 from iac.domain_stacks.artists_stack import ArtistsStack
+from iac.domain_stacks.ratings_stack import RatingsStack
+from iac.domain_stacks.singles_stack import SinglesStack
 from iac.domain_stacks.albums_stack import AlbumsStack
 from iac.domain_stacks.genres_stack import GenresStack
-from iac.domain_stacks.songs_stack import SongsStack
-from iac.shared_layer_stack import SharedLayerStack
+from iac.libs_layer_stack import LibsLayerStack
 from iac.domain_stacks.auth_stack import AuthStack
 from iac.api_gateway_stack import ApiGatewayStack
 from iac.utils_layer_stack import UtilsLayerStack
@@ -25,7 +26,7 @@ ENV = Environment(account=os.getenv("CDK_DEFAULT_ACCOUNT"), region=os.getenv("CD
 cognito_stack = CognitoStack(app, "CognitoStack", env=ENV)
 dynamo_db_stack = DynamoDbStack(app, "DynamoDbStack", env=ENV)
 s3_stack = S3Stack(app, "S3Stack", env=ENV)
-shared_layer_stack = SharedLayerStack(app, "SharedLayerStack", env=ENV)
+libs_layer_stack = LibsLayerStack(app, "LibsLayerStack", env=ENV)
 auth_layer_stack = AuthLayerStack(app, "AuthLayerStack", env=ENV)
 utils_layer_stack = UtilsLayerStack(app, "UtilsLayerStack", env=ENV)
 email_stack = EmailStack(app, "EmailStack", env=ENV)
@@ -54,24 +55,26 @@ env_vars = {
 api_gateway = ApiGatewayStack(app, "ApiGatewayStack", user_pool=cognito_stack.user_pool, env=ENV)
 
 # Email test stack
-email_test_stack = EmailTestStack(app, "EmailTestStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, email_stack, env_vars, env=ENV)
+email_test_stack = EmailTestStack(app, "EmailTestStack", dynamo_db_stack, s3_stack, libs_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, email_stack, env_vars, env=ENV)
 
 # Auth stack
-auth_stack = AuthStack(app, "AuthStack", cognito_stack, dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, env_vars, env=ENV)
+auth_stack = AuthStack(app, "AuthStack", cognito_stack, dynamo_db_stack, s3_stack, libs_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, env_vars, env=ENV)
 
 # Domain stacks
-albums = AlbumsStack(app, "AlbumsStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, env_vars, env=ENV)
+albums = AlbumsStack(app, "AlbumsStack", dynamo_db_stack, s3_stack, libs_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, env_vars, env=ENV)
 
-artists = ArtistsStack(app, "ArtistsStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, env_vars, env=ENV)
+artists = ArtistsStack(app, "ArtistsStack", dynamo_db_stack, s3_stack, libs_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, env_vars, env=ENV)
 
-genres = GenresStack(app, "GenresStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, env_vars, env=ENV)
+genres = GenresStack(app, "GenresStack", dynamo_db_stack, s3_stack, libs_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, env_vars, env=ENV)
 
 interactions = InteractionsStack(app, "InteractionsStack", dynamo_db_stack, env_vars, env=ENV)
 
-playlists = PlaylistsStack(app, "PlaylistsStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, env_vars, env=ENV)
+playlists = PlaylistsStack(app, "PlaylistsStack", dynamo_db_stack, s3_stack, libs_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, env_vars, env=ENV)
 
-songs = SongsStack(app, "SongsStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, env_vars, env=ENV)
+songs = SinglesStack(app, "SinglesStack", dynamo_db_stack, s3_stack, libs_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, env_vars, env=ENV)
 
-subscriptions = SubscriptionsStack(app, "SubscriptionsStack", dynamo_db_stack, s3_stack, shared_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, email_stack, env_vars, env=ENV)
+ratings = RatingsStack(app, "RatingsStack", dynamo_db_stack, s3_stack, libs_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, env_vars, env=ENV)
+
+subscriptions = SubscriptionsStack(app, "SubscriptionsStack", dynamo_db_stack, s3_stack, libs_layer_stack, auth_layer_stack, utils_layer_stack, api_gateway, email_stack, env_vars, env=ENV)
 
 app.synth()

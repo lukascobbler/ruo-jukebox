@@ -34,10 +34,6 @@ export class SongsService {
     return this.http.delete<{ message: string }>(`${this.API_BASE}/${song_id}`);
   }
 
-  getSong(song_id: string): Observable<any> {
-    return this.http.get<any>(`${this.API_BASE}/${song_id}`);
-  }
-
   listSongs(): Observable<any[]> {
     return this.http.get<any[]>(`${this.API_BASE}`);
   }

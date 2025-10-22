@@ -2,8 +2,8 @@ from aws_cdk.aws_cognito import UserPoolGroup, AuthFlow, SignInAliases, Standard
 from aws_cdk import Stack, RemovalPolicy, CfnOutput, Duration
 from constructs import Construct
 
-LOGGED_IN_GROUP_NAME = "LoggedInUser"
 ADMIN_GROUP_NAME = "Admin"
+USER_GROUP_NAME = "User"
 
 
 class CognitoStack(Stack):
@@ -48,7 +48,7 @@ class CognitoStack(Stack):
         )
 
     def _define_user_groups(self):
-        UserPoolGroup(self, "LoggedInUsersGroup", user_pool=self.user_pool, group_name=LOGGED_IN_GROUP_NAME)
+        UserPoolGroup(self, "UserGroup", user_pool=self.user_pool, group_name=USER_GROUP_NAME)
         UserPoolGroup(self, "AdminGroup", user_pool=self.user_pool, group_name=ADMIN_GROUP_NAME)
 
     def _expose_objects(self):

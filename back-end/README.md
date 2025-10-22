@@ -12,8 +12,8 @@
 
 ## Backend deployment
 
-1. Add requirements to shared layer: \
-   `pip install -r requirements.txt -t shared_layer/python`
+1. Add requirements to libs layer: \
+   `pip install -r requirements.txt -t libs_layer/python`
 2. Deploy stack: \
    `cdk deploy CognitoStack --require-approval never` \
    `cdk deploy --all --require-approval never`

@@ -1,4 +1,4 @@
-from iac.shared_layer_stack import SharedLayerStack
+from iac.libs_layer_stack import LibsLayerStack
 from iac.utils_layer_stack import UtilsLayerStack
 from iac.auth_layer_stack import AuthLayerStack
 from iac.dynamo_db_stack import DynamoDbStack
@@ -10,7 +10,7 @@ from iac.s3_stack import S3Stack
 
 
 class LambdaWithPermissions(Construct):
-    def __init__(self, scope: Construct, id: str, path: str, env: dict, dynamo_db: DynamoDbStack, s3: S3Stack, shared_layer_stack: SharedLayerStack,
+    def __init__(self, scope: Construct, id: str, path: str, env: dict, dynamo_db: DynamoDbStack, s3: S3Stack, libs_layer_stack: LibsLayerStack,
                  auth_layer_stack: AuthLayerStack, utils_layer_stack: UtilsLayerStack, extra_env: dict | None = None):
         super().__init__(scope, id)
         env = {**env, **(extra_env or {})}
@@ -26,7 +26,7 @@ class LambdaWithPermissions(Construct):
             runtime=aws_lambda.Runtime.PYTHON_3_11,
             handler="lambda.lambda_handler",
             code=aws_lambda.Code.from_asset(path),
-            layers=[shared_layer_stack.shared_layer, auth_layer_stack.auth_layer, utils_layer_stack.utils_layer],
+            layers=[libs_layer_stack.libs_layer, auth_layer_stack.auth_layer, utils_layer_stack.utils_layer],
             environment=env,
             timeout=Duration.seconds(15),
             memory_size=256,
