@@ -3,7 +3,6 @@ from iac.layers.libs_layer_stack import LibsLayerStack
 from iac.layers.auth_layer_stack import AuthLayerStack
 from iac.shared.dynamo_db_stack import DynamoDbStack
 from iac.shared.cognito_stack import CognitoStack
-from iac.shared.email_stack import EmailStack
 from iac.shared.s3_stack import S3Stack
 from constructs import Construct
 from aws_cdk import NestedStack
@@ -19,7 +18,6 @@ class SharedResourcesStack(NestedStack):
         self.auth_layer_stack = AuthLayerStack(self, "AuthLayerStack")
         self.libs_layer_stack = LibsLayerStack(self, "LibsLayerStack")
         self.dynamo_db_stack = DynamoDbStack(self, "DynamoDbStack", branch)
-        self.email_stack = EmailStack(self, "EmailStack", branch)
         self.s3_stack = S3Stack(self, "S3Stack")
 
         self.env_vars = {

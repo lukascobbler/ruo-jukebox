@@ -71,16 +71,17 @@ def create_single(single_id, name, artists, genres):
     return core_single
 
 
-def create_artist(artist_id, name, biography, genres):
+def create_artist(artist_id, name, biography=None, genres=None, cover_key=None):
     core_artist = {
         "artist_id": artist_id,
         "content_type": "ARTIST",
         "name": name,
         "name_lc": name.lower(),
-        "biography": biography,
-        "cover_key": f"artists/{artist_id}.jpg",
-        "genres": genres
     }
+
+    if biography: core_artist["biography"] = biography
+    if cover_key: core_artist["cover_key"] = cover_key
+    if genres: core_artist["genres"] = genres
 
     with content_table.batch_writer() as batch:
         batch.put_item(Item={**core_artist, "PK": artist_id, "SK": "META"})

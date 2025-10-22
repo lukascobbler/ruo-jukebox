@@ -1,7 +1,6 @@
 from aws_cdk.aws_cognito import UserPoolGroup, AuthFlow, SignInAliases, StandardAttribute, UserPool, StandardAttributes, PasswordPolicy, StringAttribute
 from aws_cdk import NestedStack, RemovalPolicy, Duration
 from constructs import Construct
-
 ADMIN_GROUP_NAME = "Admin"
 USER_GROUP_NAME = "User"
 
@@ -18,9 +17,9 @@ class CognitoStack(NestedStack):
             self_sign_up_enabled=True,
             sign_in_aliases=SignInAliases(username=True, email=True),
             standard_attributes=StandardAttributes(
-                given_name=StandardAttribute(required=False, mutable=True),
-                family_name=StandardAttribute(required=False, mutable=True),
-                birthdate=StandardAttribute(required=False, mutable=True),
+                given_name=StandardAttribute(required=True, mutable=True),
+                family_name=StandardAttribute(required=True, mutable=True),
+                birthdate=StandardAttribute(required=True, mutable=True),
                 email=StandardAttribute(required=True, mutable=True),
             ),
             custom_attributes={"userId": StringAttribute(mutable=True)},
