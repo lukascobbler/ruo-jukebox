@@ -22,7 +22,7 @@ def lambda_handler(event, context):
     if not name: return response(400, error="Field 'name' is required")
 
     genres, message = get_genre_objects(genres)
-    if not genres: return response(400, error=message)
+    if genres is None: return response(400, error=message)
 
     cover_key = f"artists/{artist_id}.jpg"
     if not file_exists_on_s3(IMAGES_BUCKET, cover_key):
