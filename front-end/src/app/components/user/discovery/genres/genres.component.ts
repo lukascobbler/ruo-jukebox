@@ -40,6 +40,7 @@ export class GenresComponent implements OnInit {
   private fetchGenres(): void {
     this.genresService.list().subscribe({
       next: (items) => {
+        console.log(items)
         this.genres = items ?? [];
       },
       error: (err) => {

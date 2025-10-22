@@ -1,68 +1,30 @@
-from boto3.dynamodb.conditions import Key
 from pre_authorize import pre_authorize
-import boto3, json, os
-
-dynamodb = boto3.resource("dynamodb")
-genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
-subs_table = dynamodb.Table(os.environ["SUBSCRIPTIONS_TABLE"])
-CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
-
-
-def _user_id(event) -> str:
-    return (event["userId"] or "").strip()
-
-
-def _is_admin(event) -> bool:
-    return (event["userRole"] or "").strip() == "Admin"
-
+import json
+from read import get_subscriptions_for_user
+from read import list_genres
+from general_utils import response
 
 @pre_authorize(["Admin", "User"])
 def lambda_handler(event, context):
-    items, lek = [], None
-    while True:
-        kwargs = {
-            "KeyConditionExpression": Key("PK").eq("genres"),
-            "ProjectionExpression": "#pk, genre_id, #n",
-            "ExpressionAttributeNames": {"#pk": "PK", "#n": "Name"},
-        }
-        if lek:
-            kwargs["ExclusiveStartKey"] = lek
-        resp = genres_table.query(**kwargs)
-        items.extend(resp.get("Items", []))
-        lek = resp.get("LastEvaluatedKey")
-        if not lek:
-            break
+    user_id = event["userId"]
+    subs = get_subscriptions_for_user(user_id)
+    sub_genre_rows = subs.get("genres", [])
+    genres = list_genres()
+    items = []
+    subscribed_keys = {
+        (row.get("sub_id") or row.get("SK"))
+        for row in sub_genre_rows
+        if row
+    }
+    for g in genres:
+        gid = g.get("genre_id") or g.get("PK")
+        name = g.get("name")
+        is_sub = (("SUB~" + gid) in subscribed_keys) if gid else False
 
-    if _is_admin(event):
-        out = [{"id": it["genre_id"], "name": it.get("Name", ""), "isSubscribed": False} for it in items]
-        return {"statusCode": 200, "headers": CORS_HEADERS, "body": json.dumps(out)}
+        items.append({
+            "id": gid,
+            "name": name,
+            "isSubscribed": is_sub
+        })
 
-    uid = _user_id(event)
-    user_topics = set()
-    if uid:
-        lek = None
-        while True:
-            q = {
-                "IndexName": "byUser",
-                "KeyConditionExpression": Key("user_id").eq(uid),
-                "ProjectionExpression": "topic",
-            }
-            if lek:
-                q["ExclusiveStartKey"] = lek
-            r = subs_table.query(**q)
-            for s in r.get("Items", []):
-                t = s.get("topic")
-                if t:
-                    user_topics.add(t)
-            lek = r.get("LastEvaluatedKey")
-            if not lek:
-                break
-
-    out = []
-    for it in items:
-        gid = it["genre_id"]
-        name = it.get("Name", "")
-        is_sub = gid in user_topics
-        out.append({"id": gid, "name": name, "isSubscribed": is_sub})
-
-    return {"statusCode": 200, "headers": CORS_HEADERS, "body": json.dumps(out)}
+    return response(200, items)

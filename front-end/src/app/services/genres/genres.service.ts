@@ -43,14 +43,9 @@ export class GenresService {
       `${env.API_URL}/genres/${encodeURIComponent(id)}`
     );
   }
-
   list(): Observable<GenreItem[]> {
-    const url = `${env.API_URL}/genres`;
     return this.http
-      .get<GenreItem[] | string>(url)
-      .pipe(
-        map(res => Array.isArray(res) ? res : JSON.parse(res as string) as GenreItem[])
-      );
+      .get<GenreItem[]>(`${env.API_URL}/genres`)
+      .pipe(shareReplay(1));
   }
-
 }
