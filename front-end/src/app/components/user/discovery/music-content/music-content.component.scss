@@ -93,3 +93,11 @@ p {
   object-fit: cover;
   display: block;
 }
+
+.no-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $white;
+  font-size: 110px;
+}
