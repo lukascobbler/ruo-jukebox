@@ -8,6 +8,7 @@ import {Subscription, interval} from 'rxjs';
 import {Song} from '../../../models/Song';
 import {Artist} from '../../../models/Artist';
 import {Role} from '../../../models/Role';
+import {SingleItem} from '../../../services/singles/singles.service';
 
 @Component({
   selector: 'app-player',
@@ -20,12 +21,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
   dialog = inject(MatDialog);
   protected readonly player = inject(PlayerService);
 
-  currentlyPlayingSong: Song = {
+  currentlyPlayingSong: Song | SingleItem = {
     cover_url: '',
     audio_url: '',
     song_id: '',
     no: 0,
-    title: '',
+    name: '',
     album: '',
     albumId: '',
     duration: 0,
@@ -98,7 +99,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.dialog.open(LyricsDialogComponent, {
       width: '600px',
       maxWidth: '70vw',
-      data: {lyrics: this.currentlyPlayingSong.lyrics}
+      // data: {lyrics: this.currentlyPlayingSong.lyrics}
     });
   }
 
@@ -114,7 +115,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.hoverRating = 0;
   }
 
-  getArtistNames(song: Song): string {
+  getArtistNames(song: Song | SingleItem): string {
     return song.artists.map((a: Artist) => a.name).join(', ') || '';
   }
 }

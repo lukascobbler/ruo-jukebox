@@ -49,7 +49,7 @@ export class CreateArtistDialogComponent {
   busy = false;
 
   constructor(
-    public dialogRef: MatDialogRef<CreateArtistDialogComponent, null>,
+    public dialogRef: MatDialogRef<CreateArtistDialogComponent, boolean>,
     private artistsService: ArtistsService,
     public toast: ToastrService
   ) {}
@@ -89,7 +89,7 @@ export class CreateArtistDialogComponent {
       );
 
       this.toast.success('Artist created', completed.name);
-      this.dialogRef.close(null);
+      this.dialogRef.close(true);
     } catch (err: any) {
       const msg = err?.error?.message || err?.message || 'Failed to create artist';
       this.toast.error('Create artist error', msg);
@@ -99,7 +99,7 @@ export class CreateArtistDialogComponent {
   }
 
   closeDialog() {
-    this.dialogRef.close(null);
+    this.dialogRef.close(false);
   }
 
   onNoClick() {

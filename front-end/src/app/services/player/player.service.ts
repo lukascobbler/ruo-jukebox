@@ -1,25 +1,26 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {Song} from '../../models/Song';
+import {SingleItem} from '../singles/singles.service';
 
 @Injectable({providedIn: 'root'})
 export class PlayerService {
   private audio = new Audio();
-  private playlist: Song[] = [];
+  private playlist: Song[] | SingleItem[] = [];
   private index = 0;
 
-  private currentSongSubject = new BehaviorSubject<Song | null>(null);
+  private currentSongSubject = new BehaviorSubject<Song | SingleItem | null>(null);
   currentSong$ = this.currentSongSubject.asObservable();
 
   constructor() {
     this.audio.addEventListener('ended', () => this.next());
   }
 
-  loadPlaylist(songs: Song[]) {
+  loadPlaylist(songs: Song[] | SingleItem[]) {
     this.playlist = songs;
   }
 
-  play(song?: Song) {
+  play(song?: Song | SingleItem) {
     if (song) {
       this.index = this.playlist.findIndex(s => s.song_id === song.song_id);
       this.audio.src = song.audio_url;

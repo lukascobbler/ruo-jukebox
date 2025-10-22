@@ -50,7 +50,7 @@ def create_album(album_id, name, artists, genres):
     return core_album
 
 
-def create_single(single_id, name, artists, genres, audio_key, song_id):
+def create_single(single_id, name, artists, genres, audio_key, cover_key, song_id):
     core_single = {
         "content_id": single_id,
         "content_type": "SINGLE",
@@ -58,10 +58,12 @@ def create_single(single_id, name, artists, genres, audio_key, song_id):
         "name_lc": name.lower(),
         "song_id": song_id,
         "audio_key": audio_key,
-        "cover_key": f"singles/{single_id}.jpg",
         "artists": artists,
         "genres": genres
     }
+
+    if cover_key:
+        core_single["cover_key"] = cover_key
 
     with content_table.batch_writer() as batch:
         batch.put_item(Item={**core_single, "PK": single_id, "SK": "META"})

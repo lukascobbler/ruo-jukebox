@@ -101,6 +101,10 @@ export class AllArtistsComponent implements OnInit {
     });
 
     ref.componentInstance.genres = this.genres;
+
+    ref.afterClosed().subscribe((result) => {
+      if (result !== undefined) this.fetchArtists();
+    });
   }
 
   private extractError(err: any): string {

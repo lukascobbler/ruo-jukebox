@@ -4,7 +4,7 @@ import {Artist} from './Artist';
 export interface Song {
   song_id: string;
   no?: number;
-  title: string;
+  name: string;
   album: string;
   albumId: string;
   artistId: string;
