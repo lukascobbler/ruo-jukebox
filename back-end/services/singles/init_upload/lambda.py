@@ -14,7 +14,6 @@ def lambda_handler(event, context):
         single_id = "SINGLE~" + str(uuid.uuid4())
         song_id = "SONG~" + str(uuid.uuid4())
         cover = body.get("cover") == True
-        print(body)
 
         audio_key = f"songs/{song_id}.mp3"
         cover_key = f"singles/{single_id}.jpg" if cover else None

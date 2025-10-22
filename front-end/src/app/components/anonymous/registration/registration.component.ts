@@ -50,10 +50,10 @@ export class RegistrationComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      name: ['', Validators.required],
-      surname: ['', Validators.required],
+      name: [''],
+      surname: [''],
       username: ['', Validators.required],
-      dateOfBirth: ['', Validators.required],
+      dateOfBirth: [''],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(64)]],
     });
@@ -69,7 +69,7 @@ export class RegistrationComponent implements OnInit {
 
   get someRequiredMissing(): boolean {
     const v = this.form.value as Record<string, string | Date>;
-    return ['name', 'surname', 'username', 'email', 'password', 'dateOfBirth']
+    return ['username', 'email', 'password']
       .some(k => {
         const value = v[k];
         if (typeof value === 'string') return value.trim().length === 0;
@@ -103,7 +103,7 @@ export class RegistrationComponent implements OnInit {
     };
 
     this.loading = true;
-    const formattedDate = dateOfBirth.toISOString().split('T')[0];
+    const formattedDate = dateOfBirth ? dateOfBirth.toISOString().split('T')[0] : null;
     this.auth.register({name, surname, username, email, password, dateOfBirth: formattedDate} as any).subscribe({
       next: () => {
         this.toast.success('Registered', 'Successfully registered.');

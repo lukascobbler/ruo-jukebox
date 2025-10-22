@@ -18,9 +18,9 @@ class CognitoStack(NestedStack):
             self_sign_up_enabled=True,
             sign_in_aliases=SignInAliases(username=True, email=True),
             standard_attributes=StandardAttributes(
-                given_name=StandardAttribute(required=True, mutable=True),
-                family_name=StandardAttribute(required=True, mutable=True),
-                birthdate=StandardAttribute(required=True, mutable=True),
+                given_name=StandardAttribute(required=False, mutable=True),
+                family_name=StandardAttribute(required=False, mutable=True),
+                birthdate=StandardAttribute(required=False, mutable=True),
                 email=StandardAttribute(required=True, mutable=True),
             ),
             custom_attributes={"userId": StringAttribute(mutable=True)},

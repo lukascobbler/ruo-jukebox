@@ -106,11 +106,13 @@ def create_user(user_id, name, surname, email, birthday):
     item = {
         "user_id": user_id,
         "SK": "META",
-        "name": name,
-        "surname": surname,
-        "email": email,
-        "birthday": birthday
+        "email": email
     }
+
+    if name: item["name"] = name
+    if surname: item["surname"] = surname
+    if birthday: item["birthday"] = birthday
+
     userdata_table.put_item(Item=item)
     return item
 
