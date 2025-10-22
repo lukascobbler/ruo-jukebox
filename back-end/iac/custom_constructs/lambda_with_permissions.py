@@ -1,18 +1,18 @@
-from iac.libs_layer_stack import LibsLayerStack
-from iac.utils_layer_stack import UtilsLayerStack
-from iac.auth_layer_stack import AuthLayerStack
-from iac.dynamo_db_stack import DynamoDbStack
+from iac.layers.utils_layer_stack import UtilsLayerStack
+from iac.layers.libs_layer_stack import LibsLayerStack
+from iac.layers.auth_layer_stack import AuthLayerStack
+from iac.shared.dynamo_db_stack import DynamoDbStack
 from aws_cdk import Duration, aws_lambda
+from iac.shared.s3_stack import S3Stack
 from aws_cdk.aws_dynamodb import Table
 from aws_cdk import aws_iam as iam
 from constructs import Construct
-from iac.s3_stack import S3Stack
 
 
 class LambdaWithPermissions(Construct):
-    def __init__(self, scope: Construct, id: str, path: str, env: dict, dynamo_db: DynamoDbStack, s3: S3Stack, libs_layer_stack: LibsLayerStack,
+    def __init__(self, scope: Construct, construct_id: str, path: str, env: dict, dynamo_db: DynamoDbStack, s3: S3Stack, libs_layer_stack: LibsLayerStack,
                  auth_layer_stack: AuthLayerStack, utils_layer_stack: UtilsLayerStack, extra_env: dict | None = None):
-        super().__init__(scope, id)
+        super().__init__(scope, construct_id)
         env = {**env, **(extra_env or {})}
 
         role = iam.Role(

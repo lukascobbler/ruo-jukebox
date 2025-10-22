@@ -1,7 +1,7 @@
 from botocore.exceptions import ClientError
+from general_utils import response
 import boto3, json, os
 
-CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 COGNITO_CLIENT_ID = os.environ["USER_POOL_CLIENT_ID"]
 cognito = boto3.client("cognito-idp")
 
@@ -13,7 +13,7 @@ def lambda_handler(event, context):
         password = body.get("password")
 
         if not username or not password:
-            return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Username and password required"})}
+            return response(400, error="Username and password required")
 
         try:
             resp = cognito.initiate_auth(
@@ -22,24 +22,22 @@ def lambda_handler(event, context):
                 AuthParameters={"USERNAME": username, "PASSWORD": password}
             )
         except cognito.exceptions.NotAuthorizedException:
-            return {"statusCode": 401, "headers": CORS_HEADERS, "body": json.dumps({"message": "Invalid username or password"})}
+            return response(401, error="Invalid username or password")
         except cognito.exceptions.UserNotFoundException:
-            return {"statusCode": 404, "headers": CORS_HEADERS, "body": json.dumps({"message": "User not found"})}
+            return response(404, error="User not found")
         except ClientError as e:
-            return {"statusCode": 500, "headers": CORS_HEADERS, "body": json.dumps({"message": f"Cognito error: {str(e)}"})}
+            return response(500, error=f"Cognito error: {str(e)}")
 
-        return {
-            "statusCode": 200,
-            "headers": CORS_HEADERS,
-            "body": json.dumps({
-                "message": "Login successful",
-                "id_token": resp["AuthenticationResult"]["IdToken"],
-                "access_token": resp["AuthenticationResult"]["AccessToken"],
-                "refresh_token": resp["AuthenticationResult"]["RefreshToken"],
-                "expires_in": resp["AuthenticationResult"]["ExpiresIn"],
-                "token_type": resp["AuthenticationResult"]["TokenType"]
-            })
-        }
+        body = json.dumps({
+            "message": "Login successful",
+            "id_token": resp["AuthenticationResult"]["IdToken"],
+            "access_token": resp["AuthenticationResult"]["AccessToken"],
+            "refresh_token": resp["AuthenticationResult"]["RefreshToken"],
+            "expires_in": resp["AuthenticationResult"]["ExpiresIn"],
+            "token_type": resp["AuthenticationResult"]["TokenType"]
+        })
+
+        return response(200, body)
 
     except Exception as e:
-        return {"statusCode": 500, "headers": CORS_HEADERS, "body": json.dumps({"message": f"Internal server error: {str(e)}"})}
+        return response(500, error=f"Internal server error: {str(e)}")

@@ -1,10 +1,10 @@
-from aws_cdk import Stack, RemovalPolicy, PhysicalName, aws_s3 as s3, aws_iam as iam
+from aws_cdk import NestedStack, RemovalPolicy, PhysicalName, aws_s3 as s3
 from constructs import Construct
 
 
-class S3Stack(Stack):
-    def __init__(self, scope: Construct, id: str, **kwargs):
-        super().__init__(scope, id, **kwargs)
+class S3Stack(NestedStack):
+    def __init__(self, scope: Construct, stack_id: str, **kwargs):
+        super().__init__(scope, stack_id, **kwargs)
 
         common_cors = [
             s3.CorsRule(

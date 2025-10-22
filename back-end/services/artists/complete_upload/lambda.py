@@ -7,7 +7,7 @@ import json
 
 @pre_authorize(['Admin'])
 def lambda_handler(event, context):
-    body = json.loads(event.get("body"))
+    body = json.loads(event.get("body", "{}"))
 
     artist_id = body.get("artist_id").strip()
     name = body.get("name").strip()

@@ -1,10 +1,10 @@
-from aws_cdk import Stack, aws_lambda
+from aws_cdk import NestedStack, aws_lambda
 from constructs import Construct
 
 
-class LibsLayerStack(Stack):
-    def __init__(self, scope: Construct, id: str, **kwargs):
-        super().__init__(scope, id, **kwargs)
+class LibsLayerStack(NestedStack):
+    def __init__(self, scope: Construct, stack_id: str, **kwargs):
+        super().__init__(scope, stack_id, **kwargs)
 
         self.libs_layer = aws_lambda.LayerVersion(
             self, "LibsLayer",

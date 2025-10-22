@@ -7,7 +7,7 @@ from general_utils import response
 def lambda_handler(event, context):
     user_id = event["userId"]
 
-    body = json.loads(event.get("body"))
+    body = json.loads(event.get("body", "{}"))
     target_id = body.get("targetId")
 
 

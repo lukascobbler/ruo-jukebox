@@ -15,7 +15,7 @@ def lambda_handler(event, context):
         return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Genre id missing in path"})}
 
     try:
-        body = json.loads(event.get("body") or "{}")
+        body = json.loads(event.get("body", "{}"))
     except json.JSONDecodeError:
         return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Invalid JSON body"})}
 

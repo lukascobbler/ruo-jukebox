@@ -2,6 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Album} from '../../models/album/Album';
+import {env} from '../../../environments/environment';
 
 export interface AlbumUpdateRequest {
   name?: string;
@@ -24,39 +25,38 @@ export interface UploadInitResponse {
 
 @Injectable({providedIn: 'root'})
 export class AlbumsService {
-  private readonly API_URL = 'https://api.jb.moma.rs';
   private readonly http = inject(HttpClient);
 
   list(): Observable<Album[]> {
-    return this.http.get<Album[]>(`${this.API_URL}/albums`);
+    return this.http.get<Album[]>(`${env.API_URL}/albums`);
   }
 
   release(id: string): Observable<void> {
-    return this.http.post<void>(`${this.API_URL}/albums/${encodeURIComponent(id)}`, {});
+    return this.http.post<void>(`${env.API_URL}/albums/${encodeURIComponent(id)}`, {});
   }
 
   initUpload(payload: UploadInitPayload): Observable<UploadInitResponse> {
-    return this.http.post<UploadInitResponse>(`${this.API_URL}/init-upload`, payload);
+    return this.http.post<UploadInitResponse>(`${env.API_URL}/init-upload`, payload);
   }
 
   completeUpload(album_id: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.API_URL}/complete-upload`, { album_id });
+    return this.http.post<{ message: string }>(`${env.API_URL}/complete-upload`, { album_id });
   }
 
   get(id: string): Observable<Album> {
-    return this.http.get<Album>(`${this.API_URL}/albums/${encodeURIComponent(id)}`);
+    return this.http.get<Album>(`${env.API_URL}/albums/${encodeURIComponent(id)}`);
   }
 
   update(id: string, body: AlbumUpdateRequest): Observable<void> {
     return this.http.patch<void>(
-      `${this.API_URL}/albums/${encodeURIComponent(id)}`,
+      `${env.API_URL}/albums/${encodeURIComponent(id)}`,
       body
     );
   }
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(
-      `${this.API_URL}/albums/${encodeURIComponent(id)}`
+      `${env.API_URL}/albums/${encodeURIComponent(id)}`
     );
   }
 }

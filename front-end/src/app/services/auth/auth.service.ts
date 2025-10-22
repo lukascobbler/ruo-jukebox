@@ -4,10 +4,10 @@ import {finalize, tap} from 'rxjs/operators';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {Role} from '../../models/Role';
 import {Router} from '@angular/router';
+import {env} from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly API_URL = 'https://api.jb.moma.rs';
   private readonly TOKEN_KEY = 'access_token';
   private readonly ID_TOKEN_KEY = 'id_token';
 
@@ -21,7 +21,7 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<any> {
-    return this.http.post(`${this.API_URL}/auth/login`, {
+    return this.http.post(`${env.API_URL}/auth/login`, {
       username: email,
       password,
     }).pipe(
@@ -34,7 +34,7 @@ export class AuthService {
   }
 
   register(data: any): Observable<any> {
-    return this.http.post(`${this.API_URL}/auth/register`, {
+    return this.http.post(`${env.API_URL}/auth/register`, {
       username: data.username,
       email: data.email,
       password: data.password,
@@ -47,7 +47,7 @@ export class AuthService {
   logout() {
     const token = this.getToken();
     this.http
-      .post<void>(`${this.API_URL}/auth/logout`, { access_token: token })
+      .post<void>(`${env.API_URL}/auth/logout`, { access_token: token })
       .pipe(finalize(() => this.clear())).subscribe({
         complete: () => this.router.navigate(['/login']),
         error: () => this.router.navigate(['/login']),

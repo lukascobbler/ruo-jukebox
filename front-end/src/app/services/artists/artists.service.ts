@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Artist } from '../../models/Artist';
+import {env} from '../../../environments/environment';
 
 export interface CreateArtistRequest {
   name: string;
@@ -29,12 +30,11 @@ export interface CompleteUploadResp {
 
 @Injectable({ providedIn: 'root' })
 export class ArtistsService {
-  private readonly API_URL = 'https://api.jb.moma.rs';
   private http = inject(HttpClient);
 
   create(req: CreateArtistRequest): Observable<CreateArtistResponse> {
     return this.http
-      .post<CreateArtistResponse | string>(`${this.API_URL}/artists`, req)
+      .post<CreateArtistResponse | string>(`${env.API_URL}/artists`, req)
       .pipe(map((r) => (typeof r === 'string' ? JSON.parse(r) : r)));
   }
 
@@ -44,7 +44,7 @@ export class ArtistsService {
   ): Observable<InitUploadResp> {
     return this.http
       .post<InitUploadResp | string>(
-        `${this.API_URL}/artists/${encodeURIComponent(
+        `${env.API_URL}/artists/${encodeURIComponent(
           artistId
         )}/picture/init_upload`,
         { contentType }
@@ -58,7 +58,7 @@ export class ArtistsService {
   ): Observable<CompleteUploadResp> {
     return this.http
       .post<CompleteUploadResp | string>(
-        `${this.API_URL}/artists/${encodeURIComponent(
+        `${env.API_URL}/artists/${encodeURIComponent(
           artistId
         )}/picture/complete_upload`,
         { key }
@@ -79,7 +79,7 @@ export class ArtistsService {
   }
 
   getAll(): Observable<Artist[]> {
-    return this.http.get<Artist[] | string>(`${this.API_URL}/artists`).pipe(
+    return this.http.get<Artist[] | string>(`${env.API_URL}/artists`).pipe(
       map((res) =>
         Array.isArray(res) ? res : (JSON.parse(res as string) as Artist[])
       ),
@@ -99,7 +99,7 @@ export class ArtistsService {
   getByGenre(genreId: string) {
     return this.http
       .get<Artist[] | string>(
-        `${this.API_URL}/artists/by-genre/${encodeURIComponent(genreId)}`
+        `${env.API_URL}/artists/by-genre/${encodeURIComponent(genreId)}`
       )
       .pipe(
         map((res) =>
@@ -109,7 +109,7 @@ export class ArtistsService {
   }
 
   searchByName(q: string) {
-    const url = `${this.API_URL}/artists/search?q=${encodeURIComponent(q)}`;
+    const url = `${env.API_URL}/artists/search?q=${encodeURIComponent(q)}`;
     return this.http.get<Artist[] | string>(url).pipe(
       map(res => Array.isArray(res) ? res : JSON.parse(res as string) as Artist[])
     );

@@ -1,4 +1,4 @@
-from general_utils import response, file_exists_on_s3, get_genre_objects, get_artists_objects
+from general_utils import response, file_exists_on_s3, get_genre_objects, get_artist_objects
 from create import create_album, get_contents
 import json, os
 
@@ -7,7 +7,7 @@ AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
 
 
 def lambda_handler(event, context):
-    body = json.loads(event.get("body"))
+    body = json.loads(event.get("body", "{}"))
 
     album_id = body.get("album_id").strip()
     song_ids = body.get("song_ids")
@@ -15,7 +15,7 @@ def lambda_handler(event, context):
     artists = body.get("artists")
     genres = body.get("genres")
 
-    artists, message = get_artists_objects(artists)
+    artists, message = get_artist_objects(artists)
     if not artists: return response(400, error=message)
 
     genres, message = get_genre_objects(genres)

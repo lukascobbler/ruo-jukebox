@@ -10,11 +10,11 @@ CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 @pre_authorize(['Admin'])
 def lambda_handler(event, context):
     try:
-        body = json.loads(event.get("body") or "{}")
+        body = json.loads(event.get("body", "{}"))
     except json.JSONDecodeError:
         return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Invalid JSON body"})}
 
-    name = (body.get("name") or "").strip()
+    name = body.get("name", "").strip()
     if not name:
         return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Field 'name' is required"})}
 

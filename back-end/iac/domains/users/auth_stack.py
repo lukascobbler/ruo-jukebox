@@ -1,21 +1,21 @@
-from iac.constructs.lambda_with_permissions import LambdaWithPermissions
-from iac.libs_layer_stack import LibsLayerStack
+from iac.custom_constructs.lambda_with_permissions import LambdaWithPermissions
+from iac.layers.utils_layer_stack import UtilsLayerStack
+from iac.layers.libs_layer_stack import LibsLayerStack
+from iac.layers.auth_layer_stack import AuthLayerStack
+from iac.shared.dynamo_db_stack import DynamoDbStack
 from iac.api_gateway_stack import ApiGatewayStack
-from iac.utils_layer_stack import UtilsLayerStack
-from iac.auth_layer_stack import AuthLayerStack
-from iac.dynamo_db_stack import DynamoDbStack
+from iac.shared.cognito_stack import CognitoStack
 from aws_cdk.aws_iam import PolicyStatement
 from aws_cdk import aws_apigateway as apigw
-from iac.cognito_stack import CognitoStack
+from iac.shared.s3_stack import S3Stack
 from constructs import Construct
-from iac.s3_stack import S3Stack
-from aws_cdk import Stack
+from aws_cdk import NestedStack
 
 
-class AuthStack(Stack):
-    def __init__(self, scope: Construct, id: str, cognito_stack: CognitoStack, dynamo_db: DynamoDbStack, s3: S3Stack, libs_layers_stack: LibsLayerStack,
+class AuthStack(NestedStack):
+    def __init__(self, scope: Construct, stack_id: str, cognito_stack: CognitoStack, dynamo_db: DynamoDbStack, s3: S3Stack, libs_layers_stack: LibsLayerStack,
                  auth_layer_stack: AuthLayerStack, utils_layer_stack: UtilsLayerStack, api_stack: ApiGatewayStack, env_vars: dict, **kwargs):
-        super().__init__(scope, id, **kwargs)
+        super().__init__(scope, stack_id, **kwargs)
         self.lambdas = {}
         self.cognito_stack = cognito_stack
         self._create_lambdas(dynamo_db, s3, libs_layers_stack, auth_layer_stack, utils_layer_stack, env_vars)

@@ -1,16 +1,18 @@
-from aws_cdk import Stack, RemovalPolicy, aws_dynamodb as ddb
+from aws_cdk import NestedStack, RemovalPolicy, aws_dynamodb as ddb
 from aws_cdk.aws_dynamodb import Attribute, AttributeType
 from constructs import Construct
 
 
-class DynamoDbStack(Stack):
-    def __init__(self, scope: Construct, id: str, **kwargs):
-        super().__init__(scope, id, **kwargs)
+class DynamoDbStack(NestedStack):
+    def __init__(self, scope: Construct, stack_id: str, branch: str, **kwargs):
+        super().__init__(scope, stack_id, **kwargs)
+
+        suffix = f"-{branch}" if branch != "main" else ""
 
         # Content Table (ARTIST, ALBUM, SINGLE, SONG, GENRE)
         self.content = ddb.Table(
             self, "ContentTable",
-            table_name="ContentTable",
+            table_name=f"ContentTable{suffix}",
             partition_key=Attribute(name="PK", type=AttributeType.STRING),
             sort_key=Attribute(name="SK", type=AttributeType.STRING),
             billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
@@ -33,7 +35,7 @@ class DynamoDbStack(Stack):
         # Userdata Table (Users, Playlists, Ratings, Subscriptions)
         self.userdata = ddb.Table(
             self, "UserdataTable",
-            table_name="UserdataTable",
+            table_name=f"UserdataTable-{branch}",
             partition_key=Attribute(name="user_id", type=AttributeType.STRING),
             sort_key=Attribute(name="SK", type=AttributeType.STRING),
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES,
@@ -57,7 +59,7 @@ class DynamoDbStack(Stack):
         # Interactions Table
         self.interactions = ddb.Table(
             self, "InteractionsTable",
-            table_name="InteractionsTable",
+            table_name=f"InteractionsTable-{branch}",
             partition_key=Attribute(name="user_id", type=AttributeType.STRING),
             sort_key=Attribute(name="ts", type=AttributeType.STRING),
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES,
@@ -69,7 +71,7 @@ class DynamoDbStack(Stack):
         # Feed Table
         self.feed = ddb.Table(
             self, "FeedTable",
-            table_name="FeedTable",
+            table_name=f"FeedTable-{branch}",
             partition_key=Attribute(name="user_id", type=AttributeType.STRING),
             sort_key=Attribute(name="content_id", type=AttributeType.STRING),
             billing_mode=ddb.BillingMode.PAY_PER_REQUEST,

@@ -40,7 +40,8 @@ export class CreateSingleDialogComponent implements OnInit {
   @ViewChild(UploadSongBoxComponent) songBox!: UploadSongBoxComponent;
   @ViewChild(UploadImageBoxComponent) coverBox!: UploadImageBoxComponent;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
+  }
 
   selectedArtists: string[] = [];
   selectedGenres: string[] = [];
@@ -77,17 +78,20 @@ export class CreateSingleDialogComponent implements OnInit {
 
     this.loading = true;
     try {
-      const initRes = await lastValueFrom(this.songsService.initUpload({
+      const initRes = await lastValueFrom(this.songsService.initUpload({cover: Boolean(coverFile)}));
+
+      await fetch(initRes.audio_url, {method: 'PUT', body: mp3File});
+
+      if (coverFile && initRes.cover_url)
+        await fetch(initRes.audio_url, {method: 'PUT', body: coverFile});
+
+      await lastValueFrom(this.songsService.completeUpload({
         name: this.name,
+        song_id: initRes.song_id,
+        single_id: initRes.single_id,
         artists: this.selectedArtists,
         genres: this.selectedGenres,
-        filename: mp3File.name,
-        cover_filename: coverFile?.name
       }));
-      await fetch(initRes.upload_url, {method: 'PUT', body: mp3File});
-      if (coverFile && initRes.cover_upload_url)
-        await fetch(initRes.cover_upload_url, {method: 'PUT', body: coverFile});
-      await lastValueFrom(this.songsService.completeUpload(initRes.song_id));
 
       this.toast.success('Success', 'Song successfully created');
       this.dialogRef.close(initRes.song_id);

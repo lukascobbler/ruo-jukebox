@@ -77,23 +77,23 @@ export class CreateAlbumSongDialogComponent {
     }
 
     this.loading = true;
-    try {
-      const initRes = await lastValueFrom(this.songsService.initUpload({
-        name: this.name,
-        artists: this.selectedArtists,
-        genres: this.selectedGenres,
-        filename: mp3File.name,
-        album_id: this.album_id
-      }));
-      await fetch(initRes.upload_url, {method: 'PUT', body: mp3File});
-      await lastValueFrom(this.songsService.completeUpload(initRes.song_id));
-
-      this.toast.success('Success', 'Song successfully created');
-      this.dialogRef.close(initRes.song_id);
-    } catch {
-      this.toast.error('Error', 'Unable to upload the song');
-    } finally {
-      this.loading = false;
-    }
+    // try {
+    //   const initRes = await lastValueFrom(this.songsService.initUpload({
+    //     name: this.name,
+    //     artists: this.selectedArtists,
+    //     genres: this.selectedGenres,
+    //     filename: mp3File.name,
+    //     album_id: this.album_id
+    //   }));
+    //   await fetch(initRes.upload_url, {method: 'PUT', body: mp3File});
+    //   await lastValueFrom(this.songsService.completeUpload(initRes.song_id));
+    //
+    //   this.toast.success('Success', 'Song successfully created');
+    //   this.dialogRef.close(initRes.song_id);
+    // } catch {
+    //   this.toast.error('Error', 'Unable to upload the song');
+    // } finally {
+    //   this.loading = false;
+    // }
   }
 }

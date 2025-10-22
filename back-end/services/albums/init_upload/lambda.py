@@ -5,7 +5,7 @@ IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
 AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
 
 def lambda_handler(event, context):
-    body = json.loads(event.get("body"))
+    body = json.loads(event.get("body", "{}"))
 
     try:
         number_of_songs = int(body["numberOfSongs"])

@@ -1,4 +1,4 @@
-from general_utils import response, file_exists_on_s3, get_genre_objects, get_artists_objects
+from general_utils import response, file_exists_on_s3, get_genre_objects, get_artist_objects
 from create import create_single, create_songs
 from pre_authorize import pre_authorize
 from read import get_contents
@@ -9,7 +9,7 @@ IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
 
 
 def lambda_handler(event, context):
-    body = json.loads(event.get("body"))
+    body = json.loads(event.get("body", "{}"))
 
     single_id = body.get("single_id").strip()
     song_id = body.get("song_id").strip()
@@ -32,7 +32,7 @@ def lambda_handler(event, context):
     genres, message = get_genre_objects(genres)
     if not genres: return response(400, error=message)
 
-    artists, message = get_artists_objects(artists)
+    artists, message = get_artist_objects(artists)
     if not artists: return response(400, error=message)
 
     core_song = {

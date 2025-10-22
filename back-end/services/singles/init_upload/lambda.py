@@ -18,7 +18,11 @@ def lambda_handler(event, context):
         cover_key = f"singles/{single_id}.jpg" if cover else None
 
         audio_url = generate_s3_upload_url(AUDIO_BUCKET, audio_key)
-        res = {"song_id": song_id, "upload_url": audio_url}
+        res = {
+            "song_id": song_id,
+            "single_id": single_id,
+            "audio_url": audio_url
+        }
 
         if cover_key:
             res["cover_url"] = generate_s3_upload_url(IMAGES_BUCKET, cover_key)

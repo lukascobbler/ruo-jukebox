@@ -1,23 +1,15 @@
 from aws_cdk.aws_cognito import UserPoolGroup, AuthFlow, SignInAliases, StandardAttribute, UserPool, StandardAttributes, PasswordPolicy, StringAttribute
-from aws_cdk import Stack, RemovalPolicy, CfnOutput, Duration
+from aws_cdk import NestedStack, RemovalPolicy, Duration
 from constructs import Construct
 
 ADMIN_GROUP_NAME = "Admin"
 USER_GROUP_NAME = "User"
 
 
-class CognitoStack(Stack):
-    def __init__(self, scope: Construct, id: str, **kwargs):
-        super().__init__(scope, id, **kwargs)
+class CognitoStack(NestedStack):
+    def __init__(self, scope: Construct, stack_id: str, **kwargs):
+        super().__init__(scope, stack_id, **kwargs)
 
-        self.user_pool: UserPool = None
-        self.app_client = None
-
-        self._define_user_pool()
-        self._define_user_groups()
-        self._expose_objects()
-
-    def _define_user_pool(self):
         self.user_pool = UserPool(
             self, "JukeboxUserPool",
             self_sign_up_enabled=True,
@@ -47,10 +39,5 @@ class CognitoStack(Stack):
             id_token_validity=Duration.hours(24),
         )
 
-    def _define_user_groups(self):
         UserPoolGroup(self, "UserGroup", user_pool=self.user_pool, group_name=USER_GROUP_NAME)
         UserPoolGroup(self, "AdminGroup", user_pool=self.user_pool, group_name=ADMIN_GROUP_NAME)
-
-    def _expose_objects(self):
-        CfnOutput(self, "UserPoolId", value=self.user_pool.user_pool_id, export_name="CognitoUserPoolId")
-        CfnOutput(self, "UserPoolClientId", value=self.app_client.user_pool_client_id, export_name="CognitoUserPoolClientId")

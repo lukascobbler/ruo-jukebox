@@ -9,7 +9,7 @@ CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 s3 = boto3.client('s3', os.environ["REGION"], endpoint_url=os.environ["S3_ENDPOINT_URL"])
 
 
-def response(status: int, body: dict, error: str | None = None):
+def response(status: int, body: dict = None, error: str | None = None):
     body = {"message": error} if error else body
     return {"statusCode": status, "headers": CORS_HEADERS, "body": json.dumps(body, default=str)}
 
