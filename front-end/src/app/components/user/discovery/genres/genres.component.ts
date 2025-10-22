@@ -69,29 +69,29 @@ export class GenresComponent implements OnInit {
   }
 
 async toggleGenreSubscription(event: Event, genre: GenreItem) {
-  event.stopPropagation();
-  if (this.busyIds.has(genre.id)) return;
+  // event.stopPropagation();
+  // if (this.busyIds.has(genre.id)) return;
 
-  const topic = genre.id;          
-  const prev = !!genre.isSubscribed;
+  // const topic = genre.id;          
+  // const prev = !!genre.isSubscribed;
 
-  genre.isSubscribed = !prev;
-  this.busyIds.add(genre.id);
+  // genre.isSubscribed = !prev;
+  // this.busyIds.add(genre.id);
 
-  try {
-    if (prev) {
-      await firstValueFrom(this.subsService.delete(topic)); 
-    } else {
-      await firstValueFrom(this.subsService.create(topic));
-    }
-    this.toast.success(prev ? 'Unsubscribed' : 'Subscribed', genre.name);
-  } catch (err: any) {
-    genre.isSubscribed = prev;
-    const msg = this.extractError(err);
-    this.toast.error(prev ? 'Unsubscribe error' : 'Subscribe error', msg);
-  } finally {
-    this.busyIds.delete(genre.id);
-  }
+  // try {
+  //   if (prev) {
+  //     await firstValueFrom(this.subsService.delete(topic)); 
+  //   } else {
+  //     await firstValueFrom(this.subsService.create(topic));
+  //   }
+  //   this.toast.success(prev ? 'Unsubscribed' : 'Subscribed', genre.name);
+  // } catch (err: any) {
+  //   genre.isSubscribed = prev;
+  //   const msg = this.extractError(err);
+  //   this.toast.error(prev ? 'Unsubscribe error' : 'Subscribe error', msg);
+  // } finally {
+  //   this.busyIds.delete(genre.id);
+  // }
 }
 
 

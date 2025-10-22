@@ -79,7 +79,7 @@ def search(table, query: str):
 
 # all genres and artists a user is subscribed to
 def get_subscriptions_for_user(table, user_id: str):  # e.g. 'USER~{UUID}'
-    items = query_all(table, KeyConditionExpression=Key("PK").eq(user_id) & Key("SK").begins_with("SUB~"))
+    items = query_all(table, KeyConditionExpression=Key("user_id").eq(user_id) & Key("SK").begins_with("SUB~"))
     res = {"genres": [], "artists": []}
     for item in items:
         if item["SK"].startswith("SUB~GENRE~"):

@@ -55,54 +55,54 @@ export class SubscriptionsComponent {
     this.fetchMine();
   }
   private fetchMine(): void {
-    this.subsService.listMine().subscribe({
-      next: (payload) => {
-        const rows: Row[] = [];
+    // this.subsService.listMine().subscribe({
+    //   next: (payload) => {
+    //     const rows: Row[] = [];
 
-        for (const a of payload.artists || []) {
-          rows.push({
-            topic: a.id,
-            subscriptionName: a.name,
-            type: 'artist'
-          });
-        }
+    //     for (const a of payload.artists || []) {
+    //       rows.push({
+    //         topic: a.id,
+    //         subscriptionName: a.name,
+    //         type: 'artist'
+    //       });
+    //     }
 
-        for (const g of payload.genres || []) {
-          rows.push({
-            topic: g.id,
-            subscriptionName: g.name,
-            type: 'genre'
-          });
-        }
+    //     for (const g of payload.genres || []) {
+    //       rows.push({
+    //         topic: g.id,
+    //         subscriptionName: g.name,
+    //         type: 'genre'
+    //       });
+    //     }
 
-        rows.sort((x, y) =>
-          x.type === y.type ? x.subscriptionName.localeCompare(y.subscriptionName)
-                            : x.type.localeCompare(y.type)
-        );
+    //     rows.sort((x, y) =>
+    //       x.type === y.type ? x.subscriptionName.localeCompare(y.subscriptionName)
+    //                         : x.type.localeCompare(y.type)
+    //     );
 
-        this.subscribedToDataSource = rows;
-      },
-      error: (err) => {
-        const msg = this.extractError(err);
-        this.toast.error('Failed to load subscriptions', msg);
-      }
-    });
+    //     this.subscribedToDataSource = rows;
+    //   },
+    //   error: (err) => {
+    //     const msg = this.extractError(err);
+    //     this.toast.error('Failed to load subscriptions', msg);
+    //   }
+    // });
   }
 
   async onUnsubscribe(row: Row) {
-    if (this.busyTopics.has(row.topic)) return;
-    this.busyTopics.add(row.topic);
+    // if (this.busyTopics.has(row.topic)) return;
+    // this.busyTopics.add(row.topic);
 
-    try {
-      await firstValueFrom(this.subsService.delete(row.topic));
-      this.subscribedToDataSource = this.subscribedToDataSource.filter(r => r.topic !== row.topic);
-      this.toast.success('Unsubscribed', row.subscriptionName);
-    } catch (err: any) {
-      const msg = this.extractError(err);
-      this.toast.error('Unsubscribe error', msg);
-    } finally {
-      this.busyTopics.delete(row.topic);
-    }
+    // try {
+    //   await firstValueFrom(this.subsService.delete(row.topic));
+    //   this.subscribedToDataSource = this.subscribedToDataSource.filter(r => r.topic !== row.topic);
+    //   this.toast.success('Unsubscribed', row.subscriptionName);
+    // } catch (err: any) {
+    //   const msg = this.extractError(err);
+    //   this.toast.error('Unsubscribe error', msg);
+    // } finally {
+    //   this.busyTopics.delete(row.topic);
+    // }
   }
 
   private extractError(err: any): string {

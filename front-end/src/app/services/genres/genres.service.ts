@@ -45,12 +45,15 @@ export class GenresService {
   }
 
   list(): Observable<GenreItem[]> {
-    const url = `${this.API_URL}/genres`;
-    return this.http
-      .get<GenreItem[] | string>(url)
-      .pipe(
-        map(res => Array.isArray(res) ? res : JSON.parse(res as string) as GenreItem[])
-      );
-  }
+    type GenresResp = { items: { genre_id?: string; PK?: string; name?: string; subscribed?: boolean }[] };
 
+    return this.http.get<GenresResp>(`${this.API_URL}/genres`).pipe(
+      map(res => (res.items ?? []).map(i => ({
+        id: (i.genre_id || i.PK || ''),  // keep prefixed id e.g. "GENRE~uuid"
+        name: i.name ?? '',
+        isSubscribed: !!i.subscribed,
+      }))),
+      shareReplay(1)
+    );
+  }
 }
