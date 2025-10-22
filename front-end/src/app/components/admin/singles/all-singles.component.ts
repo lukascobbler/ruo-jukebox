@@ -4,13 +4,10 @@ import {CreateSingleDialogComponent} from '../dialogs/single/create-single-dialo
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {ToastrService} from '../../../services/toastr/toastr.service';
 import {PlayerService} from '../../../services/player/player.service';
-import {SongsService} from '../../../services/singles/singles.service';
+import {SongsService, SingleItem} from '../../../services/singles/singles.service';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Component, inject, OnInit} from '@angular/core';
 import {MatIconButton} from '@angular/material/button';
-import {GenreItem} from '../../../models/GenreItem';
-import {Artist} from '../../../models/Artist';
-import {Song} from '../../../models/Song';
 import {NgIf} from '@angular/common';
 import {lastValueFrom} from 'rxjs';
 
@@ -34,7 +31,7 @@ export class AllSinglesComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
 
   displayedColumns = ['cover', 'name', 'artists', 'genres', 'actions'];
-  singlesDataSource: Song[] = [];
+  singlesDataSource: SingleItem[] = [];
   loading = false;
 
   ngOnInit() {
@@ -44,9 +41,10 @@ export class AllSinglesComponent implements OnInit {
   private loadSingles(): void {
     this.loading = true;
     this.songsService.listSingles().subscribe({
-      next: (songs) => {
-        this.singlesDataSource = songs;
-        this.player.loadPlaylist(songs);
+      next: (singles) => {
+        console.log(singles);
+        this.singlesDataSource = singles;
+        this.player.loadPlaylist(singles);
         this.loading = false;
       },
       error: () => this.loading = false
@@ -61,51 +59,50 @@ export class AllSinglesComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.loadSingles();
-        this.toast.success('Success', 'Song successfully created!');
+        this.toast.success('Success', 'Single successfully created!');
       }
     });
   }
 
-  async deleteSong(song: Song): Promise<void> {
-    console.log(song)
+  async deleteSong(single: SingleItem): Promise<void> {
     try {
-      await lastValueFrom(this.songsService.deleteSinge(song.song_id));
-      this.toast.success('Deleted', 'Song deleted successfully');
+      await lastValueFrom(this.songsService.deleteSingle(single.content_id));
+      this.toast.success('Deleted', 'Single deleted successfully');
       this.loadSingles();
     } catch {
-      this.toast.error('Error', 'Failed to delete song');
+      this.toast.error('Error', 'Failed to delete single');
     }
   }
 
-  updateSong(song: Song): void {
+  updateSong(single: SingleItem): void {
     const dialogRef = this.dialog.open(CreateSingleDialogComponent, {
       minWidth: '900px',
       data: {
-        song_id: song.song_id,
-        name: song.title,
-        cover_url: song.cover_url,
-        artists: song.artists.map(a => a.name),
-        genres: song.genres.map(g => g.name)
+        content_id: single.content_id,
+        name: single.name,
+        cover_url: single.cover_url,
+        artists: single.artists?.map(a => a.name) || [],
+        genres: single.genres?.map(g => g.name) || []
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.loadSingles();
-        this.toast.success('Updated', 'Song successfully updated!');
+        this.toast.success('Updated', 'Single successfully updated!');
       }
     });
   }
 
-  getGenreNames(song: Song): string {
-    return song.genres.map((g: GenreItem) => g.name).join(', ') || '';
+  getGenreNames(single: SingleItem): string {
+    return single.genres?.map(g => g.name).join(', ') || '';
   }
 
-  getArtistNames(song: Song): string {
-    return song.artists.map((a: Artist) => a.name).join(', ') || '';
+  getArtistNames(single: SingleItem): string {
+    return single.artists?.map(a => a.name).join(', ') || '';
   }
 
-  playSong(song: Song): void {
-    this.player.play(song);
+  playSong(single: SingleItem): void {
+    this.player.play(single);
   }
 }

@@ -1,19 +1,21 @@
 import {UploadImageBoxComponent} from '../upload-image-box/upload-image-box.component';
 import {UploadSongBoxComponent} from '../upload-song-box/upload-song-box.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {ArtistsService} from '../../../../services/artists/artists.service';
 import {Component, inject, ViewChild, Inject, OnInit} from '@angular/core';
+import {SongsService} from '../../../../services/singles/singles.service';
+import {GenresService} from '../../../../services/genres/genres.service';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {SongsService} from '../../../../services/singles/singles.service';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatIconButton} from '@angular/material/button';
 import {MatSelect} from '@angular/material/select';
+import {Artist} from '../../../../models/Artist';
 import {MatInput} from '@angular/material/input';
 import {MatOption} from '@angular/material/core';
 import {FormsModule} from '@angular/forms';
 import {NgIf, NgFor} from '@angular/common';
 import {lastValueFrom} from 'rxjs';
-import {GenresService} from '../../../../services/genres/genres.service';
 
 @Component({
   selector: 'app-single',
@@ -38,16 +40,17 @@ import {GenresService} from '../../../../services/genres/genres.service';
 export class CreateSingleDialogComponent implements OnInit {
   private readonly songsService = inject(SongsService);
   private readonly genresService = inject(GenresService);
+  private readonly artistsService = inject(ArtistsService);
   private readonly toast = inject(ToastrService);
   private readonly dialogRef = inject(MatDialogRef<CreateSingleDialogComponent, string | null>);
   @ViewChild(UploadSongBoxComponent) songBox!: UploadSongBoxComponent;
   @ViewChild(UploadImageBoxComponent) coverBox!: UploadImageBoxComponent;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
-  }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 
   selectedArtists: string[] = [];
   selectedGenres: string[] = [];
+  artists: Artist[] = [];
   genres: { genre_id: string; name: string }[] = [];
   name = '';
   isEditMode = false;
@@ -62,9 +65,14 @@ export class CreateSingleDialogComponent implements OnInit {
     }
 
     try {
-      this.genres = await lastValueFrom(this.genresService.list());
+      const [genres, artists] = await Promise.all([
+        lastValueFrom(this.genresService.list()),
+        lastValueFrom(this.artistsService.getAll())
+      ]);
+      this.genres = genres;
+      this.artists = artists;
     } catch {
-      this.toast.error('Error', 'Failed to load genres');
+      this.toast.error('Error', 'Failed to load artists or genres');
     }
   }
 
@@ -75,6 +83,16 @@ export class CreateSingleDialogComponent implements OnInit {
   async createSong() {
     if (this.isEditMode) {
       await this.updateSong();
+      return;
+    }
+
+    if (!this.name.trim()) {
+      this.toast.error('Error', 'Name is required');
+      return;
+    }
+
+    if (this.selectedArtists.length === 0) {
+      this.toast.error('Error', 'At least one artist must be selected');
       return;
     }
 
@@ -96,17 +114,17 @@ export class CreateSingleDialogComponent implements OnInit {
         await fetch(initRes.cover_url, {method: 'PUT', body: coverFile});
 
       await lastValueFrom(this.songsService.completeUpload({
-        name: this.name,
+        name: this.name.trim(),
         song_id: initRes.song_id,
         single_id: initRes.single_id,
         artists: this.selectedArtists,
         genres: this.selectedGenres,
       }));
 
-      this.toast.success('Success', 'Song successfully created');
+      this.toast.success('Success', 'Single successfully created');
       this.dialogRef.close(initRes.song_id);
     } catch {
-      this.toast.error('Error', 'Unable to upload the song');
+      this.toast.error('Error', 'Unable to upload the single');
     } finally {
       this.loading = false;
     }
@@ -121,7 +139,7 @@ export class CreateSingleDialogComponent implements OnInit {
       const hasNewAudio = !!newAudioFile;
 
       const body: any = {
-        name: this.name,
+        name: this.name.trim(),
         artist_ids: this.selectedArtists,
         genre_ids: this.selectedGenres,
       };
@@ -137,10 +155,10 @@ export class CreateSingleDialogComponent implements OnInit {
       if (hasNewAudio && updateRes.audio_upload_url)
         await fetch(updateRes.audio_upload_url, {method: 'PUT', body: newAudioFile});
 
-      this.toast.success('Success', 'Song updated successfully');
+      this.toast.success('Success', 'Single updated successfully');
       this.dialogRef.close(this.data.song_id);
     } catch {
-      this.toast.error('Error', 'Failed to update song');
+      this.toast.error('Error', 'Failed to update single');
     } finally {
       this.loading = false;
     }

@@ -50,16 +50,20 @@ def create_album(album_id, name, artists, genres):
     return core_album
 
 
-def create_single(single_id, name, artists, genres):
+def create_single(single_id, name, artists, genres, audio_key, cover_key, song_id):
     core_single = {
         "content_id": single_id,
         "content_type": "SINGLE",
         "name": name,
         "name_lc": name.lower(),
-        "cover_key": f"singles/{single_id}.jpg",
+        "song_id": song_id,
+        "audio_key": audio_key,
         "artists": artists,
         "genres": genres
     }
+
+    if cover_key:
+        core_single["cover_key"] = cover_key
 
     with content_table.batch_writer() as batch:
         batch.put_item(Item={**core_single, "PK": single_id, "SK": "META"})
@@ -71,20 +75,21 @@ def create_single(single_id, name, artists, genres):
     return core_single
 
 
-def create_artist(artist_id, name, biography, genres):
+def create_artist(artist_id, name, biography=None, genres=None, cover_key=None):
     core_artist = {
         "artist_id": artist_id,
         "content_type": "ARTIST",
         "name": name,
         "name_lc": name.lower(),
-        "biography": biography,
-        "cover_key": f"artists/{artist_id}.jpg",
-        "genres": genres
     }
+
+    if biography: core_artist["biography"] = biography
+    if cover_key: core_artist["cover_key"] = cover_key
+    if genres: core_artist["genres"] = genres
 
     with content_table.batch_writer() as batch:
         batch.put_item(Item={**core_artist, "PK": artist_id, "SK": "META"})
-        for g in genres:
+        for g in (genres or []):
             batch.put_item(Item={**core_artist, "PK": g["genre_id"], "SK": f"CONTENT~{artist_id}"})
 
     return core_artist

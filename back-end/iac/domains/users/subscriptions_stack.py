@@ -1,11 +1,10 @@
 from iac.custom_constructs.lambda_with_permissions import LambdaWithPermissions
 from aws_cdk import NestedStack, aws_apigateway as apigw
+from iac.shared.api_gateway_stack import ApiGatewayStack
 from iac.layers.utils_layer_stack import UtilsLayerStack
 from iac.layers.libs_layer_stack import LibsLayerStack
 from iac.layers.auth_layer_stack import AuthLayerStack
 from iac.shared.dynamo_db_stack import DynamoDbStack
-from iac.api_gateway_stack import ApiGatewayStack
-from iac.shared.email_stack import EmailStack
 from iac.shared.s3_stack import S3Stack
 from constructs import Construct
 from aws_cdk import (
@@ -18,9 +17,8 @@ from aws_cdk import (
 
 class SubscriptionsStack(NestedStack):
     def __init__(self, scope: Construct, stack_id: str,
-                 dynamo_db: DynamoDbStack, s3: S3Stack, libs_layer_stack: LibsLayerStack,
-                 auth_layer_stack: AuthLayerStack, utils_layer_stack: UtilsLayerStack,
-                 api_stack: ApiGatewayStack, environment, **kwargs):
+                 dynamo_db: DynamoDbStack, s3: S3Stack, libs_layer_stack: LibsLayerStack, auth_layer_stack: AuthLayerStack,
+                 utils_layer_stack: UtilsLayerStack, api_stack: ApiGatewayStack, environment, **kwargs):
         super().__init__(scope, stack_id, **kwargs)
         self.lambdas = {}
 

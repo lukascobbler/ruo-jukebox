@@ -2,6 +2,7 @@ import {Injectable, inject} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {env} from '../../../environments/environment';
+import {Artist} from '../../models/Artist';
 
 export interface UploadInitPayload {
   cover: boolean;
@@ -22,18 +23,23 @@ export interface UploadCompletePayload {
   genres: string[];
 }
 
-export interface UpdateSongPayload {
-  name?: string;
-  artist_ids?: string[];
-  genre_ids?: string[];
-  cover_filename?: string;
-  audio_filename?: string;
+export interface CompleteUploadResponse {
+  single_id: string;
+  name: string;
+  artists: { artist_id: string; name: string }[];
+  genres: { genre_id: string; name: string }[];
+  cover_key?: string;
 }
 
-export interface UpdateSongResponse {
+export interface SingleItem {
+  content_id: string;
+  name: string;
   song_id: string;
-  upload_url: string;
-  cover_upload_url?: string;
+  audio_url: string;
+  cover_url?: string;
+  artists: Artist[];
+  genres: { name: string }[];
+  duration: number;
 }
 
 @Injectable({providedIn: 'root'})
@@ -44,22 +50,22 @@ export class SongsService {
     return this.http.post<UploadInitResponse>(`${env.API_URL}/single/init-upload`, payload);
   }
 
-  completeUpload(payload: UploadCompletePayload): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${env.API_URL}/single/complete-upload`, payload);
+  completeUpload(payload: UploadCompletePayload): Observable<CompleteUploadResponse> {
+    return this.http.post<CompleteUploadResponse>(`${env.API_URL}/single/complete-upload`, payload);
   }
 
-  deleteSinge(song_id: string): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${env.API_URL}/single/${song_id}`);
+  deleteSingle(content_id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${env.API_URL}/single/${content_id}`);
   }
 
-  listSingles(): Observable<any[]> {
-    return this.http.get<any[]>(`${env.API_URL}/single`);
+  listSingles(): Observable<SingleItem[]> {
+    return this.http.get<SingleItem[]>(`${env.API_URL}/single`);
   }
 
-  updateSingle(song_id: string, payload: UpdateSongPayload): Observable<{ message: string; cover_upload_url?: string; audio_upload_url?: string }> {
+  updateSingle(content_id: string, payload: Partial<UploadCompletePayload>): Observable<{ message: string; cover_upload_url?: string; audio_upload_url?: string }> {
     return this.http.patch<{ message: string; cover_upload_url?: string; audio_upload_url?: string }>(
-      `${env.API_URL}/single/${song_id}`,
-      {song_id, ...payload}
+      `${env.API_URL}/single/${content_id}`,
+      {content_id, ...payload}
     );
   }
 }
