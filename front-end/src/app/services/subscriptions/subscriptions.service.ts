@@ -7,13 +7,14 @@ import {env} from '../../../environments/environment';
 export class SubscriptionsService {
   private http = inject(HttpClient);
 
-  create(topic: string) {
-    return this.http.post<{ topic: string; created: boolean }>(`${env.API_URL}/subscriptions`, { topic });
+  create(targetId: string) {
+    console.log(targetId)
+    return this.http.post<{ targetId: string; created: boolean }>(`${env.API_URL}/subscriptions`, { targetId });
   }
 
-  delete(topic: string) {
-    const enc = encodeURIComponent(topic);
-    return this.http.delete<{ topic: string; deleted: boolean }>(`${env.API_URL}/subscriptions/${enc}`);
+  delete(targetId: string) {
+    const enc = encodeURIComponent(targetId);
+    return this.http.delete<{ targetId: string; deleted: boolean }>(`${env.API_URL}/subscriptions/${enc}`);
   }
 
   listMine() {

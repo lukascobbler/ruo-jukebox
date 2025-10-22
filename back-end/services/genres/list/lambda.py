@@ -22,7 +22,7 @@ def lambda_handler(event, context):
         is_sub = (("SUB~" + gid) in subscribed_keys) if gid else False
 
         items.append({
-            "id": gid,
+            "genre_id": gid,
             "name": name,
             "isSubscribed": is_sub
         })
