@@ -99,12 +99,12 @@ export class SearchResultsComponent implements OnInit {
     ).subscribe({
       next: (artists) => {
         this.foundArtists = (artists || []).map(a => ({
-          id: a.id,
+          artist_id: a.artist_id,
           name: a.name,
           biography: a.biography,
           genres: a.genres,
-          pictureUrl: a.pictureUrl ?? null,
-          pictureKey: null
+          cover_url: a.cover_url ?? null,
+          cover_key: null
         }));
       },
       error: (err) => {

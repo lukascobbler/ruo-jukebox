@@ -11,16 +11,13 @@
     <div class="info">
       <mat-form-field appearance="outline">
         <mat-label>Name</mat-label>
-        <input matInput [(ngModel)]="name"/>
+        <input matInput [(ngModel)]="name" />
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Artists</mat-label>
         <mat-select [(ngModel)]="selectedArtists" multiple>
-          <mat-option [value]="'artist1'">Awesome artist 1</mat-option>
-          <mat-option [value]="'artist2'">Awesome artist 2</mat-option>
-          <mat-option [value]="'artist3'">Awesome artist 3</mat-option>
-          <mat-option [value]="'artist4'">Awesome artist 4</mat-option>
+          <mat-option *ngFor="let artist of artists" [value]="artist.artist_id">{{ artist.name }}</mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -30,7 +27,6 @@
           <mat-option *ngFor="let genre of genres" [value]="genre.genre_id">{{ genre.name }}</mat-option>
         </mat-select>
       </mat-form-field>
-
 
       <app-upload-song-box class="file"></app-upload-song-box>
     </div>

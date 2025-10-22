@@ -23,10 +23,10 @@
       <p class="big-text">Discover artists</p>
 <div class="discover-artists horizontal-scroller">
   <div *ngFor="let artist of artists" class="single-artist">
-    <button class="icon-button" (click)="router.navigate(['artist', artist.id])">
-      <ng-container *ngIf="artist.pictureUrl; else missingArtist">
+    <button class="icon-button" (click)="router.navigate(['artist', artist.artist_id])">
+      <ng-container *ngIf="artist.cover_url; else missingArtist">
         <img
-          [src]="artist.pictureUrl!"
+          [src]="artist.cover_url!"
           [alt]="artist.name"
           class="artist-avatar"
           width="192"

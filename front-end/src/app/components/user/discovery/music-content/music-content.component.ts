@@ -75,11 +75,11 @@ export class MusicContentComponent implements OnInit {
           return this.artistsService.getByGenre(genreId).pipe(
             map((list: Artist[]) =>
               list.map(a => ({
-                id: a.id,
+                id: a.artist_id,
                 name: a.name,
                 biography: a.biography,
                 genres: a.genres,
-                pictureUrl: a.pictureUrl ?? null,
+                pictureUrl: a.cover_url ?? null,
                 pictureKey: null
               }))
             )
@@ -97,11 +97,12 @@ export class MusicContentComponent implements OnInit {
         );
       })
     ).subscribe({
-      next: (artists) => { this.artists = artists ?? []; },
-      error: (err) => {
-        const msg = this.extractError(err);
-        this.toast.error('Artists error', msg);
-      }
+      // TODO
+      // next: (artists) => { this.artists = artists ?? []; },
+      // error: (err) => {
+      //   const msg = this.extractError(err);
+      //   this.toast.error('Artists error', msg);
+      // }
     });
     let genreId = this.route.snapshot.params['id'];
   }

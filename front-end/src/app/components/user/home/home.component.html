@@ -23,7 +23,7 @@
       <p class="big-text">Recommended artists</p>
       <div class="recommended-artists horizontal-scroller">
         <div *ngFor="let artist of artists" class="single-artist">
-          <button class="icon-button" (click)="router.navigate(['artist', artist.id])">
+          <button class="icon-button" (click)="router.navigate(['artist', artist.artist_id])">
             <app-round-missing-icon-x-large [icon_name]="'artist'" />
           </button>
           <p class="artist-name">{{ artist.name }}</p>

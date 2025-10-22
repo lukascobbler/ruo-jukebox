@@ -47,7 +47,7 @@ def lambda_handler(event, context):
         "genres": genres
     }
 
-    core_single = create_single(single_id, name, artists, genres)
+    core_single = create_single(single_id, name, artists, genres, audio_key, song_id)
     create_songs(single_id, [core_song])
 
     return response(200, core_single)

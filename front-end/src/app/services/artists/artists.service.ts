@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
-import { Artist } from '../../models/Artist';
-import { env } from '../../../environments/environment';
+import {inject, Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Observable, map} from 'rxjs';
+import {Artist} from '../../models/Artist';
+import {env} from '../../../environments/environment';
 
 export interface CreateArtistRequest {
   name: string;
@@ -24,7 +24,7 @@ export interface CompleteUploadResp {
   genres: { genre_id: string; name: string }[];
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class ArtistsService {
   private http = inject(HttpClient);
 
@@ -32,11 +32,6 @@ export class ArtistsService {
     return this.http
       .post<CreateArtistResponse | string>(`${env.API_URL}/artists/init-upload`, req)
       .pipe(map(r => (typeof r === 'string' ? JSON.parse(r) : r)));
-  }
-
-  uploadToS3(uploadUrl: string, file: File, contentType: string): Observable<void> {
-    const headers = new HttpHeaders({ 'Content-Type': contentType });
-    return this.http.put(uploadUrl, file, { headers, responseType: 'text' }).pipe(map(() => void 0));
   }
 
   completeUpload(body: {

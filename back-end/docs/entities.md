@@ -100,6 +100,9 @@ core_single = {
     "content_type": "SINGLE",
     # same as in song
     "name": "Super song",
+    "song_id": "SONG~{UUID}",
+    "audio_key": "songs/SONG~{UUID}.mp3",
+    "transcription_key": "transcriptions/SONG~{UUID}.txt",
     "cover_key": "singles/SINGLE~{UUID}.jpg",
     "artists": [{
         "artist_id": "ARTIST~{UUID}",

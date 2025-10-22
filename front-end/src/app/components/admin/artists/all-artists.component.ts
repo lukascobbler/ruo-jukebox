@@ -92,7 +92,7 @@ export class AllArtistsComponent implements OnInit {
   }
 
   getArtistGenres(artist: Artist) {
-    return artist.genres.map((g) => g['name']).join(', ');
+    return (artist.genres?.length ? artist.genres.map(g => g['name']).join(', ') : '');
   }
 
   createNewArtist() {

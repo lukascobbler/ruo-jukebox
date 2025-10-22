@@ -36,7 +36,7 @@ def batch_get_items(table, keys):
 
 # get content with id
 def get_content(content_id):
-    return query_all(content_table, KeyConditionExpression=Key("PK").eq(content_id) & Key("SK").eq("META"))
+    return query_all(content_table, KeyConditionExpression=Key("PK").eq(content_id) & Key("SK").eq("META"))[0]
 
 
 # get batch content by id
@@ -47,22 +47,22 @@ def get_contents(content_ids: list[str]):
 
 # all genres
 def list_genres():
-    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("GENRE"))
+    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("GENRE") & Key("SK").eq("META"))
 
 
 # all artists
 def list_artists():
-    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("ARTIST"))
+    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("ARTIST") & Key("SK").eq("META"))
 
 
 # all singles
 def list_singles():
-    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("SINGLE"))
+    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("SINGLE") & Key("SK").eq("META"))
 
 
 # all albums
 def list_albums():
-    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("ALBUM"))
+    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("ALBUM") & Key("SK").eq("META"))
 
 
 # all albums and artists for a given genre (discovery page)
@@ -99,8 +99,8 @@ def search(query: str):
     items = query_all(content_table, IndexName="byName", KeyConditionExpression=Key("name_lc").eq(query.lower()))
     res = {"songs": [], "albums": [], "artists": []}
     for item in items:
-        if item["SK"].startswith("CONTENT~SINGLE~"):
-            res["singles"].append(item)
+        if item["SK"].startswith("CONTENT~SONG~"):
+            res["songs"].append(item)
         elif item["SK"].startswith("CONTENT~ALBUM~"):
             res["albums"].append(item)
         elif item["SK"].startswith("CONTENT~ARTIST~"):

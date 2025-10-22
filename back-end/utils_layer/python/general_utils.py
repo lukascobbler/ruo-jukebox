@@ -46,7 +46,7 @@ def get_genre_objects(genres: list[str]) -> tuple[list[dict[str, Any]] | None, s
 
 def get_artist_objects(artists: list[str]) -> tuple[list[dict[str, Any]] | None, str]:
     if not artists or not isinstance(artists, list) or len(artists) == 0:
-        return [], "Success"  # "Field 'artists' must contain at least one genre"
+        return None, "Field 'artists' must contain at least one genre"
     for artist in artists:
         if not artist or not isinstance(artist, str) or not artist.startswith("ARTIST~"):
             return None, "Each artist must be a valid 'artist_id' starting with 'ARTIST~'"

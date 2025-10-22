@@ -76,10 +76,8 @@ export class CreateArtistDialogComponent {
       );
       if (!init.artist_id) throw new Error('Init upload failed');
 
-      if (file && init.cover_url) {
-        const ct = file.type;
-        await firstValueFrom(this.artistsService.uploadToS3(init.cover_url, file, ct));
-      }
+      if (file && init.cover_url)
+        await fetch(init.cover_url, {method: 'PUT', body: file});
 
       const completed = await firstValueFrom(
         this.artistsService.completeUpload({
