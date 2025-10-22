@@ -23,6 +23,8 @@ class SubscriptionsStack(NestedStack):
         self.lambdas = {}
 
         # sqs setup
+
+        # singles and albums sends messages here
         self.new_content_dlq = sqs.Queue(
             self, "NewContentDLQ",
             retention_period=Duration.days(14),
@@ -35,19 +37,37 @@ class SubscriptionsStack(NestedStack):
             ),
         )
 
+        # just sends emails
+        self.email_send_dlq = sqs.Queue(
+            self, "EmailSendDLQ",
+            retention_period=Duration.days(14),
+        )
+        self.email_send_queue = sqs.Queue(
+            self, "EmailSendQueue",
+            visibility_timeout=Duration.seconds(60),
+            dead_letter_queue=sqs.DeadLetterQueue(max_receive_count=5, queue=self.email_send_dlq),
+        )
+
         self._create_lambdas(dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, environment)
         self._attach_to_api(api_stack)
 
-        # setup worker for sqs
+        # setup workers for sqs
+
+        # aggregator
         notify_fn = self.lambdas["SubsNotifyNewContent"]
         notify_fn.add_event_source(events.SqsEventSource(self.new_content_queue, batch_size=10))
-        notify_fn.role.add_to_principal_policy(iam.PolicyStatement(
+        notify_fn.add_environment("EMAIL_SEND_QUEUE_URL", self.email_send_queue.queue_url)
+        self.email_send_queue.grant_send_messages(notify_fn)
+
+        # email sender
+        sender_fn = self.lambdas["SubsSendEmail"]
+        sender_fn.add_event_source(events.SqsEventSource(self.email_send_queue, batch_size=10))
+
+        sender_fn.role.add_to_principal_policy(iam.PolicyStatement(
             actions=["ses:SendEmail", "ses:SendRawEmail"],
             resources=["*"]
         ))
-        notify_fn.add_environment("FROM_EMAIL", environment["FROM_EMAIL"])
-        notify_fn.add_environment("TO_EMAIL", "usi379538@gmail.com") # TODO remove
-
+        sender_fn.add_environment("FROM_EMAIL", environment["FROM_EMAIL"])
 
     def _create_lambdas(self, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, env):
         lambda_defs = {
@@ -55,6 +75,7 @@ class SubscriptionsStack(NestedStack):
             "SubsListMine": "services/subscriptions/list_mine",
             "SubsDelete": "services/subscriptions/delete",
             "SubsNotifyNewContent": "services/subscriptions/notify_new_content",
+            "SubsSendEmail": "services/subscriptions/send_email",      
         }
         for key, path in lambda_defs.items():
             self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack).fn
