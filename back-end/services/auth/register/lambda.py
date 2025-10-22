@@ -1,7 +1,7 @@
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 from passlib.hash import pbkdf2_sha256
-import boto3, json, os
+import boto3, json, os, uuid
 
 USERS_TABLE = os.environ["USERS_TABLE"]
 COGNITO_USER_POOL_ID = os.environ["USER_POOL_ID"]
@@ -21,6 +21,7 @@ def lambda_handler(event, context):
         first_name = body.get("first_name")
         last_name = body.get("last_name")
         birthday = body.get("birthday")
+        user_id = f"USER~{uuid.uuid4()}"
 
         if not username or not email or not password or not first_name or not last_name or not birthday:
             return {"statusCode": 400, "headers": CORS_HEADERS, "body": json.dumps({"message": "Missing required fields"})}
@@ -47,7 +48,8 @@ def lambda_handler(event, context):
                     {"Name": "email_verified", "Value": "true"},
                     {"Name": "given_name", "Value": first_name},
                     {"Name": "family_name", "Value": last_name},
-                    {"Name": "birthdate", "Value": birthday}  # Make sure format is YYYY-MM-DD
+                    {"Name": "birthdate", "Value": birthday},  # Make sure format is YYYY-MM-DD
+                    {"Name": "custom:userId", "Value": user_id}
                 ],
                 MessageAction="SUPPRESS"
             )
