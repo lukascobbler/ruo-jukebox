@@ -1,9 +1,10 @@
-from aws_cdk.aws_cognito import UserPoolGroup, AuthFlow, SignInAliases, StandardAttribute, UserPool, StandardAttributes, PasswordPolicy
+from aws_cdk.aws_cognito import UserPoolGroup, AuthFlow, SignInAliases, StandardAttribute, UserPool, StandardAttributes, PasswordPolicy, StringAttribute
 from aws_cdk import Stack, RemovalPolicy, CfnOutput, Duration
 from constructs import Construct
 
 LOGGED_IN_GROUP_NAME = "LoggedInUser"
 ADMIN_GROUP_NAME = "Admin"
+
 
 class CognitoStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs):
@@ -27,6 +28,7 @@ class CognitoStack(Stack):
                 birthdate=StandardAttribute(required=True, mutable=True),
                 email=StandardAttribute(required=True, mutable=True),
             ),
+            custom_attributes={"userId": StringAttribute(mutable=True)},
             password_policy=PasswordPolicy(
                 min_length=6,
                 require_uppercase=False,

@@ -1,7 +1,7 @@
 from authorization_exception import AuthorizationException
 
 
-def inject_user_id(event: dict):
+def inject_userdata(event: dict):
     authorizer = event.get('requestContext', {}).get('authorizer', {})
     claims = authorizer.get('claims', {})
     if not claims:
@@ -15,7 +15,7 @@ def inject_user_id(event: dict):
         user_group = user_group[0]
 
     event["userRole"] = user_group
-    event["userId"] = claims.get("sub")
+    event["userId"] = claims.get("custom:userId")
     event["username"] = claims.get("cognito:username") or claims.get("preferred_username")
     event["email"] = claims.get("email")
 

@@ -1,12 +1,14 @@
+from boto3 import s3
 import json
 import os
 
-from boto3 import s3
-
 CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
-def response(status, body):
+
+def response(status: int, body: dict, error: str | None = None):
+    body = {"message": error} if error else body
     return {"statusCode": status, "headers": CORS_HEADERS, "body": json.dumps(body, default=str)}
+
 
 def generate_s3_download_url(bucket, key):
     if not key: return None
