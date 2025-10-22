@@ -8,22 +8,55 @@ from iac.api_gateway_stack import ApiGatewayStack
 from iac.shared.email_stack import EmailStack
 from iac.shared.s3_stack import S3Stack
 from constructs import Construct
-
+from aws_cdk import (
+    NestedStack, Duration,
+    aws_apigateway as apigw,
+    aws_sqs as sqs,
+    aws_lambda_event_sources as events,
+    aws_iam as iam,
+)
 
 class SubscriptionsStack(NestedStack):
     def __init__(self, scope: Construct, stack_id: str,
-                 dynamo_db: DynamoDbStack, s3: S3Stack, libs_layer_stack: LibsLayerStack, auth_layer_stack: AuthLayerStack,
-                 utils_layer_stack: UtilsLayerStack, api_stack: ApiGatewayStack, email_stack: EmailStack, environment, **kwargs):
+                 dynamo_db: DynamoDbStack, s3: S3Stack, libs_layer_stack: LibsLayerStack,
+                 auth_layer_stack: AuthLayerStack, utils_layer_stack: UtilsLayerStack,
+                 api_stack: ApiGatewayStack, environment, **kwargs):
         super().__init__(scope, stack_id, **kwargs)
         self.lambdas = {}
+
+        # sqs setup
+        self.new_content_dlq = sqs.Queue(
+            self, "NewContentDLQ",
+            retention_period=Duration.days(14),
+        )
+        self.new_content_queue = sqs.Queue(
+            self, "NewContentQueue",
+            visibility_timeout=Duration.seconds(60),
+            dead_letter_queue=sqs.DeadLetterQueue(
+                max_receive_count=5, queue=self.new_content_dlq
+            ),
+        )
+
         self._create_lambdas(dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, environment)
         self._attach_to_api(api_stack)
+
+        # setup worker for sqs
+        notify_fn = self.lambdas["SubsNotifyNewContent"]
+        notify_fn.add_event_source(events.SqsEventSource(self.new_content_queue, batch_size=10))
+        notify_fn.role.add_to_principal_policy(iam.PolicyStatement(
+            actions=["ses:SendEmail", "ses:SendRawEmail"],
+            resources=["*"]
+        ))
+        notify_fn.add_environment("FROM_EMAIL", environment["FROM_EMAIL"])
+        notify_fn.add_environment("TO_EMAIL", "usi379538@gmail.com") # TODO remove
+
 
     def _create_lambdas(self, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, env):
         lambda_defs = {
             "SubsCreate": "services/subscriptions/create",
             "SubsListMine": "services/subscriptions/list_mine",
-            "SubsDelete": "services/subscriptions/delete"
+            "SubsDelete": "services/subscriptions/delete",
+            "SubsNotifyNewContent": "services/subscriptions/notify_new_content",
         }
         for key, path in lambda_defs.items():
             self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack).fn

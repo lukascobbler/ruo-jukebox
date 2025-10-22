@@ -2,11 +2,12 @@ from general_utils import response, file_exists_on_s3, get_genre_objects, get_ar
 from create import create_single, create_songs
 from pre_authorize import pre_authorize
 from read import get_contents
-import json, os
+import json, os, boto3
 
 AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
 IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
-
+SQS_QUEUE_URL = os.environ["NEW_CONTENT_QUEUE_URL"]
+sqs = boto3.client("sqs")
 
 @pre_authorize(['Admin'])
 def lambda_handler(event, context):
@@ -49,5 +50,15 @@ def lambda_handler(event, context):
 
     core_single = create_single(single_id, name, artists, genres)
     create_songs(single_id, [core_song])
+
+    msg = {
+        "type": "NEW_SINGLE",
+        "name": name,
+        "artist_ids": [a["artist_id"] for a in artists],
+        "genre_ids":  [g["genre_id"] for g in genres],
+        "artist_names": [a["name"] for a in artists],
+        "genre_names":  [g["name"] for g in genres]
+    }
+    sqs.send_message(QueueUrl=SQS_QUEUE_URL, MessageBody=json.dumps(msg))
 
     return response(200, core_single)

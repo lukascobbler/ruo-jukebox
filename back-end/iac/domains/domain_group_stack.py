@@ -43,6 +43,17 @@ class DomainGroupStack(NestedStack):
             env_vars
         )
 
+        subs_stack = SubscriptionsStack( # create before singles and albums to get the SQS queue
+            self, "SubscriptionsStack",
+            shared.dynamo_db_stack,
+            shared.s3_stack,
+            shared.libs_layer_stack,
+            shared.auth_layer_stack,
+            shared.utils_layer_stack,
+            api_gateway,
+            env_vars
+        )
+
         AlbumsStack(
             self, "AlbumsStack",
             shared.dynamo_db_stack,
@@ -101,7 +112,8 @@ class DomainGroupStack(NestedStack):
             shared.auth_layer_stack,
             shared.utils_layer_stack,
             api_gateway,
-            env_vars
+            env_vars,
+            notify_queue=subs_stack.new_content_queue
         )
 
         RatingsStack(
@@ -115,14 +127,4 @@ class DomainGroupStack(NestedStack):
             env_vars
         )
 
-        SubscriptionsStack(
-            self, "SubscriptionsStack",
-            shared.dynamo_db_stack,
-            shared.s3_stack,
-            shared.libs_layer_stack,
-            shared.auth_layer_stack,
-            shared.utils_layer_stack,
-            api_gateway,
-            shared.email_stack,
-            env_vars
-        )
+
