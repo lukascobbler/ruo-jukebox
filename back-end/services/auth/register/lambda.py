@@ -19,7 +19,7 @@ def lambda_handler(event, context):
         birthday = body.get("birthday")
         user_id = f"USER~{uuid.uuid4()}"
 
-        if not username or not email or not password or not name or not surname or not birthday:
+        if not username or not email or not password:
             return response(400, error="Missing required fields")
 
         try:
@@ -32,18 +32,21 @@ def lambda_handler(event, context):
         if resp["Users"]:
             return response(409, error="Email already exists")
 
+        user_attributes = [
+            {"Name": "email", "Value": email},
+            {"Name": "email_verified", "Value": "true"},
+            {"Name": "custom:userId", "Value": user_id}
+        ]
+
+        if name: user_attributes.append({"Name": "given_name", "Value": name})
+        if surname: user_attributes.append({"Name": "family_name", "Value": surname})
+        if birthday: user_attributes.append({"Name": "birthdate", "Value": birthday})  # format is YYYY-MM-DD
+
         try:
             cognito.admin_create_user(
                 UserPoolId=COGNITO_USER_POOL_ID,
                 Username=username,
-                UserAttributes=[
-                    {"Name": "email", "Value": email},
-                    {"Name": "email_verified", "Value": "true"},
-                    {"Name": "given_name", "Value": name},
-                    {"Name": "family_name", "Value": surname},
-                    {"Name": "birthdate", "Value": birthday},  # Make sure format is YYYY-MM-DD
-                    {"Name": "custom:userId", "Value": user_id}
-                ],
+                UserAttributes=user_attributes,
                 MessageAction="SUPPRESS"
             )
 

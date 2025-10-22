@@ -34,7 +34,7 @@ def file_exists_on_s3(bucket, key):
 
 def get_genre_objects(genres: list[str]) -> tuple[list[dict[str, Any]] | None, str]:
     if not genres or not isinstance(genres, list) or len(genres) == 0:
-        return None, "Field 'genres' must contain at least one genre"
+        return [], "Success"  # "Field 'genres' must contain at least one genre"
     for genre in genres:
         if not genre or not isinstance(genre, str) or not genre.startswith("GENRE~"):
             return None, "Each genre must be a valid 'genre_id' starting with 'GENRE~'"
@@ -46,7 +46,7 @@ def get_genre_objects(genres: list[str]) -> tuple[list[dict[str, Any]] | None, s
 
 def get_artist_objects(artists: list[str]) -> tuple[list[dict[str, Any]] | None, str]:
     if not artists or not isinstance(artists, list) or len(artists) == 0:
-        return None, "Field 'artists' must contain at least one artist"
+        return [], "Success"  # "Field 'artists' must contain at least one genre"
     for artist in artists:
         if not artist or not isinstance(artist, str) or not artist.startswith("ARTIST~"):
             return None, "Each artist must be a valid 'artist_id' starting with 'ARTIST~'"

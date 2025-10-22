@@ -14,6 +14,5 @@ def lambda_handler(event, context):
     for single in all_singles:
         if "cover_key" in single:
             single["cover_url"] = generate_s3_download_url(IMAGES_BUCKET, single["cover_key"])
-        single["audio_url"] = generate_s3_download_url(AUDIO_BUCKET, single["audio_key"])
 
     return response(200, all_singles)
