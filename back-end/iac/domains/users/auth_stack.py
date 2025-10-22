@@ -36,7 +36,9 @@ class AuthStack(NestedStack):
                 actions=[
                     "cognito-idp:AdminCreateUser",
                     "cognito-idp:AdminSetUserPassword",
-                    "cognito-idp:AdminAddUserToGroup"
+                    "cognito-idp:AdminAddUserToGroup",
+                    "cognito-idp:AdminGetUser",
+                    "cognito-idp:ListUsers"
                 ],
                 resources=[self.cognito_stack.user_pool.user_pool_arn]
             )

@@ -4,7 +4,7 @@ import {CreateSingleDialogComponent} from '../dialogs/single/create-single-dialo
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {ToastrService} from '../../../services/toastr/toastr.service';
 import {PlayerService} from '../../../services/player/player.service';
-import {SongsService} from '../../../services/songs/songs.service';
+import {SongsService} from '../../../services/singles/singles.service';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Component, inject, OnInit} from '@angular/core';
 import {MatIconButton} from '@angular/material/button';
@@ -43,7 +43,7 @@ export class AllSinglesComponent implements OnInit {
 
   private loadSingles(): void {
     this.loading = true;
-    this.songsService.listSongs().subscribe({
+    this.songsService.listSingles().subscribe({
       next: (songs) => {
         this.singlesDataSource = songs;
         this.player.loadPlaylist(songs);
@@ -69,7 +69,7 @@ export class AllSinglesComponent implements OnInit {
   async deleteSong(song: Song): Promise<void> {
     console.log(song)
     try {
-      await lastValueFrom(this.songsService.deleteSong(song.song_id));
+      await lastValueFrom(this.songsService.deleteSinge(song.song_id));
       this.toast.success('Deleted', 'Song deleted successfully');
       this.loadSingles();
     } catch {

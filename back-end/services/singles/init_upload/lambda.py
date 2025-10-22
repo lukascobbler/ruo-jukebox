@@ -7,6 +7,7 @@ AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
 IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
 
 
+@pre_authorize(['Admin'])
 def lambda_handler(event, context):
     try:
         body = json.loads(event.get("body", "{}"))

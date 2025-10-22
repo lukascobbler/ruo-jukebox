@@ -4,7 +4,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {Component, inject, ViewChild, Inject, OnInit} from '@angular/core';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {SongsService} from '../../../../services/songs/songs.service';
+import {SongsService} from '../../../../services/singles/singles.service';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatIconButton} from '@angular/material/button';
 import {MatSelect} from '@angular/material/select';
@@ -119,7 +119,7 @@ export class CreateSingleDialogComponent implements OnInit {
       if (hasNewCover) body.cover_filename = newCoverFile.name;
       if (hasNewAudio) body.audio_filename = newAudioFile.name;
 
-      const updateRes = await lastValueFrom(this.songsService.updateSong(this.data.song_id, body));
+      const updateRes = await lastValueFrom(this.songsService.updateSingle(this.data.song_id, body));
 
       if (hasNewCover && updateRes.cover_upload_url)
         await fetch(updateRes.cover_upload_url, {method: 'PUT', body: newCoverFile});

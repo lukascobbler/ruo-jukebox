@@ -29,12 +29,12 @@ class SinglesStack(NestedStack):
             self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack).fn
 
     def _attach_to_api(self, api: ApiGatewayStack):
-        song = api.api.root.add_resource("song")
-        song_id = song.add_resource("{id}")
+        single = api.api.root.add_resource("single")
+        single_id = single.add_resource("{id}")
 
-        song.add_resource("init-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["SingleInitUpload"]), **api.auth_kwargs)
-        song.add_resource("complete-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["SingleCompleteUpload"]), **api.auth_kwargs)
-        song.add_method("GET", apigw.LambdaIntegration(self.lambdas["SingleList"]), **api.auth_kwargs)
+        single.add_resource("init-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["SingleInitUpload"]), **api.auth_kwargs)
+        single.add_resource("complete-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["SingleCompleteUpload"]), **api.auth_kwargs)
+        single.add_method("GET", apigw.LambdaIntegration(self.lambdas["SingleList"]), **api.auth_kwargs)
 
-        song_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["SingleUpdate"]), **api.auth_kwargs)
-        song_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["SingleDelete"]), **api.auth_kwargs)
+        single_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["SingleUpdate"]), **api.auth_kwargs)
+        single_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["SingleDelete"]), **api.auth_kwargs)

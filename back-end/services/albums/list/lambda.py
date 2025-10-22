@@ -1,4 +1,4 @@
-from general_utilities import response, generate_s3_download_url
+from general_utils import response, generate_s3_download_url
 from read import list_albums
 import os
 

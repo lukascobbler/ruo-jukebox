@@ -1,4 +1,5 @@
 from boto3.dynamodb.conditions import Key
+from pre_authorize import pre_authorize
 import json, boto3, os
 
 dynamodb = boto3.resource("dynamodb")
@@ -34,6 +35,7 @@ def _delete_content_genres(song_id):
             batch.delete_item(Key={"genre": item["genre"], "entity": song_id})
 
 
+@pre_authorize(['Admin'])
 def lambda_handler(event, context):
     try:
         body = json.loads(event.get("body", "{}"))

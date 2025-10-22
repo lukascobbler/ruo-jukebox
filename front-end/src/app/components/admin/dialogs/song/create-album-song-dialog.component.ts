@@ -10,7 +10,7 @@ import {FormsModule} from '@angular/forms';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {NgIf} from '@angular/common';
 import {UploadImageBoxComponent} from '../upload-image-box/upload-image-box.component';
-import {SongsService} from '../../../../services/songs/songs.service';
+import {SongsService} from '../../../../services/singles/singles.service';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {lastValueFrom} from 'rxjs';
 

@@ -21,7 +21,7 @@ import {Artist} from '../../../../models/Artist';
 import {NgIf} from '@angular/common';
 import {AlbumsService} from '../../../../services/albums/albums.service';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
-import {SongsService} from '../../../../services/songs/songs.service';
+import {SongsService} from '../../../../services/singles/singles.service';
 
 @Component({
   selector: 'app-album-details',

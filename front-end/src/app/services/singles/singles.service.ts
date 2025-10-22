@@ -41,24 +41,24 @@ export class SongsService {
   private readonly http = inject(HttpClient);
 
   initUpload(payload: UploadInitPayload): Observable<UploadInitResponse> {
-    return this.http.post<UploadInitResponse>(`${env.API_URL}/song/init-upload`, payload);
+    return this.http.post<UploadInitResponse>(`${env.API_URL}/single/init-upload`, payload);
   }
 
   completeUpload(payload: UploadCompletePayload): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${env.API_URL}/song/complete-upload`, payload);
+    return this.http.post<{ message: string }>(`${env.API_URL}/single/complete-upload`, payload);
   }
 
-  deleteSong(song_id: string): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${env.API_URL}/song/${song_id}`);
+  deleteSinge(song_id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${env.API_URL}/single/${song_id}`);
   }
 
-  listSongs(): Observable<any[]> {
-    return this.http.get<any[]>(`${env.API_URL}/song`);
+  listSingles(): Observable<any[]> {
+    return this.http.get<any[]>(`${env.API_URL}/single`);
   }
 
-  updateSong(song_id: string, payload: UpdateSongPayload): Observable<{ message: string; cover_upload_url?: string; audio_upload_url?: string }> {
+  updateSingle(song_id: string, payload: UpdateSongPayload): Observable<{ message: string; cover_upload_url?: string; audio_upload_url?: string }> {
     return this.http.patch<{ message: string; cover_upload_url?: string; audio_upload_url?: string }>(
-      `${env.API_URL}/song/${song_id}`,
+      `${env.API_URL}/single/${song_id}`,
       {song_id, ...payload}
     );
   }

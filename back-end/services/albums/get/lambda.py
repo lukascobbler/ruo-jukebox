@@ -1,4 +1,4 @@
-from general_utilities import generate_s3_download_url, response
+from general_utils import generate_s3_download_url, response
 from pre_authorize import pre_authorize
 from read import songs_for_album
 import json

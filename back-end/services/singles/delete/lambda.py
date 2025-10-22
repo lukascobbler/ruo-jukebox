@@ -1,4 +1,5 @@
 from boto3.dynamodb.conditions import Key
+from pre_authorize import pre_authorize
 import json, os, boto3
 
 dynamodb = boto3.resource("dynamodb")
@@ -13,6 +14,7 @@ TRANSCRIPTS_BUCKET = os.environ.get("TRANSCRIPTS_BUCKET", "")
 CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
 
 
+@pre_authorize(['Admin'])
 def lambda_handler(event, context):
     try:
         song_id = event.get("pathParameters", {}).get("id")

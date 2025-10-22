@@ -1,12 +1,12 @@
 import {inject, Injectable} from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {finalize, tap} from 'rxjs/operators';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {Role} from '../../models/Role';
 import {Router} from '@angular/router';
 import {env} from '../../../environments/environment';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class AuthService {
   private readonly TOKEN_KEY = 'access_token';
   private readonly ID_TOKEN_KEY = 'id_token';
@@ -21,13 +21,14 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<any> {
-    return this.http.post(`${env.API_URL}/auth/login`, {
-      username: email,
-      password,
-    }).pipe(
+    return this.http.post(`${env.API_URL}/auth/login`, {username: email, password}).pipe(
       tap((res: any) => {
         localStorage.setItem(this.TOKEN_KEY, res.access_token);
-        if (res.id_token) localStorage.setItem(this.ID_TOKEN_KEY, res.id_token);
+        console.log('typeof res:', typeof res);
+        console.log('res:', res);
+        if (res.id_token) {
+          localStorage.setItem(this.ID_TOKEN_KEY, res.id_token);
+        }
         this.updateRoleFromStorage();
       })
     );
@@ -47,11 +48,11 @@ export class AuthService {
   logout() {
     const token = this.getToken();
     this.http
-      .post<void>(`${env.API_URL}/auth/logout`, { access_token: token })
+      .post<void>(`${env.API_URL}/auth/logout`, {access_token: token})
       .pipe(finalize(() => this.clear())).subscribe({
-        complete: () => this.router.navigate(['/login']),
-        error: () => this.router.navigate(['/login']),
-      });
+      complete: () => this.router.navigate(['/login']),
+      error: () => this.router.navigate(['/login']),
+    });
   }
 
   getToken(): string | null {

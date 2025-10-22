@@ -28,14 +28,14 @@ def lambda_handler(event, context):
         except ClientError as e:
             return response(500, error=f"Cognito error: {str(e)}")
 
-        body = json.dumps({
+        body = {
             "message": "Login successful",
             "id_token": resp["AuthenticationResult"]["IdToken"],
             "access_token": resp["AuthenticationResult"]["AccessToken"],
             "refresh_token": resp["AuthenticationResult"]["RefreshToken"],
             "expires_in": resp["AuthenticationResult"]["ExpiresIn"],
             "token_type": resp["AuthenticationResult"]["TokenType"]
-        })
+        }
 
         return response(200, body)
 
