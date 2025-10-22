@@ -47,22 +47,22 @@ def get_contents(content_ids: list[str]):
 
 # all genres
 def list_genres():
-    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("GENRE") & Key("SK").eq("META"))
+    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("GENRE"))
 
 
 # all artists
 def list_artists():
-    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("ARTIST") & Key("SK").eq("META"))
+    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("ARTIST"))
 
 
 # all singles
 def list_singles():
-    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("SINGLE") & Key("SK").eq("META"))
+    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("SINGLE"))
 
 
 # all albums
 def list_albums():
-    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("ALBUM") & Key("SK").eq("META"))
+    return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("ALBUM"))
 
 
 # all albums and artists for a given genre (discovery page)

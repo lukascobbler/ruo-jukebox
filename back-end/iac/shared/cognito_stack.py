@@ -7,11 +7,14 @@ USER_GROUP_NAME = "User"
 
 
 class CognitoStack(NestedStack):
-    def __init__(self, scope: Construct, stack_id: str, **kwargs):
+    def __init__(self, scope: Construct, stack_id: str, branch: str, **kwargs):
         super().__init__(scope, stack_id, **kwargs)
 
+        suffix = f"-{branch}" if branch != "main" else ""
+
         self.user_pool = UserPool(
-            self, "JukeboxUserPool",
+            self, f"JukeboxUserPool{suffix}",
+            user_pool_name=f"JukeboxUserPool{suffix}",
             self_sign_up_enabled=True,
             sign_in_aliases=SignInAliases(username=True, email=True),
             standard_attributes=StandardAttributes(

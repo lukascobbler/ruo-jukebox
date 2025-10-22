@@ -60,7 +60,7 @@ export class CreateArtistDialogComponent {
   ) {}
 
   trackByGenreId(_i: number, g: GenreItem) {
-    return g.id;
+    return g.genre_id;
   }
 
   async onCreateClicked() {

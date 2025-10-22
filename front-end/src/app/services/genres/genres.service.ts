@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {map, Observable, shareReplay} from 'rxjs';
-import { GenreItem } from '../../models/GenreItem';
+import {GenreItem} from '../../models/GenreItem';
 import {env} from '../../../environments/environment';
 
 export interface GenreCreateRequest {
