@@ -5,6 +5,10 @@ from general_utils import response
 
 @pre_authorize(["Admin", "User"])
 def lambda_handler(event, context):
-    albums_and_artists = list_by_genre()
+    path_params = event.get("pathParameters") or {}
+    genre_id = path_params.get("id")
 
-    return response(200, albums_and_artists)
+    if not genre_id:
+        return response(400, error="Missing genre ID")
+
+    return response(200, list_by_genre(genre_id))

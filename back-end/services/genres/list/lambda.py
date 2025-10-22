@@ -1,5 +1,5 @@
 from pre_authorize import pre_authorize
-from read import get, list_genres
+from read import list_genres
 from general_utils import response
 
 
