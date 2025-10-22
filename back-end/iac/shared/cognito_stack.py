@@ -1,7 +1,6 @@
 from aws_cdk.aws_cognito import UserPoolGroup, AuthFlow, SignInAliases, StandardAttribute, UserPool, StandardAttributes, PasswordPolicy, StringAttribute
 from aws_cdk import NestedStack, RemovalPolicy, Duration
 from constructs import Construct
-
 ADMIN_GROUP_NAME = "Admin"
 USER_GROUP_NAME = "User"
 

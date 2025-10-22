@@ -92,7 +92,7 @@ export class AllArtistsComponent implements OnInit {
   }
 
   getArtistGenres(artist: Artist) {
-    return artist.genres.map((g) => g['name']).join(', ');
+    return (artist.genres?.length ? artist.genres.map(g => g['name']).join(', ') : '');
   }
 
   createNewArtist() {
@@ -101,6 +101,10 @@ export class AllArtistsComponent implements OnInit {
     });
 
     ref.componentInstance.genres = this.genres;
+
+    ref.afterClosed().subscribe((result) => {
+      if (result !== undefined) this.fetchArtists();
+    });
   }
 
   private extractError(err: any): string {

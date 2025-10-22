@@ -1,6 +1,6 @@
 from iac.shared.shared_resources_stack import SharedResourcesStack
 from iac.domains.domain_group_stack import DomainGroupStack
-from iac.api_gateway_stack import ApiGatewayStack
+from iac.shared.api_gateway_stack import ApiGatewayStack
 from constructs import Construct
 from aws_cdk import Stack
 

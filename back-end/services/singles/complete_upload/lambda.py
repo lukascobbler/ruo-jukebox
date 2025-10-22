@@ -31,10 +31,10 @@ def lambda_handler(event, context):
         cover_key = ""
 
     genres, message = get_genre_objects(genres)
-    if not genres: return response(400, error=message)
+    if genres is None: return response(400, error=message)
 
     artists, message = get_artist_objects(artists)
-    if not artists: return response(400, error=message)
+    if artists is None: return response(400, error=message)
 
     core_song = {
         "content_id": song_id,
@@ -47,7 +47,7 @@ def lambda_handler(event, context):
         "genres": genres
     }
 
-    core_single = create_single(single_id, name, artists, genres)
-    create_songs(core_single["content_id"], core_song)
+    core_single = create_single(single_id, name, artists, genres, audio_key, cover_key, song_id)
+    create_songs(single_id, [core_song])
 
     return response(200, core_single)

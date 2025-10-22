@@ -1,9 +1,9 @@
 from iac.custom_constructs.lambda_with_permissions import LambdaWithPermissions
 from iac.layers.utils_layer_stack import UtilsLayerStack
+from iac.shared.api_gateway_stack import ApiGatewayStack
 from iac.layers.libs_layer_stack import LibsLayerStack
 from iac.layers.auth_layer_stack import AuthLayerStack
 from iac.shared.dynamo_db_stack import DynamoDbStack
-from iac.api_gateway_stack import ApiGatewayStack
 from iac.shared.cognito_stack import CognitoStack
 from aws_cdk.aws_iam import PolicyStatement
 from aws_cdk import aws_apigateway as apigw

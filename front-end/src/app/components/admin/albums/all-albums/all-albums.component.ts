@@ -18,7 +18,7 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AlbumDialogData, CreateAlbumDialogComponent} from '../../dialogs/album/create-album-dialog.component';
 import {Artist} from '../../../../models/Artist';
 import { GenresService } from '../../../../services/genres/genres.service';
-import {AlbumsService} from '../../../../services/albums/albums.service';
+import {AlbumsService, OfflineAlbumRequest} from '../../../../services/albums/albums.service';
 import {GenreItem} from '../../../../models/GenreItem';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {NgIf} from '@angular/common';
@@ -77,14 +77,13 @@ export class AllAlbumsComponent implements OnInit {
   }
 
   createNewAlbum() {
-    const dialogRef: MatDialogRef<CreateAlbumDialogComponent, string> = this.dialog.open(CreateAlbumDialogComponent, {
+    const dialogRef: MatDialogRef<CreateAlbumDialogComponent, OfflineAlbumRequest | null> = this.dialog.open(CreateAlbumDialogComponent, {
       minWidth: '500px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loadAlbums();
-        this.toast.success('Success', 'Album successfully created!');
+        this.router.navigate(['album-details'], { state: { data: result } })
       }
     });
   }

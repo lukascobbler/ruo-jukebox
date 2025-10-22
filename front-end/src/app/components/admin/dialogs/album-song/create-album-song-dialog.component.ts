@@ -1,4 +1,4 @@
-import {Component, Inject, inject, Input, ViewChild} from '@angular/core';
+import {Component, Inject, inject, Input, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatIconButton} from '@angular/material/button';
@@ -8,11 +8,15 @@ import {MatSelect} from '@angular/material/select';
 import {UploadSongBoxComponent} from '../upload-song-box/upload-song-box.component';
 import {FormsModule} from '@angular/forms';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
-import {NgIf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 import {UploadImageBoxComponent} from '../upload-image-box/upload-image-box.component';
 import {SongsService} from '../../../../services/singles/singles.service';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {lastValueFrom} from 'rxjs';
+import {Artist} from '../../../../models/Artist';
+import {GenresService} from '../../../../services/genres/genres.service';
+import {ArtistsService} from '../../../../services/artists/artists.service';
+import {OfflineSongRequest} from '../../../../services/albums/albums.service';
 
 @Component({
   selector: 'app-album-song',
@@ -28,44 +32,56 @@ import {lastValueFrom} from 'rxjs';
     FormsModule,
     MatProgressSpinner,
     NgIf,
-    UploadImageBoxComponent
+    UploadImageBoxComponent,
+    NgForOf
   ],
   templateUrl: './create-album-song-dialog.component.html',
   styleUrl: './create-album-song-dialog.component.scss'
 })
-export class CreateAlbumSongDialogComponent {
+export class CreateAlbumSongDialogComponent implements OnInit {
   private readonly songsService = inject(SongsService);
+  private readonly genresService = inject(GenresService);
+  private readonly artistsService = inject(ArtistsService);
   private readonly toast = inject(ToastrService);
-  private readonly dialogRef = inject(MatDialogRef<CreateAlbumSongDialogComponent, string | null>);
+  private readonly dialogRef = inject(MatDialogRef<CreateAlbumSongDialogComponent, OfflineSongRequest | null>);
   // @ts-ignore
   @Input() album_id: string;
   @ViewChild(UploadSongBoxComponent) songBox!: UploadSongBoxComponent;
   @ViewChild(UploadImageBoxComponent) coverBox!: UploadImageBoxComponent;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
-
   selectedArtists: string[] = [];
   selectedGenres: string[] = [];
+  artists: Artist[] = [];
+  genres: { genre_id: string; name: string }[] = [];
   name = '';
   isEditMode = false;
   loading = false;
-
-  ngOnInit() {
-    if (this.data) {
-      this.isEditMode = true;
-      this.name = this.data.name || '';
-      this.selectedArtists = this.data.artists || [];
-      this.selectedGenres = this.data.genres || [];
-    }
-  }
 
   onNoClick() {
     this.dialogRef.close(undefined);
   }
 
-  async createSong() {
-    if (this.isEditMode) {
-      // await this.updateSong(); todo
+  async ngOnInit() {
+    try {
+      const [genres, artists] = await Promise.all([
+        lastValueFrom(this.genresService.list()),
+        lastValueFrom(this.artistsService.getAll())
+      ]);
+      this.genres = genres;
+      this.artists = artists;
+    } catch {
+      this.toast.error('Error', 'Failed to load artists or genres');
+    }
+  }
+
+  async createAlbumSong() {
+    if (!this.name.trim()) {
+      this.toast.error('Error', 'Name is required');
+      return;
+    }
+
+    if (this.selectedArtists.length === 0) {
+      this.toast.error('Error', 'At least one artist must be selected');
       return;
     }
 
@@ -76,24 +92,13 @@ export class CreateAlbumSongDialogComponent {
       return;
     }
 
-    this.loading = true;
-    // try {
-    //   const initRes = await lastValueFrom(this.songsService.initUpload({
-    //     name: this.name,
-    //     artists: this.selectedArtists,
-    //     genres: this.selectedGenres,
-    //     filename: mp3File.name,
-    //     album_id: this.album_id
-    //   }));
-    //   await fetch(initRes.upload_url, {method: 'PUT', body: mp3File});
-    //   await lastValueFrom(this.songsService.completeUpload(initRes.song_id));
-    //
-    //   this.toast.success('Success', 'Song successfully created');
-    //   this.dialogRef.close(initRes.song_id);
-    // } catch {
-    //   this.toast.error('Error', 'Unable to upload the song');
-    // } finally {
-    //   this.loading = false;
-    // }
+    let result: OfflineSongRequest = {
+      audioFile: mp3File,
+      name: this.name,
+      selectedArtists: this.selectedArtists,
+      selectedGenres: this.selectedGenres,
+    }
+
+    this.dialogRef.close(result)
   }
 }

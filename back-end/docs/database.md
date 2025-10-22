@@ -27,7 +27,7 @@ content_type  =  ARTIST | ALBUM | SONG
 ### GSI byType {PK} - {SK}
 
 ```
-{content_type} - <NO_SK>
+{content_type} - {SK}
 
 content_type  =  ARTIST | ALBUM | SINGLE | SONG | GENRE
 ```

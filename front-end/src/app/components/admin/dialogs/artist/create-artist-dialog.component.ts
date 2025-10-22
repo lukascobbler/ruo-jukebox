@@ -6,20 +6,15 @@ import { MatSelect } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
 import { MatIconButton } from '@angular/material/button';
 import { UploadImageBoxComponent } from '../upload-image-box/upload-image-box.component';
-import {NgForOf, NgIf} from '@angular/common';
+import { NgForOf, NgIf } from '@angular/common';
 import { GenreItem } from '../../../../models/GenreItem';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ArtistsService } from '../../../../services/artists/artists.service';
 import { ToastrService } from '../../../../services/toastr/toastr.service';
 import { firstValueFrom } from 'rxjs';
-import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
-const ALLOWED_CT = new Set([
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/avif',
-]);
+const ALLOWED_CT = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
 
 @Component({
   selector: 'app-create-artist',
@@ -48,13 +43,13 @@ export class CreateArtistDialogComponent {
   private fb = inject(FormBuilder);
   form = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(200)]],
-    biography: ['', [Validators.required, Validators.maxLength(5000)]],
+    biography: ['', [Validators.maxLength(5000)]],
   });
 
   busy = false;
 
   constructor(
-    public dialogRef: MatDialogRef<CreateArtistDialogComponent, null>,
+    public dialogRef: MatDialogRef<CreateArtistDialogComponent, boolean>,
     private artistsService: ArtistsService,
     public toast: ToastrService
   ) {}
@@ -64,48 +59,39 @@ export class CreateArtistDialogComponent {
   }
 
   async onCreateClicked() {
-    if (this.form.invalid || this.selectedGenreIds.length === 0) {
-      this.toast.error(
-        'Missing data',
-        'Name, Biography and at least one Genre are required.'
-      );
+    if (this.form.invalid) {
+      this.toast.error('Missing data', 'Name is required.');
       return;
     }
+
     const name = this.form.value.name!.trim();
-    const biography = this.form.value.biography!.trim();
+    const biography = this.form.value.biography?.trim();
     const genres = this.selectedGenreIds.slice();
     const file = this.imageBox?.image?.file ?? null;
 
-
     this.busy = true;
     try {
-      const created = await firstValueFrom(
-        this.artistsService.create({ name, biography, genres })
+      const init = await firstValueFrom(
+        this.artistsService.create({ name, biography, genres, cover: !!file })
       );
-      if (!created) throw new Error('Create artist failed');
+      if (!init.artist_id) throw new Error('Init upload failed');
 
-      if (file) {
-        const ct = file.type;
-        console.log('ct (PUT & presign):', ct);
-        const init = await firstValueFrom(
-          this.artistsService.initPictureUpload(created.id, ct)
-        );
-        if (!init?.uploadUrl || !init?.key)
-          throw new Error('Init upload failed');
+      if (file && init.cover_url)
+        await fetch(init.cover_url, {method: 'PUT', body: file});
 
-        await firstValueFrom(
-          this.artistsService.uploadToS3(init.uploadUrl, file, ct)
-        );
-        await firstValueFrom(
-          this.artistsService.completePictureUpload(created.id, init.key)
-        );
-      }
+      const completed = await firstValueFrom(
+        this.artistsService.completeUpload({
+          artist_id: init.artist_id,
+          name,
+          biography,
+          genres,
+        })
+      );
 
-      this.toast.success('Artist created', name);
-      this.dialogRef.close(null);
+      this.toast.success('Artist created', completed.name);
+      this.dialogRef.close(true);
     } catch (err: any) {
-      const msg =
-        err?.error?.message || err?.message || 'Failed to create artist';
+      const msg = err?.error?.message || err?.message || 'Failed to create artist';
       this.toast.error('Create artist error', msg);
     } finally {
       this.busy = false;
@@ -113,8 +99,9 @@ export class CreateArtistDialogComponent {
   }
 
   closeDialog() {
-    this.dialogRef.close(null);
+    this.dialogRef.close(false);
   }
+
   onNoClick() {
     this.dialogRef.close(undefined);
   }

@@ -14,25 +14,21 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Artist</mat-label>
-      <mat-select [(ngModel)]="selectedArtistId" placeholder="Select artist">
-        <mat-option *ngFor="let artist of availableArtists" [value]="artist.id">
-          {{ artist.name }}
-        </mat-option>
+      <mat-label>Artists</mat-label>
+      <mat-select [(ngModel)]="selectedArtists" multiple>
+        <mat-option *ngFor="let artist of artists" [value]="artist.artist_id">{{ artist.name }}</mat-option>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Genres</mat-label>
-      <mat-select [(ngModel)]="selectedGenreIds" multiple placeholder="Select genres">
-        <mat-option *ngFor="let genre of availableGenres" [value]="genre.id">
-          {{ genre.name }}
-        </mat-option>
+      <mat-select [(ngModel)]="selectedGenres" multiple>
+        <mat-option *ngFor="let genre of genres" [value]="genre.genre_id">{{ genre.name }}</mat-option>
       </mat-select>
     </mat-form-field>
 
     <app-upload-image-box class="picture"></app-upload-image-box>
   </div>
 
-  <button (click)="create()" class="orange-button finish">Create</button>
+  <button (click)="createOfflineRequest()" class="orange-button finish">Create</button>
 </div>

@@ -1,4 +1,4 @@
-import {Component, inject, ViewChild} from '@angular/core';
+import {Component, Inject, inject, numberAttribute, OnInit, ViewChild} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIconButton } from '@angular/material/button';
@@ -6,12 +6,15 @@ import { MatInput } from '@angular/material/input';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { UploadImageBoxComponent } from '../upload-image-box/upload-image-box.component';
-import { MatDialogRef } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {NgForOf, NgIf} from '@angular/common';
 import {lastValueFrom} from 'rxjs';
-import {AlbumsService} from '../../../../services/albums/albums.service';
+import {AlbumsService, OfflineAlbumRequest} from '../../../../services/albums/albums.service';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {GenresService} from '../../../../services/genres/genres.service';
+import {ArtistsService} from '../../../../services/artists/artists.service';
+import {Artist} from '../../../../models/Artist';
 
 export interface AlbumDialogData {
   name: string;
@@ -39,66 +42,58 @@ export interface AlbumDialogData {
   templateUrl: './create-album-dialog.component.html',
   styleUrl: './create-album-dialog.component.scss'
 })
-export class CreateAlbumDialogComponent {
-  albumsService = inject(AlbumsService);
+export class CreateAlbumDialogComponent implements OnInit {
+  genresService = inject(GenresService);
+  artistsService = inject(ArtistsService);
   toast = inject(ToastrService);
-  dialogRef = inject(MatDialogRef<CreateAlbumDialogComponent, string | null | undefined>);
-  selectedArtistId = '';
-  selectedGenreIds: string[] = [];
+  dialogRef = inject(MatDialogRef<CreateAlbumDialogComponent, OfflineAlbumRequest | null | undefined>);
 
   selectedArtists: string[] = [];
   selectedGenres: string[] = [];
+  artists: Artist[] = [];
+  genres: { genre_id: string; name: string }[] = [];
   name = '';
-  isEditMode = false;
   loading = false;
 
   @ViewChild(UploadImageBoxComponent) coverBox!: UploadImageBoxComponent;
-
-  // placeholder lists (will later come from real services)
-  availableArtists = [
-    { id: 'artist1', name: 'Awesome artist 1' },
-    { id: 'artist2', name: 'Awesome artist 2' },
-    { id: 'artist3', name: 'Awesome artist 3' }
-  ];
-
-  availableGenres = [
-    { id: 'rock', name: 'Rock' },
-    { id: 'pop', name: 'Pop' },
-    { id: 'jazz', name: 'Jazz' },
-    { id: 'classical', name: 'Classical' }
-  ];
 
   onNoClick() {
     this.dialogRef.close(undefined);
   }
 
-  async create() {
-    if (this.isEditMode) {
-      // await this.updateAlbum(); todo
+  async ngOnInit() {
+    try {
+      const [genres, artists] = await Promise.all([
+        lastValueFrom(this.genresService.list()),
+        lastValueFrom(this.artistsService.getAll())
+      ]);
+      this.genres = genres;
+      this.artists = artists;
+    } catch {
+      this.toast.error('Error', 'Failed to load artists or genres');
+    }
+  }
+
+  async createOfflineRequest() {
+    if (!this.name.trim()) {
+      this.toast.error('Error', 'Name is required');
+      return;
+    }
+
+    if (this.selectedArtists.length === 0) {
+      this.toast.error('Error', 'At least one artist must be selected');
       return;
     }
 
     const coverFile = this.coverBox.image?.file;
 
-    this.loading = true;
-    try {
-      const initRes = await lastValueFrom(this.albumsService.initUpload({
-        name: this.name,
-        artists: this.selectedArtists,
-        genres: this.selectedGenres,
-        cover_filename: coverFile?.name
-      }));
-      await fetch(initRes.upload_url, {method: 'PUT'});
-      if (coverFile && initRes.cover_upload_url)
-        await fetch(initRes.cover_upload_url, {method: 'PUT', body: coverFile});
-      await lastValueFrom(this.albumsService.completeUpload(initRes.album_id));
-
-      this.toast.success('Success', 'Song successfully created');
-      this.dialogRef.close(initRes.album_id);
-    } catch {
-      this.toast.error('Error', 'Unable to upload the album');
-    } finally {
-      this.loading = false;
+    let result: OfflineAlbumRequest = {
+      coverFile: coverFile,
+      name: this.name,
+      selectedArtists: this.selectedArtists,
+      selectedGenres: this.selectedGenres
     }
+
+    this.dialogRef.close(result);
   }
 }

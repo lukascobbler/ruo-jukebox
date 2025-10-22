@@ -9,8 +9,8 @@ from iac.domains.content.albums_stack import AlbumsStack
 from iac.domains.content.search_stack import SearchStack
 from iac.domains.content.genres_stack import GenresStack
 from iac.domains.users.ratings_stack import RatingsStack
+from iac.shared.api_gateway_stack import ApiGatewayStack
 from iac.domains.users.auth_stack import AuthStack
-from iac.api_gateway_stack import ApiGatewayStack
 from constructs import Construct
 from aws_cdk import NestedStack
 
@@ -28,7 +28,6 @@ class DomainGroupStack(NestedStack):
             shared.auth_layer_stack,
             shared.utils_layer_stack,
             api_gateway,
-            shared.email_stack,
             env_vars
         )
 
@@ -124,7 +123,6 @@ class DomainGroupStack(NestedStack):
             shared.auth_layer_stack,
             shared.utils_layer_stack,
             api_gateway,
-            shared.email_stack,
             env_vars
         )
 

@@ -37,7 +37,7 @@ export const routes: Routes = [
   // Admin
   { path: 'all-artists', component: AllArtistsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['Admin'] as Role[] } },
   { path: 'all-albums', component: AllAlbumsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['Admin'] as Role[] }  },
-  { path: 'edit-album/:id', component: AlbumDetailsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['Admin'] as Role[] }  },
+  { path: 'album-details', component: AlbumDetailsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['Admin'] as Role[] }  },
   { path: 'all-singles', component: AllSinglesComponent, canActivate: [authGuard, roleGuard], data: { roles: ['Admin'] as Role[] }  },
 
   // misc

@@ -111,7 +111,7 @@ def update_album(album_id, name=None, genres=None, artists=None):
     return album
 
 
-def update_single(single_id, name=None, genres=None, artists=None):
+def update_single(single_id, name=None, genres=None, artists=None, audio_key=None):
     single = content_table.get_item(Key={"PK": single_id, "SK": "META"}).get("Item")
     if not single:
         return None
@@ -124,6 +124,10 @@ def update_single(single_id, name=None, genres=None, artists=None):
         vals[":nlc"] = name.lower()
         single["name"] = name
         single["name_lc"] = name.lower()
+    if audio_key:
+        expr.append("audio_key = :ak")
+        vals[":ak"] = audio_key
+        single["audio_key"] = audio_key
 
     if expr:
         content_table.update_item(

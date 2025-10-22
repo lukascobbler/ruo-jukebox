@@ -1,4 +1,5 @@
 from pre_authorize import pre_authorize
+from general_utils import response
 import boto3, os, json
 
 ses = boto3.client("ses", region_name=os.environ.get("AWS_REGION", "eu-central-1"))
@@ -16,6 +17,8 @@ def lambda_handler(event, context):
     user_id = event.get("userId", "N/A")
     username = event.get("username", "N/A")
     email = event.get("email", "N/A")
+
+    print("after definitions")
 
     html_template = f"""
     <html>
@@ -43,7 +46,7 @@ def lambda_handler(event, context):
     </html>
     """
 
-    response = ses.send_email(
+    res = ses.send_email(
         Source=FROM_EMAIL,
         Destination={"ToAddresses": [recipient]},
         Message={
@@ -52,4 +55,4 @@ def lambda_handler(event, context):
         }
     )
 
-    return {"statusCode": 200, "headers": CORS_HEADERS, "messageId": response["MessageId"], "sentTo": recipient}
+    return response(200, {"messageId": res["MessageId"], "sentTo": recipient})
