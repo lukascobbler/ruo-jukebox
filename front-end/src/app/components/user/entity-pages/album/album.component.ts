@@ -19,5 +19,5 @@ import {AuthService} from '../../../../services/auth/auth.service';
 export class AlbumComponent {
   auth = inject(AuthService);
 
-  album: Album = { id: '1', name: 'Awesome album', artist: 'Awesome artist', artistId: '1', genres: [{id: '1', name: 'jazz'}, {id: '2', name: 'country'}, {id: '3', name: 'rock'}], released: false };
+  album: Album = { id: '1', name: 'Awesome album', artist: 'Awesome artist', artistId: '1', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false };
 }

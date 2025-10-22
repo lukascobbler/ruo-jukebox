@@ -17,7 +17,7 @@
       <mat-form-field appearance="outline">
         <mat-label>Genres</mat-label>
         <mat-select [(value)]="selectedGenreIds" [multiple]="true" placeholder="Select genres">
-          <mat-option *ngFor="let g of genres; trackBy: trackByGenreId" [value]="g.id">
+          <mat-option *ngFor="let g of genres; trackBy: trackByGenreId" [value]="g.genre_id">
             {{ g.name }}
           </mat-option>
         </mat-select>

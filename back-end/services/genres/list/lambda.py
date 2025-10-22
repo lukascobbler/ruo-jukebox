@@ -1,20 +1,12 @@
 from boto3.dynamodb.conditions import Key
 from pre_authorize import pre_authorize
+from read import get_
 import boto3, json, os
 
 dynamodb = boto3.resource("dynamodb")
 genres_table = dynamodb.Table(os.environ["GENRES_TABLE"])
 subs_table = dynamodb.Table(os.environ["SUBSCRIPTIONS_TABLE"])
 CORS_HEADERS = json.loads(os.environ.get("CORS_HEADERS", "{}"))
-
-
-def _user_id(event) -> str:
-    return (event["userId"] or "").strip()
-
-
-def _is_admin(event) -> bool:
-    return (event["userRole"] or "").strip() == "Admin"
-
 
 @pre_authorize(["Admin", "User"])
 def lambda_handler(event, context):

@@ -29,7 +29,7 @@ class DynamoDbStack(NestedStack):
         # get by type
         self.content.add_global_secondary_index(
             index_name="byType",
-            partition_key=Attribute(name="content_type", type=AttributeType.STRING),
+            partition_key=Attribute(name="content_type", type=AttributeType.STRING)
         )
 
         # Userdata Table (Users, Playlists, Ratings, Subscriptions)

@@ -23,7 +23,7 @@ def lambda_handler(event, context):
     if not name: return response(400, error="Field 'name' is required")
 
     audio_key = f"songs/{song_id}.mp3"
-    if not file_exists_on_s3(IMAGES_BUCKET, audio_key):
+    if not file_exists_on_s3(AUDIO_BUCKET, audio_key):
         return response(400, error="Song audio not found")
 
     cover_key = f"singles/{single_id}.jpg"

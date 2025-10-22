@@ -51,7 +51,7 @@ export class GenresComponent implements OnInit {
   }
 
   goToGenre(genre: GenreItem) {
-    this.router.navigate(['genre', genre.id]);
+    this.router.navigate(['genre', genre.genre_id]);
   }
 
   unsubscribeFromGenre(event: Event, genre: GenreItem) {
@@ -70,17 +70,17 @@ export class GenresComponent implements OnInit {
 
 async toggleGenreSubscription(event: Event, genre: GenreItem) {
   event.stopPropagation();
-  if (this.busyIds.has(genre.id)) return;
+  if (this.busyIds.has(genre.genre_id)) return;
 
-  const topic = genre.id;          
+  const topic = genre.genre_id;
   const prev = !!genre.isSubscribed;
 
   genre.isSubscribed = !prev;
-  this.busyIds.add(genre.id);
+  this.busyIds.add(genre.genre_id);
 
   try {
     if (prev) {
-      await firstValueFrom(this.subsService.delete(topic)); 
+      await firstValueFrom(this.subsService.delete(topic));
     } else {
       await firstValueFrom(this.subsService.create(topic));
     }
@@ -90,7 +90,7 @@ async toggleGenreSubscription(event: Event, genre: GenreItem) {
     const msg = this.extractError(err);
     this.toast.error(prev ? 'Unsubscribe error' : 'Subscribe error', msg);
   } finally {
-    this.busyIds.delete(genre.id);
+    this.busyIds.delete(genre.genre_id);
   }
 }
 

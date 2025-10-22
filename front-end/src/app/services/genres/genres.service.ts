@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {map, Observable, shareReplay} from 'rxjs';
-import { GenreItem } from '../../models/GenreItem';
+import {GenreItem} from '../../models/GenreItem';
 import {env} from '../../../environments/environment';
 
 export interface GenreCreateRequest {
@@ -46,11 +46,9 @@ export class GenresService {
 
   list(): Observable<GenreItem[]> {
     const url = `${env.API_URL}/genres`;
-    return this.http
-      .get<GenreItem[] | string>(url)
-      .pipe(
-        map(res => Array.isArray(res) ? res : JSON.parse(res as string) as GenreItem[])
-      );
+    return this.http.get<GenreItem[] | string>(url).pipe(
+      map(res => Array.isArray(res) ? res : JSON.parse(res as string) as GenreItem[])
+    );
   }
 
 }
