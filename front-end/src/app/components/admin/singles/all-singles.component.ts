@@ -44,7 +44,7 @@ export class AllSinglesComponent implements OnInit {
       next: (singles) => {
         console.log(singles);
         this.singlesDataSource = singles;
-        // this.player.loadPlaylist(singles);
+        this.player.loadPlaylist(singles);
         this.loading = false;
       },
       error: () => this.loading = false
@@ -103,6 +103,6 @@ export class AllSinglesComponent implements OnInit {
   }
 
   playSong(single: SingleItem): void {
-    // this.player.play(single);
+    this.player.play(single);
   }
 }

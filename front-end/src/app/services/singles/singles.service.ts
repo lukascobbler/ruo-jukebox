@@ -2,6 +2,7 @@ import {Injectable, inject} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {env} from '../../../environments/environment';
+import {Artist} from '../../models/Artist';
 
 export interface UploadInitPayload {
   cover: boolean;
@@ -33,9 +34,12 @@ export interface CompleteUploadResponse {
 export interface SingleItem {
   content_id: string;
   name: string;
+  song_id: string;
+  audio_url: string;
   cover_url?: string;
-  artists: { name: string }[];
+  artists: Artist[];
   genres: { name: string }[];
+  duration: number;
 }
 
 @Injectable({providedIn: 'root'})

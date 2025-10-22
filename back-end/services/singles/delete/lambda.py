@@ -22,7 +22,7 @@ def lambda_handler(event, context):
         single = get_content(single_id)
         audio_key = single.get("audio_key", None)
         transcription_key = single.get("transcription_key")
-        delete_single(single_id, 0)
+        delete_single(single_id)
 
         # Delete S3 files
         for bucket, key in [
