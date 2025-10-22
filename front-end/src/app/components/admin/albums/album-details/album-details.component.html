@@ -1,4 +1,7 @@
-<div class="container">
+<div *ngIf="loading" class="loading">
+  <mat-spinner></mat-spinner>
+</div>
+<div *ngIf="!loading" class="container">
   <button (click)="addSong()" class="bottom-right-button orange-button">
     <span class="material-symbols-rounded">add</span> Add song to the album
   </button>

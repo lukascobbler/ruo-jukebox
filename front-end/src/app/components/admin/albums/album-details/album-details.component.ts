@@ -19,6 +19,7 @@ import {AlbumsService, OfflineAlbumRequest, OfflineSongRequest} from '../../../.
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {Router} from '@angular/router';
 import {lastValueFrom} from 'rxjs';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-album-details',
@@ -36,7 +37,8 @@ import {lastValueFrom} from 'rxjs';
     MatRowDef,
     MatTable,
     MatHeaderCellDef,
-    NgIf
+    NgIf,
+    MatProgressSpinner
   ],
   templateUrl: './album-details.component.html',
   styleUrl: './album-details.component.scss'
@@ -56,11 +58,12 @@ export class AlbumDetailsComponent implements OnInit {
   numberOfCurrentSongs = 0;
 
   ngOnInit(): void {
-    if (this.router.getCurrentNavigation()?.extras.state && this.router.getCurrentNavigation()?.extras.state!['data']) {
-      this.offlineAlbumRequest = this.router.getCurrentNavigation()?.extras.state!['data'];
+    const state = history.state;
+    if (state && state['data']) {
+      this.offlineAlbumRequest = state['data'];
       this.loading = false;
     } else {
-      this.router.navigate(['all-albums'])
+      this.router.navigate(['all-albums']);
     }
   }
 
@@ -71,7 +74,8 @@ export class AlbumDetailsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.songsToBeCreated.push(result);
+        console.log(result)
+        this.songsToBeCreated = [...this.songsToBeCreated, result];
         this.numberOfCurrentSongs += 1;
       }
     });
