@@ -19,12 +19,12 @@ import {Song} from '../../../../models/Song';
 })
 export class AlbumComponent {
   auth = inject(AuthService);
-
-  album: Album = { id: '1', name: 'Awesome album', artists: [{
-      name: "Artist 1", artist_id: "1", cover_key: null, cover_url: null, biography: "", genres: [], singles: [], albums: []
-    }], genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false };
-
-  getArtists() {
-    return this.album.artists.map(a => a.name).join(" ")
-  }
+  //
+  // album: Album = { content_id: '1', name: 'Awesome album', artists: [{
+  //     name: "Artist 1", artist_id: "1", cover_key: null, cover_url: null, biography: "", genres: [], singles: [], albums: []
+  //   }], genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false };
+  //
+  // getArtists() {
+  //   return this.album.artists.map(a => a.name).join(" ")
+  // }
 }

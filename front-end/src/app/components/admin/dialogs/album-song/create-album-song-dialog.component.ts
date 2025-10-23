@@ -1,5 +1,5 @@
-import {Component, Inject, inject, Input, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, inject, Input, OnInit, ViewChild} from '@angular/core';
+import {MatDialogRef} from '@angular/material/dialog';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatIconButton} from '@angular/material/button';
 import {MatInput} from '@angular/material/input';
@@ -17,6 +17,7 @@ import {Artist} from '../../../../models/Artist';
 import {GenresService} from '../../../../services/genres/genres.service';
 import {ArtistsService} from '../../../../services/artists/artists.service';
 import {OfflineSongRequest} from '../../../../services/albums/albums.service';
+import {Genre} from '../../../../models/Genre';
 
 @Component({
   selector: 'app-album-song',
@@ -32,7 +33,6 @@ import {OfflineSongRequest} from '../../../../services/albums/albums.service';
     FormsModule,
     MatProgressSpinner,
     NgIf,
-    UploadImageBoxComponent,
     NgForOf
   ],
   templateUrl: './create-album-song-dialog.component.html',
@@ -49,10 +49,10 @@ export class CreateAlbumSongDialogComponent implements OnInit {
   @ViewChild(UploadSongBoxComponent) songBox!: UploadSongBoxComponent;
   @ViewChild(UploadImageBoxComponent) coverBox!: UploadImageBoxComponent;
 
-  selectedArtists: string[] = [];
-  selectedGenres: string[] = [];
+  selectedArtists: Artist[] = [];
+  selectedGenres: Genre[] = [];
   artists: Artist[] = [];
-  genres: { genre_id: string; name: string }[] = [];
+  genres: Genre[] = [];
   name = '';
   isEditMode = false;
   loading = false;
@@ -95,8 +95,10 @@ export class CreateAlbumSongDialogComponent implements OnInit {
     let result: OfflineSongRequest = {
       audioFile: mp3File,
       name: this.name,
-      selectedArtists: this.selectedArtists,
-      selectedGenres: this.selectedGenres,
+      selectedArtists: this.selectedArtists.map(a => a.artist_id),
+      selectedGenres: this.selectedGenres.map(g => g.genre_id),
+      artists: this.selectedArtists,
+      genres: this.selectedGenres,
     }
 
     this.dialogRef.close(result)

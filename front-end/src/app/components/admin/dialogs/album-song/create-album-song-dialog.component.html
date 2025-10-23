@@ -17,14 +17,14 @@
       <mat-form-field appearance="outline">
         <mat-label>Artists</mat-label>
         <mat-select [(ngModel)]="selectedArtists" multiple>
-          <mat-option *ngFor="let artist of artists" [value]="artist.artist_id">{{ artist.name }}</mat-option>
+          <mat-option *ngFor="let artist of artists" [value]="artist">{{ artist.name }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Genres</mat-label>
         <mat-select [(ngModel)]="selectedGenres" multiple>
-          <mat-option *ngFor="let genre of genres" [value]="genre.genre_id">{{ genre.name }}</mat-option>
+          <mat-option *ngFor="let genre of genres" [value]="genre">{{ genre.name }}</mat-option>
         </mat-select>
       </mat-form-field>
 

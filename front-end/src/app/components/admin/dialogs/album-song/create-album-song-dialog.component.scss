@@ -3,14 +3,14 @@
 
 .container {
   background-color: $background2;
+  padding: 80px 80px 60px;
   flex-direction: column;
   align-items: center;
-  gap: 40px;
   position: relative;
   overflow: hidden;
   display: flex;
-  padding: 80px 80px 40px;
   color: $white;
+  gap: 45px;
 }
 
 .textarea {
@@ -41,7 +41,7 @@
   }
 }
 
-.info-and-file {
+.info-and-picture {
   width: 100%;
   gap: 20px;
   display: flex;
@@ -57,8 +57,6 @@
 
 .file {
   height: 125px;
-  border: 3px solid $edge;
-  border-radius: 8px;
 }
 
 mat-form-field {

@@ -3,6 +3,9 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Album} from '../../models/album/Album';
 import {env} from '../../../environments/environment';
+import {Artist} from '../../models/Artist';
+import {Genre} from '../../models/Genre';
+import {Song} from '../../models/Song';
 
 export interface OfflineAlbumRequest {
   name: string;
@@ -17,6 +20,8 @@ export interface OfflineSongRequest {
   selectedArtists: string[];
   selectedGenres: string[];
   song_id?: string;
+  artists: Artist[];
+  genres: Genre[];
 }
 
 export interface UploadInitPayload {
@@ -56,5 +61,9 @@ export class AlbumsService {
 
   list(): Observable<Album[]> {
     return this.http.get<Album[]>(`${env.API_URL}/album`);
+  }
+
+  getSongs(album_id: string): Observable<Song> {
+    return this.http.get<Song>(`${env.API_URL}/album/${album_id}`);
   }
 }

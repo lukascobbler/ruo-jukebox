@@ -17,7 +17,7 @@ import {Router} from '@angular/router';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AlbumDialogData, CreateAlbumDialogComponent} from '../../dialogs/album/create-album-dialog.component';
 import {Artist} from '../../../../models/Artist';
-import { GenresService } from '../../../../services/genres/genres.service';
+import {GenresService} from '../../../../services/genres/genres.service';
 import {AlbumsService, OfflineAlbumRequest} from '../../../../services/albums/albums.service';
 import {Genre} from '../../../../models/Genre';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
@@ -82,13 +82,18 @@ export class AllAlbumsComponent implements OnInit {
 
   createNewAlbum() {
     const dialogRef: MatDialogRef<CreateAlbumDialogComponent, OfflineAlbumRequest | null> = this.dialog.open(CreateAlbumDialogComponent, {
-      minWidth: '450px'
+      minWidth: '450px',
+      maxWidth: '450px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.router.navigate(['album-details'], { state: { data: result } })
+        this.router.navigate(['album-details'], {state: {data: {result: result, album_id: null, cover_url: null}}})
       }
     });
+  }
+
+  editAlbum(album: Album) {
+    this.router.navigate(['album-details'], {state: {data: {result: null, album_id: album.content_id, cover_url: album.cover_url}}})
   }
 }

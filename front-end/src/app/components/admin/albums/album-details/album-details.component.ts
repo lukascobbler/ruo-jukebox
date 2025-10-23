@@ -20,6 +20,8 @@ import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {Router} from '@angular/router';
 import {lastValueFrom} from 'rxjs';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {BoxMissingIconMediumComponent} from '../../../common/missing-icons/box/missing-icon-medium/box-missing-icon-medium.component';
+import {Album} from '../../../../models/album/Album';
 
 @Component({
   selector: 'app-album-details',
@@ -50,42 +52,68 @@ export class AlbumDetailsComponent implements OnInit {
   toastrService = inject(ToastrService);
 
   loading = true;
-  // @ts-ignore
-  offlineAlbumRequest: OfflineAlbumRequest;
+  offlineAlbumRequest: OfflineAlbumRequest | undefined;
   displayedColumns = ['name', 'artists', 'genres', 'actions'];
+  album_id: string | undefined;
 
-  songsToBeCreated: OfflineSongRequest[] = [];
+  songs: OfflineSongRequest[] = [];
   numberOfCurrentSongs = 0;
+  editMode = false;
+  albumName?: string;
+  cover?: string;
 
   ngOnInit(): void {
     const state = history.state;
+
     if (state && state['data']) {
-      this.offlineAlbumRequest = state['data'];
+      ({result: this.offlineAlbumRequest, album_id: this.album_id, cover_url: this.cover} = state['data'] || {});
+
+      if (this.offlineAlbumRequest) {
+        this.albumName = this.offlineAlbumRequest.name;
+        this.editMode = false;
+      } else if (this.album_id) {
+        this.editMode = true;
+        this.albumsService.getSongs(this.album_id).subscribe(songs => {
+          this.songs = songs as unknown as OfflineSongRequest[];
+        });
+      }
+
       this.loading = false;
     } else {
       this.router.navigate(['all-albums']);
     }
+
+    if (this.offlineAlbumRequest && this.offlineAlbumRequest.coverFile instanceof File)
+      this.cover = URL.createObjectURL(this.offlineAlbumRequest.coverFile);
   }
 
   addSong() {
     const dialogRef: MatDialogRef<CreateAlbumSongDialogComponent, OfflineSongRequest> = this.dialog.open(CreateAlbumSongDialogComponent, {
-      minWidth: '900px'
+      minWidth: '450px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.songsToBeCreated = [...this.songsToBeCreated, result];
+        this.songs = [...this.songs, result];
         this.numberOfCurrentSongs += 1;
       }
     });
   }
 
+  getSongGenres(song: OfflineSongRequest) {
+    return song.genres.map(s => s.name).join(', ');
+  }
+
+  getSongArtists(song: OfflineSongRequest) {
+    return song.artists.map(s => s.name).join(', ');
+  }
+
   removeSong(offlineSongRequest: OfflineSongRequest) {
     this.numberOfCurrentSongs -= 1;
 
-    const index = this.songsToBeCreated.indexOf(offlineSongRequest);
+    const index = this.songs.indexOf(offlineSongRequest);
     if (index > -1) {
-      this.songsToBeCreated.splice(index, 1);
+      this.songs.splice(index, 1);
     }
   }
 
@@ -103,29 +131,31 @@ export class AlbumDetailsComponent implements OnInit {
         await fetch(initRes.cover_url, {method: 'PUT', body: this.offlineAlbumRequest!.coverFile});
 
       let songUploadCounter = 0;
-      for (let songOfflineRequest of this.songsToBeCreated) {
-        const { song_id: predefined_song_id, audio_url: predefined_audio_url } = initRes.songs[songUploadCounter];
+      for (let songOfflineRequest of this.songs) {
+        const {song_id: predefined_song_id, audio_url: predefined_audio_url} = initRes.songs[songUploadCounter];
         await fetch(predefined_audio_url, {method: 'PUT', body: songOfflineRequest.audioFile});
         songOfflineRequest.song_id = predefined_song_id;
         songUploadCounter += 1;
       }
 
       await lastValueFrom(this.albumsService.completeUpload({
-        name: this.offlineAlbumRequest.name,
+        name: this.offlineAlbumRequest!.name,
         album_id: initRes.album_id,
-        songs: this.songsToBeCreated.map(tbc => { return {
-          song_id: tbc.song_id!, name: tbc.name, genres: tbc.selectedGenres, artists: tbc.selectedArtists }
+        songs: this.songs.map(tbc => {
+          return {
+            song_id: tbc.song_id!, name: tbc.name, genres: tbc.selectedGenres, artists: tbc.selectedArtists
+          }
         }),
-        artists: this.offlineAlbumRequest.selectedArtists,
-        genres: this.offlineAlbumRequest.selectedGenres,
+        artists: this.offlineAlbumRequest!.selectedArtists,
+        genres: this.offlineAlbumRequest!.selectedGenres,
       }));
 
-      this.toastrService.success('Success', 'Album successfully created');
-    } catch {
-      this.toastrService.error('Error', 'Unable to upload the album');
-    } finally {
       this.loading = false;
       this.router.navigate(['all-albums']);
+      this.toastrService.success('Success', 'Album successfully created');
+    } catch {
+      this.loading = false;
+      this.toastrService.error('Error', 'Unable to upload the album');
     }
   }
 }

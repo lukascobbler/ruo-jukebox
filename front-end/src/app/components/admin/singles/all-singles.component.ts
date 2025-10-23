@@ -66,10 +66,12 @@ export class AllSinglesComponent implements OnInit {
 
   async deleteSong(single: SingleItem): Promise<void> {
     try {
+      this.loading = true;
       await lastValueFrom(this.songsService.deleteSingle(single.content_id));
       this.toast.success('Deleted', 'Single deleted successfully');
       this.loadSingles();
     } catch {
+      this.loading = false;
       this.toast.error('Error', 'Failed to delete single');
     }
   }
