@@ -1,16 +1,17 @@
 from aws_cdk import (
-    Stack, Duration,
+    Duration,
     aws_s3 as s3,
     aws_sqs as sqs,
     aws_lambda_event_sources as events, PhysicalName,
+    NestedStack
 )
 from aws_cdk.aws_lambda import DockerImageFunction, DockerImageCode, Function, Code, Runtime
 from aws_cdk.aws_s3_notifications import LambdaDestination
 from constructs import Construct
 
 
-class TranscriptionStack(Stack):
-    def __init__(self, scope: Construct, id: str, s3_stack, env: dict, **kwargs):
+class TranscriptionStack(NestedStack):
+    def __init__(self, scope: Construct, id: str, s3_stack, environment: dict, **kwargs):
         super().__init__(scope, id, **kwargs)
 
         audio_bucket = s3_stack.audio_bucket
@@ -33,13 +34,12 @@ class TranscriptionStack(Stack):
 
         self.consumer_lambda = DockerImageFunction(
             self, "TranscriptionConsumerLambda",
-
             code=DockerImageCode.from_image_asset("services/transcription/transcribe"),
             memory_size=2048,
             timeout=Duration.minutes(10),
             environment={
                 "MODEL_TYPE": "small",
-                **env
+                **environment
             },
         )
 
@@ -57,7 +57,7 @@ class TranscriptionStack(Stack):
             code=Code.from_asset("services/transcription/start_transcription"),
             environment={
                 "QUEUE_URL": transcription_queue.queue_url,
-                **env
+                **environment
             },
             timeout=Duration.seconds(30),
             runtime=Runtime.PYTHON_3_12,
