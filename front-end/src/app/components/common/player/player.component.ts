@@ -22,7 +22,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   dialog = inject(MatDialog);
   protected readonly player = inject(PlayerService);
   private readonly ratingsService = inject(RatingsService);
-  
+
   currentlyPlayingSong: Song | SingleItem = {
     cover_url: '',
     audio_url: '',
@@ -109,9 +109,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
 
   openLyrics() {
     this.dialog.open(LyricsDialogComponent, {
-      width: '600px',
+      width: '800px',
       maxWidth: '70vw',
-      // data: {lyrics: this.currentlyPlayingSong.lyrics}
+      data: {song_id: this.currentlyPlayingSong.song_id}
     });
   }
 

@@ -1,3 +1,4 @@
+from iac.domains.content.lyrics_stack import LyricsStack
 from iac.domains.users.subscriptions_stack import SubscriptionsStack
 from iac.domains.users.interactions_stack import InteractionsStack
 from iac.shared.shared_resources_stack import SharedResourcesStack
@@ -129,6 +130,17 @@ class DomainGroupStack(NestedStack):
 
         SearchStack(
             self, "SearchStack",
+            shared.dynamo_db_stack,
+            shared.s3_stack,
+            shared.libs_layer_stack,
+            shared.auth_layer_stack,
+            shared.utils_layer_stack,
+            api_gateway,
+            env_vars
+        )
+
+        LyricsStack(
+            self, "TranscriptionsStack",
             shared.dynamo_db_stack,
             shared.s3_stack,
             shared.libs_layer_stack,

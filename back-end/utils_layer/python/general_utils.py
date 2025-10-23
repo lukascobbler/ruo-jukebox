@@ -32,6 +32,11 @@ def file_exists_on_s3(bucket, key):
     return True
 
 
+def get_lyrics_from_s3(bucket, key):
+    obj = s3.get_object(Bucket=bucket, Key=key)
+    return obj["Body"].read().decode("utf-8")
+
+
 def get_genre_objects(genres: list[str]) -> tuple[list[dict[str, Any]] | None, str]:
     if not genres or not isinstance(genres, list) or len(genres) == 0:
         return [], "Success"  # "Field 'genres' must contain at least one genre"

@@ -1,13 +1,16 @@
-from aws_cdk import Duration, aws_sqs as sqs, aws_lambda_event_sources as events, PhysicalName, NestedStack
+from aws_cdk import Duration, aws_sqs as sqs, aws_lambda_event_sources as events, PhysicalName, NestedStack, Size
 from aws_cdk.aws_lambda import DockerImageFunction, DockerImageCode, Function, Code, Runtime
 from iac.shared.s3_stack import S3Stack
 from constructs import Construct
 
 
-class TranscriptionStack(NestedStack):
+class TranscriptionMessagingStack(NestedStack):
     def __init__(self, scope: Construct, id: str, s3_stack: S3Stack, environment: dict, **kwargs):
         super().__init__(scope, id, **kwargs)
 
+        self._init_transcription_messaging(s3_stack, environment)
+
+    def _init_transcription_messaging(self, s3_stack, environment):
         transcription_dlq = sqs.Queue(self, "TranscriptionDLQ", retention_period=Duration.days(14))
 
         transcription_queue = sqs.Queue(
@@ -36,7 +39,7 @@ class TranscriptionStack(NestedStack):
             code=Code.from_asset("services/transcription/start_transcription"),
             environment={"QUEUE_URL": transcription_queue.queue_url, **environment},
             timeout=Duration.seconds(30),
-            runtime=Runtime.PYTHON_3_12,
+            runtime=Runtime.PYTHON_3_11,
         )
 
         s3_stack.audio_bucket.grant_read(self.producer_lambda)

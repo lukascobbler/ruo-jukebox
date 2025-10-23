@@ -1,7 +1,8 @@
 from aws_cdk import aws_events as events, aws_events_targets as targets
-from iac.shared.transcription_stack import TranscriptionStack
+from iac.shared.transcription_messaging_stack import TranscriptionMessagingStack
 from iac.layers.utils_layer_stack import UtilsLayerStack
 from iac.layers.libs_layer_stack import LibsLayerStack
+from aws_cdk.aws_lambda import Runtime, Function, Code
 from iac.layers.auth_layer_stack import AuthLayerStack
 from iac.shared.dynamo_db_stack import DynamoDbStack
 from iac.shared.cognito_stack import CognitoStack
@@ -42,7 +43,9 @@ class SharedResourcesStack(NestedStack):
             })
         }
 
-        self.transcription_stack = TranscriptionStack(self, "TranscriptionsStack", self.s3_stack, self.env_vars)
+        self.transcription_messaging_stack = TranscriptionMessagingStack(
+            self, "TranscriptionMessagingStack",
+            self.s3_stack, self.env_vars)
 
         rule = events.Rule(
             self, "AudioObjectCreatedRule",
@@ -56,4 +59,28 @@ class SharedResourcesStack(NestedStack):
             )
         )
 
-        rule.add_target(targets.LambdaFunction(self.transcription_stack.producer_lambda))
+        rule.add_target(targets.LambdaFunction(self.transcription_messaging_stack.producer_lambda))
+
+        debug_rule = events.Rule(
+            self, "DebugAudioEventsRule",
+            event_pattern=events.EventPattern(
+                source=["aws.s3"],
+                detail={
+                    "bucket": {"name": [self.s3_stack.audio_bucket.bucket_name]}
+                }
+            )
+        )
+
+        debug_lambda = Function(
+            self, "DebugEventsLambda",
+            runtime=Runtime.PYTHON_3_11,
+            handler="index.handler",
+            code=Code.from_inline("""
+import json
+def handler(event, context):
+    print("Received event:", json.dumps(event, indent=2))
+    return {"statusCode": 200}
+                    """)
+        )
+
+        debug_rule.add_target(targets.LambdaFunction(debug_lambda))
