@@ -16,7 +16,7 @@ from aws_cdk import NestedStack
 
 
 class DomainGroupStack(NestedStack):
-    def __init__(self, scope: Construct, stack_id: str, shared: SharedResourcesStack, api_gateway: ApiGatewayStack, branch: str, **kwargs):
+    def __init__(self, scope: Construct, stack_id: str, shared: SharedResourcesStack, api_gateway: ApiGatewayStack, **kwargs):
         super().__init__(scope, stack_id, **kwargs)
         env_vars = shared.env_vars
 
@@ -28,8 +28,7 @@ class DomainGroupStack(NestedStack):
             shared.auth_layer_stack,
             shared.utils_layer_stack,
             api_gateway,
-            env_vars,
-            branch
+            env_vars
         )
 
         AuthStack(
@@ -41,11 +40,10 @@ class DomainGroupStack(NestedStack):
             shared.auth_layer_stack,
             shared.utils_layer_stack,
             api_gateway,
-            env_vars,
-            branch
+            env_vars
         )
 
-        subs_stack = SubscriptionsStack(  # create before singles and albums to get the SQS queue
+        subs_stack = SubscriptionsStack( # create before singles and albums to get the SQS queue
             self, "SubscriptionsStack",
             shared.dynamo_db_stack,
             shared.s3_stack,
@@ -53,8 +51,7 @@ class DomainGroupStack(NestedStack):
             shared.auth_layer_stack,
             shared.utils_layer_stack,
             api_gateway,
-            env_vars,
-            branch
+            env_vars
         )
 
         AlbumsStack(
@@ -66,7 +63,7 @@ class DomainGroupStack(NestedStack):
             shared.utils_layer_stack,
             api_gateway,
             env_vars,
-            branch
+            notify_queue=subs_stack.new_content_queue
         )
 
         ArtistsStack(
@@ -77,8 +74,7 @@ class DomainGroupStack(NestedStack):
             shared.auth_layer_stack,
             shared.utils_layer_stack,
             api_gateway,
-            env_vars,
-            branch
+            env_vars
         )
 
         GenresStack(
@@ -89,8 +85,7 @@ class DomainGroupStack(NestedStack):
             shared.auth_layer_stack,
             shared.utils_layer_stack,
             api_gateway,
-            env_vars,
-            branch
+            env_vars
         )
 
         InteractionsStack(
@@ -107,8 +102,7 @@ class DomainGroupStack(NestedStack):
             shared.auth_layer_stack,
             shared.utils_layer_stack,
             api_gateway,
-            env_vars,
-            branch
+            env_vars
         )
 
         SinglesStack(
@@ -120,7 +114,6 @@ class DomainGroupStack(NestedStack):
             shared.utils_layer_stack,
             api_gateway,
             env_vars,
-            branch,
             notify_queue=subs_stack.new_content_queue
         )
 
@@ -132,8 +125,7 @@ class DomainGroupStack(NestedStack):
             shared.auth_layer_stack,
             shared.utils_layer_stack,
             api_gateway,
-            env_vars,
-            branch
+            env_vars
         )
 
         SearchStack(
@@ -144,6 +136,5 @@ class DomainGroupStack(NestedStack):
             shared.auth_layer_stack,
             shared.utils_layer_stack,
             api_gateway,
-            env_vars,
-            branch
+            env_vars
         )
