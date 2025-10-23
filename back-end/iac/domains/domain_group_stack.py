@@ -55,7 +55,7 @@ class DomainGroupStack(NestedStack):
             env_vars
         )
 
-        TranscriptionStack( # create before singles and albums to get the SQS queue
+        self.transcription_stack = TranscriptionStack( # create before singles and albums to get the SQS queue
             self, "TranscriptionsStack",
             shared.s3_stack,
             env_vars
