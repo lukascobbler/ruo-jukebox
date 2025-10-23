@@ -1,10 +1,11 @@
 from general_utils import response, file_exists_on_s3, get_genre_objects, get_artist_objects
 from create import create_album, create_songs
-import json, os
+import json, os, boto3
 
 IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
 AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
-
+SQS_QUEUE_URL = os.environ["NEW_CONTENT_QUEUE_URL"]
+sqs = boto3.client("sqs")
 
 def lambda_handler(event, context):
     body = json.loads(event.get("body", "{}"))
@@ -63,5 +64,13 @@ def lambda_handler(event, context):
         songs.append(core_song)
 
     create_songs(album_id, songs)
-
+    msg = {
+        "type": "NEW_ALBUM",
+        "name": name,
+        "artist_ids": [a["artist_id"] for a in artists],
+        "genre_ids":  [g["genre_id"] for g in genres],
+        "artist_names": [a["name"] for a in artists],
+        "genre_names":  [g["name"] for g in genres]
+    }
+    sqs.send_message(QueueUrl=SQS_QUEUE_URL, MessageBody=json.dumps(msg))
     return response(200, error="Success")
