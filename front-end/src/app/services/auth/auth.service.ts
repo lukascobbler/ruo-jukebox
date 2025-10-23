@@ -5,7 +5,6 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {Role} from '../../models/Role';
 import {Router} from '@angular/router';
 import {env} from '../../../environments/environment';
-import {PlayerService} from '../player/player.service';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
@@ -13,7 +12,6 @@ export class AuthService {
   private readonly ID_TOKEN_KEY = 'id_token';
 
   router = inject(Router);
-  playerService = inject(PlayerService);
 
   private roleSubject = new BehaviorSubject<Role | null>(null);
   role$ = this.roleSubject.asObservable();
@@ -51,7 +49,6 @@ export class AuthService {
       .post<void>(`${env.API_URL}/auth/logout`, {access_token: token})
       .pipe(finalize(() => this.clear())).subscribe({
       complete: () => {
-        this.playerService.destroy();
         return this.router.navigate(['/login']);
       },
       error: () => this.router.navigate(['/login']),

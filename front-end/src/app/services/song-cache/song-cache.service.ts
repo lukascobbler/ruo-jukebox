@@ -33,14 +33,14 @@ export class SongCacheService {
     );
   }
 
-  // URL resolver 
+  // URL resolver
   getSongUrl(songId: string, fallbackUrl: string): Observable<{ url: string; fromCache: boolean }> {
 
     // dodati u parametre artists + albumIds (nullable) + genres i napraviti interakciju
     return this.cache.get(songId).pipe(
       map(blob => {
         if (blob) {
-          const url = URL.createObjectURL(blob);   
+          const url = URL.createObjectURL(blob);
           return { url, fromCache: true as const };
         }
         return { url: fallbackUrl, fromCache: false as const };
@@ -54,7 +54,7 @@ export class SongCacheService {
 
   getCachedSongUrl(songId: string): Observable<string | null> {
     return this.cache.get(songId).pipe(
-      map(blob => (blob ? URL.createObjectURL(blob) : null)) 
+      map(blob => (blob ? URL.createObjectURL(blob) : null))
     );
   }
 
