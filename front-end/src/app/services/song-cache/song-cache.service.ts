@@ -81,10 +81,9 @@ export class SongCacheService {
     genreIds = ['hardcodeGenre'],
     albumId: string | null = null
   ): Observable<{ url: string; fromCache: boolean }> {
-    console.log('getSongUrl called')
     return this.cache.get(songId).pipe(
       tap(() => {
-        if (true) {
+        if (!this.auth.isAdmin()) {
           console.log('New interaction')
           this.createInteraction(
             songId,
@@ -99,7 +98,6 @@ export class SongCacheService {
           const url = URL.createObjectURL(blob);
           return {url, fromCache: true as const};
         }
-        console.log('nigga')
         return {url: fallbackUrl, fromCache: false as const};
       }),
       catchError(() => of({url: fallbackUrl, fromCache: false as const}))

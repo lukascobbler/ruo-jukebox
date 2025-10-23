@@ -24,7 +24,6 @@ export class PlayerService {
   play(song?: Song | SingleItem) {
     if (song) {
       this.index = this.playlist.findIndex(s => s.song_id === song.song_id);
-      console.log('calling getSongUrl')
       this.songCache.getSongUrl(song.song_id, song.audio_url).subscribe({
         next: ({ url, fromCache}) => {
           this.audio.src = url;
