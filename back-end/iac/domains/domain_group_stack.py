@@ -164,5 +164,6 @@ class DomainGroupStack(NestedStack):
             shared.auth_layer_stack,
             shared.utils_layer_stack,
             api_gateway,
-            env_vars
+            env_vars,
+            branch
         )

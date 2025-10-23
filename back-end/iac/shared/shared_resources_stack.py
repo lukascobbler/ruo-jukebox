@@ -45,7 +45,7 @@ class SharedResourcesStack(NestedStack):
 
         self.transcription_messaging_stack = TranscriptionMessagingStack(
             self, "TranscriptionMessagingStack",
-            self.s3_stack, self.env_vars)
+            self.s3_stack, self.env_vars, branch)
 
         rule = events.Rule(
             self, "AudioObjectCreatedRule",
