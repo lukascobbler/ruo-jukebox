@@ -25,7 +25,7 @@ class LambdaWithPermissions(Construct):
 
         self.fn = aws_lambda.Function(
             self, "LambdaFunction",
-            function_name=f"{construct_id}-{branch}",
+            function_name=f"{construct_id}{suffix}",
             runtime=aws_lambda.Runtime.PYTHON_3_11,
             handler="lambda.lambda_handler",
             code=aws_lambda.Code.from_asset(path),
