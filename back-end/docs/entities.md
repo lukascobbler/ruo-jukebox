@@ -8,7 +8,6 @@ core_song = {
     "name_lc": "super song",
     "audio_key": "songs/SONG~{UUID}.mp3",
     "cover_key": "singles/SINGLE~{UUID}.jpg" | "albums/ALBUM~{UUID}.jpg",
-    "transcription_key": "transcriptions/SONG~{UUID}.txt",
     "artists": [{
         "artist_id": "ARTIST~{UUID}",
         "name": "Super artist 1"
@@ -102,7 +101,6 @@ core_single = {
     "name": "Super song",
     "song_id": "SONG~{UUID}",
     "audio_key": "songs/SONG~{UUID}.mp3",
-    "transcription_key": "transcriptions/SONG~{UUID}.txt",
     "cover_key": "singles/SINGLE~{UUID}.jpg",
     "artists": [{
         "artist_id": "ARTIST~{UUID}",

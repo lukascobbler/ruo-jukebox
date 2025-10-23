@@ -29,7 +29,8 @@ class S3Stack(NestedStack):
             bucket_name=f"audio-bucket{suffix}",
             cors=common_cors,
             removal_policy=RemovalPolicy.DESTROY,
-            auto_delete_objects=True
+            auto_delete_objects=True,
+            event_bridge_enabled=True
         )
 
         # images bucket
