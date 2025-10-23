@@ -11,12 +11,12 @@
     </div>
   </div>
 
-  <div *ngIf="genre!.albums.length === 0 && genre!.artists.length === 0" class="no-content">
+  <div *ngIf="genre!.albums!.length === 0 && genre!.artists!.length === 0" class="no-content">
     <p>No Content</p>
   </div>
 
   <div class="discover-entities">
-    <ng-container *ngIf="genre!.albums.length > 0">
+    <ng-container *ngIf="genre!.albums!.length > 0">
       <p class="big-text">Discover albums</p>
       <div class="discover-albums horizontal-scroller">
         <div *ngFor="let album of genre!.albums" class="single-album">
@@ -29,7 +29,7 @@
       </div>
     </ng-container>
 
-    <ng-container *ngIf="genre!.artists.length > 0">
+    <ng-container *ngIf="genre!.artists!.length > 0">
       <p class="big-text">Discover artists</p>
       <div class="discover-artists horizontal-scroller">
         <div *ngFor="let artist of genre!.artists" class="single-artist">

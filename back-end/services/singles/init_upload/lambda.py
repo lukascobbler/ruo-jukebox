@@ -12,7 +12,7 @@ def lambda_handler(event, context):
     try:
         body = json.loads(event.get("body", "{}"))
         single_id = "SINGLE~" + str(uuid.uuid4())
-        song_id = "SONG~" + str(uuid.uuid4())
+        song_id = f"SONG~{uuid.uuid4()}"
         cover = body.get("cover") == True
 
         audio_key = f"songs/{song_id}.mp3"

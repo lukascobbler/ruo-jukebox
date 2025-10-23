@@ -4,32 +4,29 @@ import json, os, uuid
 IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
 AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
 
+
 def lambda_handler(event, context):
     body = json.loads(event.get("body", "{}"))
-
-    try:
-        number_of_songs = int(body["numberOfSongs"])
-        wants_cover = bool(body["wantsCover"])
-    except Exception:
-        return response(400, error="Number of songs or cover request not defined correctly")
-
     album_id = f"ALBUM~{uuid.uuid4()}"
+    cover = body.get("cover") == True
+    no_songs = int(body.get("numberOfSongs", 0))
+    cover_key = f"albums/{album_id}.jpg" if cover else None
 
-    response_body = {}
-    response_body["album_id"] = album_id
+    songs = []
 
-    if wants_cover:
-        cover_key = f"albums/{album_id}.jpg"
-        response_body["cover_url"] = generate_s3_upload_url(IMAGES_BUCKET, cover_key)
-
-    response_body["upload_urls"] = []
-    for _ in range(number_of_songs):
+    for i in range(no_songs):
         song_id = f"SONG~{uuid.uuid4()}"
-        audio_key = f"songs/{song_id}.mp3"
-        audio_url = generate_s3_upload_url(audio_key)
-        response_body["upload_urls"].append({
-            "id": song_id,
-            "url": generate_s3_upload_url(AUDIO_BUCKET, audio_url)
+        songs.append({
+            "song_id": song_id,
+            "audio_url": generate_s3_upload_url(AUDIO_BUCKET, f"songs/{song_id}.mp3"),
         })
 
-    return response(200, **response_body)
+    res = {
+        "album_id": album_id,
+        "songs": songs
+    }
+
+    if cover_key:
+        res["cover_url"] = generate_s3_upload_url(IMAGES_BUCKET, cover_key)
+
+    return response(200, res)

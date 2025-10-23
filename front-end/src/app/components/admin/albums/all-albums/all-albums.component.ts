@@ -19,7 +19,7 @@ import {AlbumDialogData, CreateAlbumDialogComponent} from '../../dialogs/album/c
 import {Artist} from '../../../../models/Artist';
 import { GenresService } from '../../../../services/genres/genres.service';
 import {AlbumsService, OfflineAlbumRequest} from '../../../../services/albums/albums.service';
-import {GenreItem} from '../../../../models/GenreItem';
+import {Genre} from '../../../../models/Genre';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {NgIf} from '@angular/common';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';

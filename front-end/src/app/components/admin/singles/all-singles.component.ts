@@ -4,12 +4,13 @@ import {CreateSingleDialogComponent} from '../dialogs/single/create-single-dialo
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {ToastrService} from '../../../services/toastr/toastr.service';
 import {PlayerService} from '../../../services/player/player.service';
-import {SongsService, SingleItem} from '../../../services/singles/singles.service';
+import {SongsService} from '../../../services/singles/singles.service';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Component, inject, OnInit} from '@angular/core';
 import {MatIconButton} from '@angular/material/button';
 import {NgIf} from '@angular/common';
 import {lastValueFrom} from 'rxjs';
+import {SingleItem} from '../../../models/Single';
 
 @Component({
   selector: 'app-all-singles',

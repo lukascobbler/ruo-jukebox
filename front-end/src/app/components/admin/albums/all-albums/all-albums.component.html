@@ -20,7 +20,7 @@
           class="name"
           *matCellDef="let album"
           (click)="router.navigate(['edit-album', album.id])"
-        ><p class="nowrap-text clickable-text"><u>{{ album.name }}</u></p>
+        ><p class="nowrap-text">{{ album.name }}</p>
         </mat-cell>
       </ng-container>
 

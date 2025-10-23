@@ -1,7 +1,7 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {NgClass, NgForOf, NgIf} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {GenreItem} from '../../../../models/GenreItem';
+import {Genre} from '../../../../models/Genre';
 import {Router} from '@angular/router';
 import {SearchComponent} from '../../search/search.component';
 import {AuthService} from '../../../../services/auth/auth.service';
@@ -33,7 +33,7 @@ export class GenresComponent implements OnInit {
   auth = inject(AuthService);
   toast = inject(ToastrService);
   loading = true;
-  genres: GenreItem[] = [];
+  genres: Genre[] = [];
   busyIds = new Set<string>();
 
   ngOnInit(): void {
@@ -53,7 +53,7 @@ export class GenresComponent implements OnInit {
     });
   }
 
-  goToGenre(genre: GenreItem) {
+  goToGenre(genre: Genre) {
     this.router.navigate(['genre', genre.genre_id]);
   }
 
@@ -66,7 +66,7 @@ export class GenresComponent implements OnInit {
     return typeof msg === 'string' ? msg : 'Unexpected error. Please try again.';
   }
 
-  async toggleGenreSubscription(event: Event, genre: GenreItem) {
+  async toggleGenreSubscription(event: Event, genre: Genre) {
     event.stopPropagation();
     if (this.busyIds.has(genre.genre_id)) return;
     const topic = genre.genre_id;

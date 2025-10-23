@@ -15,7 +15,7 @@ import {AuthService} from '../../../../services/auth/auth.service';
 import {ArtistsService} from '../../../../services/artists/artists.service';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
-import {GenreItem} from '../../../../models/GenreItem';
+import {Genre} from '../../../../models/Genre';
 import {firstValueFrom} from 'rxjs';
 import {SubscriptionsService} from '../../../../services/subscriptions/subscriptions.service';
 

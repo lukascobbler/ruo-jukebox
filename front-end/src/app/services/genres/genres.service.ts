@@ -1,7 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {map, Observable, shareReplay} from 'rxjs';
-import {GenreItem} from '../../models/GenreItem';
+import {Observable, shareReplay} from 'rxjs';
 import {env} from '../../../environments/environment';
 import {Genre} from '../../models/Genre';
 
@@ -15,9 +14,9 @@ export class GenresService {
     return this.http.get<Genre>(`${env.API_URL}/genres/${encodeURIComponent(id)}`);
   }
 
-  list(): Observable<GenreItem[]> {
+  list(): Observable<Genre[]> {
     return this.http
-      .get<GenreItem[]>(`${env.API_URL}/genres`)
+      .get<Genre[]>(`${env.API_URL}/genres`)
       .pipe(shareReplay(1));
   }
 }

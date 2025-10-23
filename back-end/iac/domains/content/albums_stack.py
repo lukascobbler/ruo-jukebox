@@ -31,7 +31,7 @@ class AlbumsStack(NestedStack):
             self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack).fn
 
     def _attach_to_api(self, api: ApiGatewayStack):
-        albums = api.api.root.add_resource("albums")
+        albums = api.api.root.add_resource("album")
         album_id = albums.add_resource("{id}")
 
         albums.add_method("GET", apigw.LambdaIntegration(self.lambdas["AlbumsList"]), **api.auth_kwargs)

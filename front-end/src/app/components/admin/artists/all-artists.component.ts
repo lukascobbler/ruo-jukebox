@@ -21,7 +21,7 @@ import {
 import {CreateArtistDialogComponent} from '../dialogs/artist/create-artist-dialog.component';
 import {GenresService} from '../../../services/genres/genres.service';
 import {ToastrService} from '../../../services/toastr/toastr.service';
-import {GenreItem} from '../../../models/GenreItem';
+import {Genre} from '../../../models/Genre';
 import {ArtistsService} from '../../../services/artists/artists.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {NgIf} from '@angular/common';
@@ -55,7 +55,7 @@ export class AllArtistsComponent implements OnInit {
   private toast = inject(ToastrService);
   private artistsService = inject(ArtistsService);
   artistsDataSource: Artist[] = [];
-  genres: GenreItem[] = [];
+  genres: Genre[] = [];
   loading = false;
 
   ngOnInit(): void {

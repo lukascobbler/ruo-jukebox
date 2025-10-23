@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {Song} from '../../models/Song';
-import {SingleItem} from '../singles/singles.service';
+import {SingleItem} from '../../models/Single';
 
 @Injectable({providedIn: 'root'})
 export class PlayerService {

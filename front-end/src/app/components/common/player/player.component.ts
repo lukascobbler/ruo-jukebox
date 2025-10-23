@@ -8,7 +8,7 @@ import {Subscription, interval} from 'rxjs';
 import {Song} from '../../../models/Song';
 import {Artist} from '../../../models/Artist';
 import {Role} from '../../../models/Role';
-import {SingleItem} from '../../../services/singles/singles.service';
+import {SingleItem} from '../../../models/Single';
 import { RatingsService } from '../../../services/ratings.service.ts/ratings.service';
 
 @Component({
@@ -22,7 +22,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   dialog = inject(MatDialog);
   protected readonly player = inject(PlayerService);
   private readonly ratingsService = inject(RatingsService);
-  
+
   currentlyPlayingSong: Song | SingleItem = {
     cover_url: '',
     audio_url: '',

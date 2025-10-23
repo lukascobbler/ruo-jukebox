@@ -1,4 +1,4 @@
-import {GenreItem} from './GenreItem';
+import {Genre} from './Genre';
 import {Artist} from './Artist';
 
 export interface Song {
@@ -10,7 +10,7 @@ export interface Song {
   artistId: string;
   duration: number;
   lyrics: string;
-  genres: GenreItem[];
+  genres: Genre[];
   artists: Artist[];
   cover_url: string;
   audio_url: string;

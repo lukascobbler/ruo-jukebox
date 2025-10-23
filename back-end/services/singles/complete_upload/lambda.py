@@ -43,10 +43,12 @@ def lambda_handler(event, context):
         "name": name,
         "name_lc": name.lower(),
         "audio_key": audio_key,
-        "cover_key": cover_key,
         "artists": artists,
         "genres": genres
     }
+
+    if cover_key:
+        core_song["cover_key"] = cover_key
 
     core_single = create_single(single_id, name, artists, genres, audio_key, cover_key, song_id)
     create_songs(single_id, [core_song])

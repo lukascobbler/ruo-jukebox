@@ -68,14 +68,32 @@ def delete_album(album_id):
 
 
 def delete_single(single_id):
-    # delete META
-    items = query_all(content_table, KeyConditionExpression=Key("PK").eq(single_id))
+    # get single META to access artists and genres
+    res = content_table.get_item(Key={"PK": single_id, "SK": "META"})
+    item = res.get("Item")
+    if not item:
+        return {"error": "Single not found"}
+
+    artists = item.get("artists", [])
+    genres = item.get("genres", [])
+
+    # delete all SINGLE items (META + POS~ entries)
+    singles = query_all(content_table, KeyConditionExpression=Key("PK").eq(single_id))
     with content_table.batch_writer() as batch:
-        for i in items:
+        for i in singles:
             batch.delete_item(Key={"PK": i["PK"], "SK": i["SK"]})
 
     # delete all artist and genre cross-links
-    linked = query_all(content_table, KeyConditionExpression=Key("SK").eq(f"CONTENT~{single_id}"))
+    linked = []
+
+    for artist in artists:
+        res = content_table.query(KeyConditionExpression=Key("PK").eq(artist["artist_id"]) & Key("SK").eq(f"CONTENT~{single_id}"))
+        linked.extend(res.get("Items", []))
+
+    for genre in genres:
+        res = content_table.query(KeyConditionExpression=Key("PK").eq(genre["genre_id"]) & Key("SK").eq(f"CONTENT~{single_id}"))
+        linked.extend(res.get("Items", []))
+
     with content_table.batch_writer() as batch:
         for i in linked:
             batch.delete_item(Key={"PK": i["PK"], "SK": i["SK"]})

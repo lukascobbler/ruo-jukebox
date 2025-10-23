@@ -7,7 +7,7 @@ import { MatInput } from '@angular/material/input';
 import { MatIconButton } from '@angular/material/button';
 import { UploadImageBoxComponent } from '../upload-image-box/upload-image-box.component';
 import { NgForOf, NgIf } from '@angular/common';
-import { GenreItem } from '../../../../models/GenreItem';
+import { Genre } from '../../../../models/Genre';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ArtistsService } from '../../../../services/artists/artists.service';
 import { ToastrService } from '../../../../services/toastr/toastr.service';
@@ -36,7 +36,7 @@ const ALLOWED_CT = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif
   styleUrl: './create-artist-dialog.component.scss',
 })
 export class CreateArtistDialogComponent {
-  @Input() genres: GenreItem[] = [];
+  @Input() genres: Genre[] = [];
   selectedGenreIds: string[] = [];
   @ViewChild('imgBox') imageBox?: UploadImageBoxComponent;
 
@@ -54,7 +54,7 @@ export class CreateArtistDialogComponent {
     public toast: ToastrService
   ) {}
 
-  trackByGenreId(_i: number, g: GenreItem) {
+  trackByGenreId(_i: number, g: Genre) {
     return g.genre_id;
   }
 

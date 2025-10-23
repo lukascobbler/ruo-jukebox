@@ -29,16 +29,18 @@ def create_songs(album_or_single_id: str, songs: list[dict]):
                 batch.put_item(Item={**song, "PK": g["genre_id"], "SK": f"CONTENT~{song_id}"})
 
 
-def create_album(album_id, name, artists, genres):
+def create_album(album_id, name, artists, genres, cover_key):
     core_album = {
         "content_id": album_id,
         "content_type": "ALBUM",
         "name": name,
         "name_lc": name.lower(),
-        "cover_key": f"albums/{album_id}.jpg",
         "artists": artists,
         "genres": genres
     }
+
+    if cover_key:
+        core_album["cover_key"] = cover_key
 
     with content_table.batch_writer() as batch:
         batch.put_item(Item={**core_album, "PK": album_id, "SK": "META"})
