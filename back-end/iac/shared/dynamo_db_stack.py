@@ -36,7 +36,7 @@ class DynamoDbStack(NestedStack):
         # Userdata Table (Users, Playlists, Ratings, Subscriptions)
         self.userdata = ddb.Table(
             self, "UserdataTable",
-            table_name=f"UserdataTable-{branch}",
+            table_name=f"UserdataTable{suffix}",
             partition_key=Attribute(name="user_id", type=AttributeType.STRING),
             sort_key=Attribute(name="SK", type=AttributeType.STRING),
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES,
@@ -60,7 +60,7 @@ class DynamoDbStack(NestedStack):
         # Interactions Table
         self.interactions = ddb.Table(
             self, "InteractionsTable",
-            table_name=f"InteractionsTable-{branch}",
+            table_name=f"InteractionsTable{suffix}",
             partition_key=Attribute(name="user_id", type=AttributeType.STRING),
             sort_key=Attribute(name="ts", type=AttributeType.STRING),
             stream=ddb.StreamViewType.NEW_AND_OLD_IMAGES,
@@ -72,7 +72,7 @@ class DynamoDbStack(NestedStack):
         # Feed Table
         self.feed = ddb.Table(
             self, "FeedTable",
-            table_name=f"FeedTable-{branch}",
+            table_name=f"FeedTable{suffix}",
             partition_key=Attribute(name="user_id", type=AttributeType.STRING),
             sort_key=Attribute(name="content_id", type=AttributeType.STRING),
             billing_mode=ddb.BillingMode.PAY_PER_REQUEST,

@@ -18,7 +18,7 @@ class SharedResourcesStack(NestedStack):
         self.auth_layer_stack = AuthLayerStack(self, "AuthLayerStack")
         self.libs_layer_stack = LibsLayerStack(self, "LibsLayerStack")
         self.dynamo_db_stack = DynamoDbStack(self, "DynamoDbStack", branch)
-        self.s3_stack = S3Stack(self, "S3Stack")
+        self.s3_stack = S3Stack(self, "S3Stack", branch)
 
         self.env_vars = {
             "AUDIO_BUCKET": self.s3_stack.audio_bucket.bucket_name,

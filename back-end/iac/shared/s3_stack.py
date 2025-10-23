@@ -3,8 +3,10 @@ from constructs import Construct
 
 
 class S3Stack(NestedStack):
-    def __init__(self, scope: Construct, stack_id: str, **kwargs):
+    def __init__(self, scope: Construct, stack_id: str, branch: str, **kwargs):
         super().__init__(scope, stack_id, **kwargs)
+
+        suffix = f"-{branch}" if branch != "main" else ""
 
         common_cors = [
             s3.CorsRule(
@@ -24,7 +26,7 @@ class S3Stack(NestedStack):
         # songs bucket
         self.audio_bucket = s3.Bucket(
             self, "AudioBucket",
-            bucket_name=PhysicalName.GENERATE_IF_NEEDED,
+            bucket_name=f"audio-bucket{suffix}",
             cors=common_cors,
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True
@@ -33,16 +35,16 @@ class S3Stack(NestedStack):
         # images bucket
         self.images_bucket = s3.Bucket(
             self, "ImagesBucket",
-            bucket_name=PhysicalName.GENERATE_IF_NEEDED,
+            bucket_name=f"image-bucket{suffix}",
             cors=common_cors,
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True
         )
 
-        # transcripts bucket TODO
+        # transcripts bucket
         self.transcripts_bucket = s3.Bucket(
             self, "TranscriptsBucket",
-            bucket_name=PhysicalName.GENERATE_IF_NEEDED,
+            bucket_name=f"lyrics-bucket{suffix}",
             cors=common_cors,
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True

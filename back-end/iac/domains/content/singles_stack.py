@@ -9,17 +9,18 @@ from iac.shared.s3_stack import S3Stack
 from constructs import Construct
 from aws_cdk import aws_sqs as sqs
 
+
 class SinglesStack(NestedStack):
     def __init__(self, scope: Construct, stack_id: str, dynamo_db: DynamoDbStack, s3: S3Stack, libs_layer_stack: LibsLayerStack,
-                 auth_layer_stack: AuthLayerStack, utils_layer_stack: UtilsLayerStack, api_stack: ApiGatewayStack, environment, notify_queue: sqs.IQueue, **kwargs):
+                 auth_layer_stack: AuthLayerStack, utils_layer_stack: UtilsLayerStack, api_stack: ApiGatewayStack, environment, branch, notify_queue: sqs.IQueue, **kwargs):
         super().__init__(scope, stack_id, **kwargs)
         self.lambdas = {}
         environment = {**environment, "NEW_CONTENT_QUEUE_URL": notify_queue.queue_url}
-        self._create_lambdas(dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, environment)
+        self._create_lambdas(dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, environment, branch)
         self._attach_to_api(api_stack)
         notify_queue.grant_send_messages(self.lambdas["SingleCompleteUpload"])
 
-    def _create_lambdas(self, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, env):
+    def _create_lambdas(self, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, env, branch):
         lambda_defs = {
             "SingleInitUpload": "services/singles/init_upload",
             "SingleCompleteUpload": "services/singles/complete_upload",
@@ -28,7 +29,7 @@ class SinglesStack(NestedStack):
             "SingleDelete": "services/singles/delete",
         }
         for key, path in lambda_defs.items():
-            self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack).fn
+            self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, branch).fn
 
     def _attach_to_api(self, api: ApiGatewayStack):
         single = api.api.root.add_resource("single")

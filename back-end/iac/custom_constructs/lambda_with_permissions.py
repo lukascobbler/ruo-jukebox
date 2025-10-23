@@ -11,9 +11,11 @@ from constructs import Construct
 
 class LambdaWithPermissions(Construct):
     def __init__(self, scope: Construct, construct_id: str, path: str, env: dict, dynamo_db: DynamoDbStack, s3: S3Stack, libs_layer_stack: LibsLayerStack,
-                 auth_layer_stack: AuthLayerStack, utils_layer_stack: UtilsLayerStack, extra_env: dict | None = None):
+                 auth_layer_stack: AuthLayerStack, utils_layer_stack: UtilsLayerStack, branch: str, extra_env: dict | None = None):
         super().__init__(scope, construct_id)
         env = {**env, **(extra_env or {})}
+
+        suffix = f"-{branch}" if branch != "main" else ""
 
         role = iam.Role(
             self, "LambdaRole",
@@ -23,6 +25,7 @@ class LambdaWithPermissions(Construct):
 
         self.fn = aws_lambda.Function(
             self, "LambdaFunction",
+            function_name=f"{construct_id}-{branch}",
             runtime=aws_lambda.Runtime.PYTHON_3_11,
             handler="lambda.lambda_handler",
             code=aws_lambda.Code.from_asset(path),

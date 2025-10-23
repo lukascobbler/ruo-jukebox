@@ -10,5 +10,5 @@ class RootStack(Stack):
         super().__init__(scope, stack_id, **kwargs)
 
         shared = SharedResourcesStack(self, "SharedResourcesStack", branch)
-        api_gateway = ApiGatewayStack(self, "ApiGatewayStack", branch, user_pool=shared.cognito_stack.user_pool)
-        DomainGroupStack(self, "DomainGroupStack", shared=shared, api_gateway=api_gateway)
+        api_gateway = ApiGatewayStack(self, "ApiGatewayStack", branch, shared.cognito_stack.user_pool)
+        DomainGroupStack(self, "DomainGroupStack", shared, api_gateway, branch)

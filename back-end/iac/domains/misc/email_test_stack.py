@@ -11,12 +11,12 @@ from constructs import Construct
 
 class EmailTestStack(NestedStack):
     def __init__(self, scope: Construct, stack_id: str, dynamo_db: DynamoDbStack, s3: S3Stack, libs_layer_stack: LibsLayerStack, auth_layer_stack: AuthLayerStack,
-                 utils_layer_stack: UtilsLayerStack, api_stack: ApiGatewayStack, environment, **kwargs):
+                 utils_layer_stack: UtilsLayerStack, api_stack: ApiGatewayStack, environment, branch, **kwargs):
         super().__init__(scope, stack_id, **kwargs)
 
         send_email_lambda = LambdaWithPermissions(
             self, "SendEmailLambda", "services/email_test/send", environment,
-            dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack).fn
+            dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, branch).fn
 
         send_email_lambda.role.add_to_policy(iam.PolicyStatement(
             actions=["ses:SendEmail", "ses:SendRawEmail"],
