@@ -51,8 +51,9 @@ class SharedResourcesStack(NestedStack):
                 detail_type=["Object Created"],
                 detail={
                     "bucket": {"name": [self.s3_stack.audio_bucket.bucket_name]},
-                    "object": {"key": [{"prefix": "songs/", "suffix": ".mp3"}]}
+                    "object": {"key": [{"prefix": "songs/"}]}
                 }
             )
         )
+
         rule.add_target(targets.LambdaFunction(self.transcription_stack.producer_lambda))

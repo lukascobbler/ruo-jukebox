@@ -21,7 +21,6 @@ class S3Stack(NestedStack):
             )
         ]
 
-        # songs bucket
         self.audio_bucket = s3.Bucket(
             self, "AudioBucket",
             bucket_name=PhysicalName.GENERATE_IF_NEEDED,
@@ -31,7 +30,6 @@ class S3Stack(NestedStack):
             event_bridge_enabled=True
         )
 
-        # images bucket
         self.images_bucket = s3.Bucket(
             self, "ImagesBucket",
             bucket_name=PhysicalName.GENERATE_IF_NEEDED,
@@ -40,7 +38,6 @@ class S3Stack(NestedStack):
             auto_delete_objects=True
         )
 
-        # transcripts bucket
         self.transcripts_bucket = s3.Bucket(
             self, "TranscriptsBucket",
             bucket_name=PhysicalName.GENERATE_IF_NEEDED,
