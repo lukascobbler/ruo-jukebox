@@ -10,6 +10,7 @@ import { ToastrService } from '../../../../services/toastr/toastr.service';
 import { SubscriptionsService } from '../../../../services/subscriptions/subscriptions.service';
 import { firstValueFrom } from 'rxjs';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {PlayerService} from '../../../../services/player/player.service';
 
 @Component({
   selector: 'app-genres',
@@ -32,6 +33,7 @@ export class GenresComponent implements OnInit {
   private router = inject(Router);
   auth = inject(AuthService);
   toast = inject(ToastrService);
+  playerService = inject(PlayerService);
   loading = true;
   genres: Genre[] = [];
   busyIds = new Set<string>();

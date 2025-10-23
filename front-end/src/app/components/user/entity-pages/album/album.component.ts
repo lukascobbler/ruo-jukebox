@@ -6,6 +6,7 @@ import {
 } from '../../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component';
 import {AuthService} from '../../../../services/auth/auth.service';
 import {Song} from '../../../../models/Song';
+import {PlayerService} from '../../../../services/player/player.service';
 
 @Component({
   selector: 'app-album',
@@ -19,6 +20,7 @@ import {Song} from '../../../../models/Song';
 })
 export class AlbumComponent {
   auth = inject(AuthService);
+  playerService = inject(PlayerService);
   //
   // album: Album = { content_id: '1', name: 'Awesome album', artists: [{
   //     name: "Artist 1", artist_id: "1", cover_key: null, cover_url: null, biography: "", genres: [], singles: [], albums: []

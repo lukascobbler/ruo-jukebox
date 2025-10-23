@@ -18,6 +18,7 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {Genre} from '../../../../models/Genre';
 import {firstValueFrom} from 'rxjs';
 import {SubscriptionsService} from '../../../../services/subscriptions/subscriptions.service';
+import {PlayerService} from '../../../../services/player/player.service';
 
 @Component({
   selector: 'app-artist',
@@ -41,6 +42,7 @@ export class ArtistComponent implements OnInit {
   subsService = inject(SubscriptionsService);
   toast = inject(ToastrService);
   auth = inject(AuthService);
+  playerService = inject(PlayerService);
 
   loading = true;
   artist: Artist | null = null;
