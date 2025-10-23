@@ -7,7 +7,10 @@
   </button>
   <div class="album-header">
     <div class="album-info">
-      <app-box-missing-icon-small [icon_name]="'album'" />
+      <img *ngIf="offlineAlbumRequest.coverFile; else missingCover" [src]="offlineAlbumRequest.coverFile" alt="cover" class="cover-picture"/>
+      <ng-template #missingCover>
+        <app-box-missing-icon-small [icon_name]="'album'" class="cover-no-picture"></app-box-missing-icon-small>
+      </ng-template>
       <p class="album-name">{{ offlineAlbumRequest.name }}</p>
     </div>
     <div class="album-control">
