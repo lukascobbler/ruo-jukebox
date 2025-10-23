@@ -57,6 +57,7 @@ export class SubscriptionsComponent {
   private fetchMine(): void {
     this.subsService.listMine().subscribe({
       next: (payload) => {
+        console.log(payload)
         const rows: Row[] = [];
 
         for (const a of payload.artists || []) {
@@ -92,7 +93,8 @@ export class SubscriptionsComponent {
   async onUnsubscribe(row: Row) {
     if (this.busyTopics.has(row.topic)) return;
     this.busyTopics.add(row.topic);
-
+    console.log('nigga')
+    console.log(row)
     try {
       await firstValueFrom(this.subsService.delete(row.topic));
       this.subscribedToDataSource = this.subscribedToDataSource.filter(r => r.topic !== row.topic);

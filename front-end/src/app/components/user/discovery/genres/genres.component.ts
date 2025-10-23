@@ -40,6 +40,7 @@ export class GenresComponent implements OnInit {
   private fetchGenres(): void {
     this.genresService.list().subscribe({
       next: (items) => {
+        console.log(items)
         this.genres = items ?? [];
       },
       error: (err) => {
@@ -71,7 +72,7 @@ export class GenresComponent implements OnInit {
 async toggleGenreSubscription(event: Event, genre: GenreItem) {
   event.stopPropagation();
   if (this.busyIds.has(genre.genre_id)) return;
-
+  console.log(genre)
   const topic = genre.genre_id;
   const prev = !!genre.isSubscribed;
 
