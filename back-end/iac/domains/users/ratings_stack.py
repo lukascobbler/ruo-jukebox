@@ -30,4 +30,5 @@ class RatingsStack(NestedStack):
         rating = api.api.root.add_resource("rating")
         rating.add_method("PUT", apigw.LambdaIntegration(self.lambdas["RatingPut"]), **api.auth_kwargs)
         rating.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["RatingDelete"]), **api.auth_kwargs)
-        rating.add_method("GET", apigw.LambdaIntegration(self.lambdas["RatingGet"]), **api.auth_kwargs)
+        song = rating.add_resource("{songId}")
+        song.add_method("GET", apigw.LambdaIntegration(self.lambdas["RatingGet"]), **api.auth_kwargs)

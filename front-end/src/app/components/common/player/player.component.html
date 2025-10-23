@@ -44,9 +44,9 @@
   </div>
 
   <div class="rating-and-lyrics">
-    <div class="rating" *ngIf="userRole === 'User'">
+    <div class="rating" *ngIf="userRole === 'Admin' && currentlyPlayingSong.song_id !== ''">
       <span
-        (click)="setStarRating(0)"
+        (click)="deleteRating()"
         class="material-symbols-rounded clear-rating"
       >
       do_not_disturb_on

@@ -9,6 +9,7 @@ import {Song} from '../../../models/Song';
 import {Artist} from '../../../models/Artist';
 import {Role} from '../../../models/Role';
 import {SingleItem} from '../../../services/singles/singles.service';
+import { RatingsService } from '../../../services/ratings.service.ts/ratings.service';
 
 @Component({
   selector: 'app-player',
@@ -20,7 +21,8 @@ import {SingleItem} from '../../../services/singles/singles.service';
 export class PlayerComponent implements OnInit, OnDestroy {
   dialog = inject(MatDialog);
   protected readonly player = inject(PlayerService);
-
+  private readonly ratingsService = inject(RatingsService);
+  
   currentlyPlayingSong: Song | SingleItem = {
     cover_url: '',
     audio_url: '',
@@ -41,7 +43,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   duration = 0;
   userRole: Role = 'Admin';
   ratings = [1, 2, 3];
-  starRating = 2;
+  starRating = 0;
   hoverRating = 0;
 
   private subs: Subscription[] = [];
@@ -52,8 +54,18 @@ export class PlayerComponent implements OnInit, OnDestroy {
         if (song) {
           this.currentlyPlayingSong = song;
           this.duration = song.duration || 0;
+          this.starRating = 0;
+          this.hoverRating = 0;
+          if(song.song_id) {
+            this.subs.push(
+              this.ratingsService.get(song.song_id).subscribe({
+                next: (r) => { this.starRating = r},
+                error: (err) => { console.error('Failed to get rating', err); }
+              }
+            ))
         }
-      })
+      }
+    })
     );
 
     this.subs.push(
@@ -104,7 +116,18 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   setStarRating(starRating: number) {
+    if (this.starRating === starRating) return;
+    const songId = this.currentlyPlayingSong.song_id;
+    if (!songId) return;
+    const prev = this.starRating;
     this.starRating = starRating;
+
+    this.subs.push(
+      this.ratingsService.set(songId, starRating).subscribe({
+        next: () => {},
+        error: (err) => { this.starRating = prev; console.error('Failed to set rating', err); }
+      })
+    );
   }
 
   setHoverRating(rating: number) {
@@ -117,5 +140,20 @@ export class PlayerComponent implements OnInit, OnDestroy {
 
   getArtistNames(song: Song | SingleItem): string {
     return song.artists.map((a: Artist) => a.name).join(', ') || '';
+  }
+  deleteRating() {
+    if (this.starRating === 0) return;
+    this.starRating = 0;
+    const songId = this.currentlyPlayingSong.song_id;
+    if (!songId) return;
+    const prev = this.starRating;
+    this.starRating = 0;
+
+    this.subs.push(
+      this.ratingsService.delete(songId).subscribe({
+        next: () => {},
+        error: (err) => { this.starRating = prev; console.error('Failed to remove rating', err); }
+      })
+    );
   }
 }
