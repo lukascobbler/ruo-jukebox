@@ -35,6 +35,8 @@ export class SongCacheService {
 
   // URL resolver 
   getSongUrl(songId: string, fallbackUrl: string): Observable<{ url: string; fromCache: boolean }> {
+
+    // dodati u parametre artists + albumIds (nullable) + genres i napraviti interakciju
     return this.cache.get(songId).pipe(
       map(blob => {
         if (blob) {
