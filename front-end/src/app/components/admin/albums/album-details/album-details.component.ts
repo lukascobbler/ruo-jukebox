@@ -52,7 +52,7 @@ export class AlbumDetailsComponent implements OnInit {
   loading = true;
   // @ts-ignore
   offlineAlbumRequest: OfflineAlbumRequest;
-  displayedColumns = ['name', 'artist', 'genres', 'actions'];
+  displayedColumns = ['name', 'artists', 'genres', 'actions'];
 
   songsToBeCreated: OfflineSongRequest[] = [];
   numberOfCurrentSongs = 0;

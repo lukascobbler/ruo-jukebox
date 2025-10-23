@@ -22,9 +22,9 @@
         <mat-cell class="name" *matCellDef="let song"><p class="nowrap-text">{{ song.title }}</p></mat-cell>
       </ng-container>
 
-      <ng-container matColumnDef="artist">
-        <mat-header-cell class="artist" *matHeaderCellDef>Artist</mat-header-cell>
-        <mat-cell class="artist" *matCellDef="let song"><p class="nowrap-text">{{ song.selectedArtists }}</p></mat-cell>
+      <ng-container matColumnDef="artists">
+        <mat-header-cell class="artists" *matHeaderCellDef>Artists</mat-header-cell>
+        <mat-cell class="artists" *matCellDef="let song"><p class="nowrap-text">{{ song.selectedArtists }}</p></mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="genres">
