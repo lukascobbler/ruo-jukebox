@@ -1,10 +1,10 @@
 from iac.custom_constructs.lambda_with_permissions import LambdaWithPermissions
 from aws_cdk import NestedStack, aws_apigateway as apigw
 from iac.layers.utils_layer_stack import UtilsLayerStack
+from iac.shared.api_gateway_stack import ApiGatewayStack
 from iac.layers.libs_layer_stack import LibsLayerStack
 from iac.layers.auth_layer_stack import AuthLayerStack
 from iac.shared.dynamo_db_stack import DynamoDbStack
-from iac.api_gateway_stack import ApiGatewayStack
 from iac.shared.s3_stack import S3Stack
 from constructs import Construct
 

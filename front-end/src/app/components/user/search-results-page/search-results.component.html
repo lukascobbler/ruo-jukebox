@@ -24,7 +24,7 @@
       <div class="found-songs horizontal-scroller">
         <div *ngFor="let song of searchResult!.singles" class="single-song">
           <app-box-missing-icon-large [icon_name]="'music_note'" />
-          <p class="song-name">{{ song.title }}</p>
+          <p class="song-name">{{ song.name }}</p>
           <p class="artist-name">{{ song.artists }}</p>
         </div>
       </div>

@@ -51,16 +51,7 @@ export class ArtistsService {
     );
   }
 
-  getByGenre(genreId: string): Observable<Artist[]> {
-    return this.http
-      .get<Artist[] | string>(`${env.API_URL}/artists/by-genre/${encodeURIComponent(genreId)}`)
-      .pipe(map(res => (Array.isArray(res) ? res : (JSON.parse(res as string) as Artist[]))));
-  }
-
-  searchByName(q: string): Observable<Artist[]> {
-    const url = `${env.API_URL}/artists/search?q=${encodeURIComponent(q)}`;
-    return this.http
-      .get<Artist[] | string>(url)
-      .pipe(map(res => (Array.isArray(res) ? res : (JSON.parse(res as string) as Artist[]))));
+  get(artistId: string): Observable<Artist> {
+    return this.http.get<Artist>(`${env.API_URL}/artists/${artistId}`)
   }
 }
