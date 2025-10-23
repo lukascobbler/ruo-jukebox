@@ -65,7 +65,7 @@ def lambda_handler(event, context):
 
     create_songs(album_id, songs)
     msg = {
-        "type": "NEW_ALBUM",
+        "type": "album",
         "name": name,
         "artist_ids": [a["artist_id"] for a in artists],
         "genre_ids":  [g["genre_id"] for g in genres],
