@@ -1,4 +1,3 @@
-from iac.domains.content.transcription_stack import TranscriptionStack
 from iac.domains.users.subscriptions_stack import SubscriptionsStack
 from iac.domains.users.interactions_stack import InteractionsStack
 from iac.shared.shared_resources_stack import SharedResourcesStack
@@ -52,12 +51,6 @@ class DomainGroupStack(NestedStack):
             shared.auth_layer_stack,
             shared.utils_layer_stack,
             api_gateway,
-            env_vars
-        )
-
-        self.transcription_stack = TranscriptionStack( # create before singles and albums to get the SQS queue
-            self, "TranscriptionsStack",
-            shared.s3_stack,
             env_vars
         )
 
