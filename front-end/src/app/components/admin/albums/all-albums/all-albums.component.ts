@@ -65,6 +65,10 @@ export class AllAlbumsComponent implements OnInit {
     return album.genres.map(g => g.name).join(', ');
   }
 
+  getAlbumArtists(album: Album) {
+    return album.artists.map(a => a.name).join(', ');
+  }
+
   private loadAlbums(): void {
     this.loading = true;
     this.albumsService.list().subscribe({

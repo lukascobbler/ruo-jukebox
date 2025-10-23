@@ -23,8 +23,14 @@
 }
 
 .cover-picture {
-  margin-top: 6px;
-  margin-bottom: 6px;
+  width: 52.5px;
+  height: 52.5px;
+  border-radius: 5px;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+  margin: 6px 0;
 }
 
 .nowrap-text {
@@ -46,21 +52,21 @@ mat-cell.cover {
 
 mat-header-cell.name,
 mat-cell.name {
-  flex: 1 1 24%;
+  flex: 1 1 25%;
 }
 
 mat-header-cell.artists,
 mat-cell.artists {
-  flex: 1 1 24%;
+  flex: 1 1 29%;
 }
 
 mat-header-cell.genres,
 mat-cell.genres {
-  flex: 1 1 30%;
+  flex: 1 1 29%;
 }
 
 mat-header-cell.actions,
 mat-cell.actions {
-  flex: 0 0 15%;
+  flex: 0 0 10%;
   min-width: 100px;
 }

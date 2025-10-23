@@ -142,3 +142,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-datepicker-toggle {
   margin-right: 8px;
 }
+
+.mat-mdc-dialog-surface {
+  background-color: transparent !important;
+}

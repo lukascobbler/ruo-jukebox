@@ -10,7 +10,10 @@
       <ng-container matColumnDef="cover">
         <mat-header-cell class="cover" *matHeaderCellDef></mat-header-cell>
         <mat-cell class="cover" *matCellDef="let album">
-          <app-box-missing-icon-small class="cover-picture" [icon_name]="'album'"/>
+          <img *ngIf="album.cover_url; else missingCover" [src]="album.cover_url" alt="cover" class="cover-picture"/>
+          <ng-template #missingCover>
+            <app-box-missing-icon-small [icon_name]="'album'" class="cover-no-picture"></app-box-missing-icon-small>
+          </ng-template>
         </mat-cell>
       </ng-container>
 
@@ -26,7 +29,7 @@
 
       <ng-container matColumnDef="artists">
         <mat-header-cell class="artists" *matHeaderCellDef>Artists</mat-header-cell>
-        <mat-cell class="artists" *matCellDef="let album"><p class="nowrap-text">{{ album.artist }}</p></mat-cell>
+        <mat-cell class="artists" *matCellDef="let album"><p class="nowrap-text">{{ getAlbumArtists(album) }}</p></mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="genres">
