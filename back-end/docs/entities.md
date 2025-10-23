@@ -252,7 +252,7 @@ interactions_table = {
     "user_id": "USER~{UUID}",
     "ts": 78971379,
     "ttl": 345345673,
-    "value": 1 | 10 | 20 | 30 | 50,
+    "value": 1 | 10 | 20 | 30 | 50, # 1 - play, (10, 20, 30) - rating, 50 - sub
     "artist_ids": [
         "ARTIST~{UUID}",
         "ARTIST~{UUID}",
