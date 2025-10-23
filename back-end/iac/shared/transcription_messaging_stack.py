@@ -5,23 +5,26 @@ from constructs import Construct
 
 
 class TranscriptionMessagingStack(NestedStack):
-    def __init__(self, scope: Construct, id: str, s3_stack: S3Stack, environment: dict, **kwargs):
+    def __init__(self, scope: Construct, id: str, s3_stack: S3Stack, environment: dict, branch: str, **kwargs):
         super().__init__(scope, id, **kwargs)
 
-        self._init_transcription_messaging(s3_stack, environment)
+        self._init_transcription_messaging(s3_stack, environment, branch)
 
-    def _init_transcription_messaging(self, s3_stack, environment):
+    def _init_transcription_messaging(self, s3_stack, environment, branch):
         transcription_dlq = sqs.Queue(self, "TranscriptionDLQ", retention_period=Duration.days(14))
+
+        suffix = f"-{branch}" if branch != "main" else ""
 
         transcription_queue = sqs.Queue(
             self, "TranscriptionQueue",
-            queue_name=PhysicalName.GENERATE_IF_NEEDED,
+            queue_name=f"TranscriptionQueue{suffix}",
             visibility_timeout=Duration.minutes(15),
             dead_letter_queue=sqs.DeadLetterQueue(max_receive_count=5, queue=transcription_dlq)
         )
 
         self.consumer_lambda = DockerImageFunction(
             self, "TranscriptionConsumerLambda",
+            function_name=f"TranscriptionConsumerLambda{suffix}",
             code=DockerImageCode.from_image_asset("services/transcription/transcribe"),
             memory_size=2048,
             timeout=Duration.minutes(10),
@@ -35,6 +38,7 @@ class TranscriptionMessagingStack(NestedStack):
 
         self.producer_lambda = Function(
             self, "TranscriptionProducerLambda",
+            function_name=f"TranscriptionProducerLambda{suffix}",
             handler="lambda.lambda_handler",
             code=Code.from_asset("services/transcription/start_transcription"),
             environment={"QUEUE_URL": transcription_queue.queue_url, **environment},
