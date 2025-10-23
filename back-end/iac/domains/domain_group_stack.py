@@ -97,6 +97,11 @@ class DomainGroupStack(NestedStack):
         InteractionsStack(
             self, "InteractionsStack",
             shared.dynamo_db_stack,
+            shared.s3_stack,
+            shared.libs_layer_stack,
+            shared.auth_layer_stack,
+            shared.utils_layer_stack,
+            api_gateway,
             env_vars
         )
 

@@ -1,14 +1,16 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {Song} from '../../models/Song';
 import {SingleItem} from '../../models/Single';
+import { SongCacheService } from '../song-cache/song-cache.service';
 
 @Injectable({providedIn: 'root'})
 export class PlayerService {
   private audio = new Audio();
   private playlist: Song[] | SingleItem[] = [];
   private index = 0;
-
+  private readonly songCache = inject(SongCacheService);
+  
   private currentSongSubject = new BehaviorSubject<Song | SingleItem | null>(null);
   currentSong$ = this.currentSongSubject.asObservable();
 
@@ -23,10 +25,23 @@ export class PlayerService {
   play(song?: Song | SingleItem) {
     if (song) {
       this.index = this.playlist.findIndex(s => s.song_id === song.song_id);
-      this.audio.src = song.audio_url;
-      this.audio.load();
-      this.audio.play();
-      this.currentSongSubject.next(song);
+
+      this.songCache.getSongUrl(song.song_id, song.audio_url).subscribe({
+        next: ({ url, fromCache}) => {
+          this.audio.src = url;
+          this.audio.load();
+          this.audio.play();
+          this.currentSongSubject.next(song);
+          console.log(`Playing song ${song.song_id} from ${fromCache ? 'cache' : 'S3'}`);
+        },
+        error: (err) => {
+          console.error('Failed to get song using cache service:', err);
+          this.audio.src = song.audio_url;
+          this.audio.load();
+          this.audio.play();
+          this.currentSongSubject.next(song);
+        }
+      });
     } else if (this.audio.paused) {
       this.audio.play();
     } else {
