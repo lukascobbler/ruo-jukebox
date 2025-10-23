@@ -97,7 +97,7 @@ def songs_for_album(album_id: str):
 # search
 def search(query: str):
     items = query_all(content_table, IndexName="byName", KeyConditionExpression=Key("name_lc").eq(query.lower()))
-    res = {"songs": [], "albums": [], "artists": []}
+    res = {"singles": [], "albums": [], "artists": []}
     for item in items:
         if item["SK"].startswith("CONTENT~SONG~"):
             res["songs"].append(item)

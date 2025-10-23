@@ -1,9 +1,9 @@
 import {Album} from './album/Album';
+import {Song} from './Song';
 import {Artist} from './Artist';
 
-export interface Genre {
-  id: string;
-  name: string;
+export interface SearchResult {
+  singles: Song[];
   albums: Album[];
   artists: Artist[];
 }

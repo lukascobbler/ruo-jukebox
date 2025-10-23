@@ -1,30 +1,37 @@
-<div class="container">
+<div *ngIf="loading" class="loading">
+  <mat-spinner></mat-spinner>
+</div>
+<div *ngIf="!loading" class="container">
   <button (click)="auth.logout()" class="logout-button orange-button">Logout</button>
 
   <div class="centering">
     <div class="text-and-image">
       <app-round-missing-icon-small [icon_name]="'artist'" />
-      <p class="big-text-artist">{{ artist.name }}</p>
-      <button (click)="artist.isSubscribed = !artist.isSubscribed" class="subscribe-button">
-        <span class="material-symbols-rounded icon" [ngClass]="{ 'full': artist.isSubscribed }">circle_notifications</span>
+      <p class="big-text-artist">{{ artist!.name }}</p>
+      <button (click)="artist!.isSubscribed = !artist!.isSubscribed" class="subscribe-button">
+        <span class="material-symbols-rounded icon" [ngClass]="{ 'full': artist!.isSubscribed }">circle_notifications</span>
       </button>
     </div>
   </div>
 
+  <div *ngIf="artist!.singles.length === 0 && artist!.albums.length === 0" class="no-content">
+    No content
+  </div>
+
   <div class="entities">
-    <div>
+    <div *ngIf="artist!.singles.length !== 0">
       <p class="big-text">Singles</p>
       <div class="singles horizontal-scroller">
-        <div *ngFor="let song of singles" class="single-song">
+        <div *ngFor="let song of artist!.singles" class="single-song">
           <app-box-missing-icon-x-large [icon_name]="'music_note'" />
           <p class="song-name">{{ song.name }}</p>
         </div>
       </div>
     </div>
-    <div>
+    <div *ngIf="artist!.albums.length !== 0">
       <p class="big-text">Albums</p>
       <div class="albums horizontal-scroller">
-        <div *ngFor="let album of albums" class="single-album">
+        <div *ngFor="let album of artist!.albums" class="single-album">
           <button class="icon-button" (click)="router.navigate(['album', album.id])">
             <app-box-missing-icon-x-large [icon_name]="'album'" />
           </button>

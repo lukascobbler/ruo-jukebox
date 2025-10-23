@@ -16,6 +16,8 @@ import {AuthService} from '../../../../services/auth/auth.service';
 import { map, switchMap } from 'rxjs';
 import { ToastrService } from '../../../../services/toastr/toastr.service';
 import { ArtistsService } from '../../../../services/artists/artists.service';
+import {GenresService} from '../../../../services/genres/genres.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-music-content',
@@ -27,7 +29,8 @@ import { ArtistsService } from '../../../../services/artists/artists.service';
     BoxMissingIconXLargeComponent,
     RoundMissingIconXLargeComponent,
     SearchComponent,
-    NgIf
+    NgIf,
+    MatProgressSpinner
   ],
   templateUrl: './music-content.component.html',
   styleUrl: './music-content.component.scss'
@@ -37,23 +40,29 @@ export class MusicContentComponent implements OnInit {
   route = inject(ActivatedRoute);
   auth = inject(AuthService);
   toast = inject(ToastrService);
-  private artistsService = inject(ArtistsService);
+  genresService = inject(GenresService);
+  loading = true;
+
   genre: Genre | null  = null;
 
-  albums: Album[] = [
-    { id: '1', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '1', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '2', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '2', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '3', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '3', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '4', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '4', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '5', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '5', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '6', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '6', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '7', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '7', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '8', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '8', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-  ];
-
-  artists: Artist[] = [];
-
   ngOnInit() {
+    let genreId = this.route.snapshot.params['id'];
+
+    this.genresService.get(genreId).subscribe({
+      next: value => {
+        this.genre = value;
+        this.loading = false;
+        setTimeout(() => this.applyHorizontalScrolling(), 100);
+        console.log(this.genre)
+      },
+      error: err => {
+        this.toast.error("Error", "Error loading music content for genres: " + err)
+        this.loading = false;
+      }
+    })
+  }
+
+  applyHorizontalScrolling() {
     const containers = document.querySelectorAll('.horizontal-scroller');
 
     containers.forEach(container => {
@@ -66,52 +75,5 @@ export class MusicContentComponent implements OnInit {
         { passive: false }
       );
     });
-
-    this.route.paramMap.pipe(
-      switchMap(pm => {
-        const genreId = pm.get('id');
-        if (genreId) {
-          // with images
-          return this.artistsService.getByGenre(genreId).pipe(
-            map((list: Artist[]) =>
-              list.map(a => ({
-                id: a.artist_id,
-                name: a.name,
-                biography: a.biography,
-                genres: a.genres,
-                pictureUrl: a.cover_url ?? null,
-                pictureKey: null
-              }))
-            )
-          );
-        }
-        // all artists (no images)
-        return this.artistsService.getAll().pipe(
-          map(list =>
-            list.map(a => ({
-              ...a,
-              pictureUrl: null,
-              pictureKey: null
-            }))
-          )
-        );
-      })
-    ).subscribe({
-      // TODO
-      // next: (artists) => { this.artists = artists ?? []; },
-      // error: (err) => {
-      //   const msg = this.extractError(err);
-      //   this.toast.error('Artists error', msg);
-      // }
-    });
-    let genreId = this.route.snapshot.params['id'];
-  }
-    private extractError(err: any): string {
-    const msg =
-      err?.error?.error ||
-      err?.error?.message ||
-      err?.message ||
-      'Unexpected error. Please try again.';
-    return typeof msg === 'string' ? msg : 'Unexpected error. Please try again.';
   }
 }

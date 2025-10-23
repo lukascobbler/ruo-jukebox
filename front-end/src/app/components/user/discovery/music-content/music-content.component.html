@@ -1,45 +1,57 @@
-<div class="container">
+<div *ngIf="loading" class="loading">
+  <mat-spinner></mat-spinner>
+</div>
+
+<div *ngIf="!loading" class="container">
   <button (click)="auth.logout()" class="logout-button orange-button">Logout</button>
+
   <div class="search-container">
     <div class="search">
-      <app-search />
+      <app-search></app-search>
     </div>
   </div>
 
+  <div *ngIf="genre!.albums.length === 0 && genre!.artists.length === 0" class="no-content">
+    <p>No Content</p>
+  </div>
+
   <div class="discover-entities">
-    <div>
+
+    <ng-container *ngIf="genre!.albums.length > 0">
       <p class="big-text">Discover albums</p>
       <div class="discover-albums horizontal-scroller">
-        <div *ngFor="let album of albums" class="single-album">
+        <div *ngFor="let album of genre!.albums" class="single-album">
           <button class="icon-button" (click)="router.navigate(['album', album.id])">
-            <app-box-missing-icon-x-large [icon_name]="'album'" />
+            <app-box-missing-icon-x-large [icon_name]="'album'"></app-box-missing-icon-x-large>
           </button>
           <p class="album-name">{{ album.name }}</p>
           <p class="artist-name">{{ album.artist }}</p>
         </div>
       </div>
-    </div>
-    <div>
+    </ng-container>
+
+    <ng-container *ngIf="genre!.artists.length > 0">
       <p class="big-text">Discover artists</p>
-<div class="discover-artists horizontal-scroller">
-  <div *ngFor="let artist of artists" class="single-artist">
-    <button class="icon-button" (click)="router.navigate(['artist', artist.artist_id])">
-      <ng-container *ngIf="artist.cover_url; else missingArtist">
-        <img
-          [src]="artist.cover_url!"
-          [alt]="artist.name"
-          class="artist-avatar"
-          width="192"
-          height="192"
-        />
-      </ng-container>
-      <ng-template #missingArtist>
-        <app-round-missing-icon-x-large [icon_name]="'artist'"></app-round-missing-icon-x-large>
-      </ng-template>
-    </button>
-    <p class="artist-name">{{ artist.name }}</p>
-  </div>
-</div>
-    </div>
+      <div class="discover-artists horizontal-scroller">
+        <div *ngFor="let artist of genre!.artists" class="single-artist">
+          <button class="icon-button" (click)="router.navigate(['artist', artist.artist_id])">
+            <ng-container *ngIf="artist.cover_url; else missingArtist">
+              <img
+                [src]="artist.cover_url!"
+                [alt]="artist.name"
+                class="artist-avatar"
+                width="192"
+                height="192"
+              />
+            </ng-container>
+            <ng-template #missingArtist>
+              <app-round-missing-icon-x-large [icon_name]="'artist'"></app-round-missing-icon-x-large>
+            </ng-template>
+          </button>
+          <p class="artist-name">{{ artist.name }}</p>
+        </div>
+      </div>
+    </ng-container>
+
   </div>
 </div>

@@ -6,6 +6,7 @@ from iac.domains.misc.email_test_stack import EmailTestStack
 from iac.domains.content.artists_stack import ArtistsStack
 from iac.domains.content.singles_stack import SinglesStack
 from iac.domains.content.albums_stack import AlbumsStack
+from iac.domains.content.search_stack import SearchStack
 from iac.domains.content.genres_stack import GenresStack
 from iac.domains.users.ratings_stack import RatingsStack
 from iac.shared.api_gateway_stack import ApiGatewayStack
@@ -117,6 +118,17 @@ class DomainGroupStack(NestedStack):
 
         RatingsStack(
             self, "RatingsStack",
+            shared.dynamo_db_stack,
+            shared.s3_stack,
+            shared.libs_layer_stack,
+            shared.auth_layer_stack,
+            shared.utils_layer_stack,
+            api_gateway,
+            env_vars
+        )
+
+        SearchStack(
+            self, "SearchStack",
             shared.dynamo_db_stack,
             shared.s3_stack,
             shared.libs_layer_stack,

@@ -1,14 +1,14 @@
 from pre_authorize import pre_authorize
-from read import list_by_genre
+from read import search
 from general_utils import response
 
 
 @pre_authorize(["Admin", "User"])
 def lambda_handler(event, context):
     path_params = event.get("pathParameters") or {}
-    genre_id = path_params.get("id")
+    query = path_params.get("query")
 
-    if not genre_id:
-        return response(400, error="Missing genre ID")
+    if not query:
+        return response(400, error="Missing query")
 
-    return response(200, list_by_genre(genre_id))
+    return response(200, search(query))

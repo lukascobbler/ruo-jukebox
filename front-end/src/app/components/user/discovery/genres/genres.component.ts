@@ -1,5 +1,5 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {NgClass, NgForOf} from "@angular/common";
+import {NgClass, NgForOf, NgIf} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {GenreItem} from '../../../../models/GenreItem';
 import {Router} from '@angular/router';
@@ -10,6 +10,7 @@ import { ToastrService } from '../../../../services/toastr/toastr.service';
 import { SubscriptionsService } from '../../../../services/subscriptions/subscriptions.service';
 import { map } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-genres',
@@ -20,6 +21,8 @@ import { firstValueFrom } from 'rxjs';
     FormsModule,
     NgClass,
     SearchComponent,
+    MatProgressSpinner,
+    NgIf,
   ],
   templateUrl: './genres.component.html',
   styleUrl: './genres.component.scss'
@@ -30,6 +33,7 @@ export class GenresComponent implements OnInit {
   private router = inject(Router);
   auth = inject(AuthService);
   toast = inject(ToastrService);
+  loading = true;
   genres: GenreItem[] = [];
   busyIds = new Set<string>();
 
@@ -40,13 +44,12 @@ export class GenresComponent implements OnInit {
   private fetchGenres(): void {
     this.genresService.list().subscribe({
       next: (items) => {
-        console.log(items)
         this.genres = items ?? [];
+        this.loading = false;
       },
       error: (err) => {
-        console.error('Failed to load genres', err);
-        const msg = this.extractError(err);
-        this.toast.error('Genres error', msg);
+        this.toast.error("Error", 'Failed to load genres', err);
+        this.loading = false;
       }
     });
   }

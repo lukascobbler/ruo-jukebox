@@ -2,7 +2,7 @@ import {Component, inject, Input} from '@angular/core';
 import {MatFormField, MatSuffix} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {Router} from '@angular/router';
+import {NavigationExtras, Router} from '@angular/router';
 
 @Component({
   selector: 'app-search',
@@ -23,6 +23,10 @@ export class SearchComponent {
   @Input() searchTerm: string = "";
 
   search() {
+    if (this.searchTerm.length === 0) {
+      return;
+    }
+
     this.router.navigate(['search', this.searchTerm]);
   }
 }
