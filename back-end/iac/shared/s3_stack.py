@@ -39,7 +39,7 @@ class S3Stack(NestedStack):
             auto_delete_objects=True
         )
 
-        # transcripts bucket TODO
+        # transcripts bucket
         self.transcripts_bucket = s3.Bucket(
             self, "TranscriptsBucket",
             bucket_name=PhysicalName.GENERATE_IF_NEEDED,
