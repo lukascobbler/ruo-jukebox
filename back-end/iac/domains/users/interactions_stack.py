@@ -12,19 +12,19 @@ from constructs import Construct
 class InteractionsStack(NestedStack):
     def __init__(self, scope: Construct, stack_id: str,
                  dynamo_db: DynamoDbStack, s3: S3Stack, libs_layer_stack: LibsLayerStack, auth_layer_stack: AuthLayerStack,
-                 utils_layer_stack: UtilsLayerStack, api_stack: ApiGatewayStack, environment, **kwargs):
+                 utils_layer_stack: UtilsLayerStack, api_stack: ApiGatewayStack, environment, branch: str, **kwargs):
         super().__init__(scope, stack_id, **kwargs)
         self.lambdas = {}
-        self._create_lambdas(dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, environment)
+        self._create_lambdas(dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, environment, branch)
         self._attach_to_api(api_stack)
 
-    def _create_lambdas(self, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, env):
+    def _create_lambdas(self, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, env, branch):
         lambda_defs = {
             "InteractionsCreate": "services/interactions/create",
         }
         for key, path in lambda_defs.items():
-            self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack).fn
-    
+            self.lambdas[key] = LambdaWithPermissions(self, key, path, env, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, branch).fn
+
     def _attach_to_api(self, api: ApiGatewayStack):
         interactions = api.api.root.add_resource("interactions")
 
