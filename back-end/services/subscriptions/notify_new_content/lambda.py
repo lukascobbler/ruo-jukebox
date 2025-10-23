@@ -33,7 +33,7 @@ def _emails_for_users(user_ids):
         return []
 
     keys = [{"user_id": uid, "SK": "META"} for uid in user_ids]
-    rows = batch_get_items(userdata_table, keys)  # uses your read.py helper
+    rows = batch_get_items(userdata_table, keys) 
     emails = []
     for r in rows:
         email = r.get("email")
@@ -42,7 +42,7 @@ def _emails_for_users(user_ids):
     return emails
 
 def _send_email_jobs(to_emails, payload):
-    # payload is dict with {name, artist_names, genre_names}
+    # payload is dict with {name, artist_names, genre_names, type}
     # SubsSendEmail will format like the old notify_new_content.
     for i in range(0, len(to_emails), 10):
         batch = to_emails[i:i+10]
@@ -70,6 +70,7 @@ def lambda_handler(event, context):
         genre_ids     = body.get("genre_ids", [])       
         artist_names  = body.get("artist_names", [])
         genre_names   = body.get("genre_names", [])
+        type = body.get('type', "type")
 
         user_ids = _gather_subscriber_user_ids(artist_ids, genre_ids)
 
@@ -83,7 +84,8 @@ def lambda_handler(event, context):
         payload = {
             "name": name,
             "artist_names": artist_names,
-            "genre_names": genre_names
+            "genre_names": genre_names,
+            "type": type
         }
         _send_email_jobs(emails, payload)
 

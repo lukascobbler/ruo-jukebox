@@ -17,7 +17,7 @@ def lambda_handler(event, context):
         to = body.get("to")
         if not to:
             continue
-
+        
         subject = body.get("subject")
         html    = body.get("html")
 
@@ -25,14 +25,15 @@ def lambda_handler(event, context):
             name         = body.get("name", "New content")
             artist_names = body.get("artist_names", [])
             genre_names  = body.get("genre_names", [])
+            type = body.get('type', "type")
 
             artists_str = _fmt_list(artist_names)
             genres_str  = _fmt_list(genre_names)
 
-            subject = f"New content: {name}"
+            subject = f"New {type}: {name}"
             html = f"""
             <html><body>
-                <p><strong>New content</strong> '<em>{name}</em>'</p>
+                <p><strong>New {type}</strong> '<em>{name}</em>'</p>
                 <p><strong>Artists:</strong> {artists_str}</p>
                 <p><strong>Genres:</strong> {genres_str}</p>
             </body></html>

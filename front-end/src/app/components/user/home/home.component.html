@@ -1,8 +1,8 @@
 <div class="container">
+  <button (click)="auth.logout(); playerService.destroy();" class="logout-button orange-button">Logout</button>
   <div class="search-container">
-    <button (click)="auth.logout()" class="logout-button orange-button">Logout</button>
     <div class="search">
-      <app-search/>
+      <app-search />
     </div>
   </div>
 
@@ -12,7 +12,7 @@
       <div class="recommended-albums horizontal-scroller">
         <div *ngFor="let album of albums" class="single-album">
           <button class="icon-button" (click)="router.navigate(['album', album.content_id])">
-            <app-box-missing-icon-x-large [icon_name]="'album'"/>
+            <app-box-missing-icon-x-large [icon_name]="'album'" />
           </button>
           <p class="album-name">{{ album.name }}</p>
           <p class="artist-name">{{ getArtists(album) }}</p>
@@ -24,7 +24,7 @@
       <div class="recommended-artists horizontal-scroller">
         <div *ngFor="let artist of artists" class="single-artist">
           <button class="icon-button" (click)="router.navigate(['artist', artist.artist_id])">
-            <app-round-missing-icon-x-large [icon_name]="'artist'"/>
+            <app-round-missing-icon-x-large [icon_name]="'artist'" />
           </button>
           <p class="artist-name">{{ artist.name }}</p>
         </div>

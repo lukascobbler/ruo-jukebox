@@ -2,8 +2,8 @@
   <mat-spinner></mat-spinner>
 </div>
 <div class="container">
+  <button (click)="auth.logout(); playerService.destroy();" class="logout-button orange-button">Logout</button>
   <div class="search-container">
-    <button (click)="auth.logout()" class="logout-button orange-button">Logout</button>
     <div class="search">
       <app-search />
     </div>

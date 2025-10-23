@@ -17,6 +17,7 @@ import { ToastrService } from '../../../services/toastr/toastr.service';
 import { firstValueFrom } from 'rxjs';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {NgIf} from '@angular/common';
+import {PlayerService} from '../../../services/player/player.service';
 
 type Row = {
   topic: string;
@@ -53,7 +54,7 @@ export class SubscriptionsComponent implements OnInit {
   subscribedToDataSource: Row[] = [];
   busyTopics = new Set<string>();
   displayedColumns = ['subscriptionName', 'actions'];
-
+  playerService = inject(PlayerService);
   loading = true;
 
   ngOnInit(): void {

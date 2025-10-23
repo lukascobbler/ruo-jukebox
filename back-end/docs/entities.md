@@ -252,12 +252,12 @@ interactions_table = {
     "user_id": "USER~{UUID}",
     "ts": 78971379,
     "ttl": 345345673,
-    "artists": [
+    "artist_ids": [
         "ARTIST~{UUID}",
         "ARTIST~{UUID}",
         "ARTIST~{UUID}"
     ],
-    "genres": [
+    "genre_ids": [
         "GENRE~{UUID}",
         "GENRE~{UUID}",
         "GENRE~{UUID}"
