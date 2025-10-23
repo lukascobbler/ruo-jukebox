@@ -13,7 +13,6 @@ export class PlayerService {
   
   private currentSongSubject = new BehaviorSubject<Song | SingleItem | null>(null);
   currentSong$ = this.currentSongSubject.asObservable();
-  private currentBlobUrl: string | null = null;
 
   constructor() {
     this.audio.addEventListener('ended', () => this.next());
@@ -26,15 +25,10 @@ export class PlayerService {
   play(song?: Song | SingleItem) {
     if (song) {
       this.index = this.playlist.findIndex(s => s.song_id === song.song_id);
-      if (this.currentBlobUrl) {
-        URL.revokeObjectURL(this.currentBlobUrl);
-        this.currentBlobUrl = null;
-      }
 
-      this.songCache.getSong(song.song_id, song.audio_url).subscribe({
-        next: ({ blob, fromCache }) => {
-          this.currentBlobUrl = URL.createObjectURL(blob);
-          this.audio.src = this.currentBlobUrl;
+      this.songCache.getSongUrl(song.song_id, song.audio_url).subscribe({
+        next: ({ url, fromCache}) => {
+          this.audio.src = url;
           this.audio.load();
           this.audio.play();
           this.currentSongSubject.next(song);
@@ -100,10 +94,6 @@ export class PlayerService {
 
   destroy() {
     this.pause();
-    if (this.currentBlobUrl) {
-      URL.revokeObjectURL(this.currentBlobUrl);
-      this.currentBlobUrl = null;
-    }
     this.audio = new Audio();
     this.playlist = [];
     this.index = 0;
