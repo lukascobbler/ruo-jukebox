@@ -74,7 +74,6 @@ export class AlbumDetailsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log(result)
         this.songsToBeCreated = [...this.songsToBeCreated, result];
         this.numberOfCurrentSongs += 1;
       }

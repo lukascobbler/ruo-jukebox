@@ -42,7 +42,6 @@ export class AllSinglesComponent implements OnInit {
     this.loading = true;
     this.songsService.listSingles().subscribe({
       next: (singles) => {
-        console.log(singles);
         this.singlesDataSource = singles;
         this.player.loadPlaylist(singles);
         this.loading = false;

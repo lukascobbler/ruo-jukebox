@@ -8,7 +8,6 @@ export class SubscriptionsService {
   private http = inject(HttpClient);
 
   create(targetId: string) {
-    console.log(targetId)
     return this.http.post<{ targetId: string; created: boolean }>(`${env.API_URL}/subscriptions`, { targetId });
   }
 

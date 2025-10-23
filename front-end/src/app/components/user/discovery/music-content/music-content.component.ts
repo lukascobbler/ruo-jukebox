@@ -53,7 +53,6 @@ export class MusicContentComponent implements OnInit {
         this.genre = value;
         this.loading = false;
         setTimeout(() => this.applyHorizontalScrolling(), 100);
-        console.log(this.genre)
       },
       error: err => {
         this.toast.error("Error", "Error loading music content for genres: " + err)
@@ -75,5 +74,9 @@ export class MusicContentComponent implements OnInit {
         { passive: false }
       );
     });
+  }
+
+  getArtists(item: Album) {
+    return item.artists.map(a => a.name).join(" ")
   }
 }

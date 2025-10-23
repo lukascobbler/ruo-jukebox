@@ -8,7 +8,7 @@
     <div class="text-and-image">
       <app-round-missing-icon-small [icon_name]="'artist'" />
       <p class="big-text-artist">{{ artist!.name }}</p>
-      <button (click)="artist!.isSubscribed = !artist!.isSubscribed" class="subscribe-button">
+      <button (click)="toggleArtistSubscription($event)" class="subscribe-button">
         <span class="material-symbols-rounded icon" [ngClass]="{ 'full': artist!.isSubscribed }">circle_notifications</span>
       </button>
     </div>

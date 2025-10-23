@@ -1,5 +1,4 @@
 from pre_authorize import pre_authorize
-import json
 from read import get_subscriptions_for_user
 from read import list_genres
 from general_utils import response

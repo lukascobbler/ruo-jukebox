@@ -15,6 +15,8 @@ import {SearchService} from '../../../services/search/search.service';
 import {SearchResult} from '../../../models/SearchResult';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {filter, Subscription} from 'rxjs';
+import {Album} from '../../../models/album/Album';
+import {Song} from '../../../models/Song';
 
 @Component({
   selector: 'app-search-results-page',
@@ -79,5 +81,9 @@ export class SearchResultsComponent implements OnInit {
         this.toastr.error("Error", "Error querying: " + err);
       }
     })
+  }
+
+  getArtists(item: Album | Song) {
+    return item.artists.map(a => a.name).join(" ")
   }
 }

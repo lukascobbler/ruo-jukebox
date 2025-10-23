@@ -17,6 +17,8 @@
         </div>
         <div class="is-subscribed">
         <button
+          (click)="toggleGenreSubscription($event, genre)"
+          [disabled]="busyIds.has(genre.genre_id)"
           class="subscribe-button">
           <span class="material-symbols-rounded icon" [ngClass]="{ 'full': genre.isSubscribed }">
             circle_notifications

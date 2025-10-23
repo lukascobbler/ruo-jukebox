@@ -15,7 +15,7 @@
             <app-box-missing-icon-x-large [icon_name]="'album'" />
           </button>
           <p class="album-name">{{ album.name }}</p>
-          <p class="artist-name">{{ album.artist }}</p>
+          <p class="artist-name">{{ getArtists(album) }}</p>
         </div>
       </div>
     </div>

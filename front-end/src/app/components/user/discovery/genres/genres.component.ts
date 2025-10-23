@@ -8,7 +8,6 @@ import {AuthService} from '../../../../services/auth/auth.service';
 import { GenresService } from '../../../../services/genres/genres.service';
 import { ToastrService } from '../../../../services/toastr/toastr.service';
 import { SubscriptionsService } from '../../../../services/subscriptions/subscriptions.service';
-import { map } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
@@ -58,12 +57,7 @@ export class GenresComponent implements OnInit {
     this.router.navigate(['genre', genre.genre_id]);
   }
 
-  unsubscribeFromGenre(event: Event, genre: GenreItem) {
-    event.stopPropagation();
-
-    genre.isSubscribed = !genre.isSubscribed;
-  }
-    private extractError(err: any): string {
+  private extractError(err: any): string {
     const msg =
       err?.error?.error ||
       err?.error?.message ||
@@ -72,31 +66,28 @@ export class GenresComponent implements OnInit {
     return typeof msg === 'string' ? msg : 'Unexpected error. Please try again.';
   }
 
-async toggleGenreSubscription(event: Event, genre: GenreItem) {
-  event.stopPropagation();
-  if (this.busyIds.has(genre.genre_id)) return;
-  console.log(genre)
-  const topic = genre.genre_id;
-  const prev = !!genre.isSubscribed;
+  async toggleGenreSubscription(event: Event, genre: GenreItem) {
+    event.stopPropagation();
+    if (this.busyIds.has(genre.genre_id)) return;
+    const topic = genre.genre_id;
+    const prev = !!genre.isSubscribed;
 
-  genre.isSubscribed = !prev;
-  this.busyIds.add(genre.genre_id);
+    genre.isSubscribed = !prev;
+    this.busyIds.add(genre.genre_id);
 
-  try {
-    if (prev) {
-      await firstValueFrom(this.subsService.delete(topic));
-    } else {
-      await firstValueFrom(this.subsService.create(topic));
+    try {
+      if (prev) {
+        await firstValueFrom(this.subsService.delete(topic));
+      } else {
+        await firstValueFrom(this.subsService.create(topic));
+      }
+      this.toast.success(prev ? 'Unsubscribed' : 'Subscribed', genre.name);
+    } catch (err: any) {
+      genre.isSubscribed = prev;
+      const msg = this.extractError(err);
+      this.toast.error(prev ? 'Unsubscribe error' : 'Subscribe error', msg);
+    } finally {
+      this.busyIds.delete(genre.genre_id);
     }
-    this.toast.success(prev ? 'Unsubscribed' : 'Subscribed', genre.name);
-  } catch (err: any) {
-    genre.isSubscribed = prev;
-    const msg = this.extractError(err);
-    this.toast.error(prev ? 'Unsubscribe error' : 'Subscribe error', msg);
-  } finally {
-    this.busyIds.delete(genre.genre_id);
   }
-}
-
-
 }

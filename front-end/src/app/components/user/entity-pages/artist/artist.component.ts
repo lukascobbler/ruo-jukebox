@@ -15,6 +15,9 @@ import {AuthService} from '../../../../services/auth/auth.service';
 import {ArtistsService} from '../../../../services/artists/artists.service';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {GenreItem} from '../../../../models/GenreItem';
+import {firstValueFrom} from 'rxjs';
+import {SubscriptionsService} from '../../../../services/subscriptions/subscriptions.service';
 
 @Component({
   selector: 'app-artist',
@@ -35,6 +38,7 @@ export class ArtistComponent implements OnInit {
   router = inject(Router);
   route = inject(ActivatedRoute);
   artistsService = inject(ArtistsService);
+  subsService = inject(SubscriptionsService);
   toast = inject(ToastrService);
   auth = inject(AuthService);
 
@@ -71,5 +75,36 @@ export class ArtistComponent implements OnInit {
         { passive: false }
       );
     });
+  }
+
+  private extractError(err: any): string {
+    const msg =
+      err?.error?.error ||
+      err?.error?.message ||
+      err?.message ||
+      'Unexpected error. Please try again.';
+    return typeof msg === 'string' ? msg : 'Unexpected error. Please try again.';
+  }
+
+  async toggleArtistSubscription(event: Event) {
+    event.stopPropagation();
+
+    const topic = this.artist!.artist_id;
+    const prev = !!this.artist!.isSubscribed;
+
+    this.artist!.isSubscribed = !prev;
+
+    try {
+      if (prev) {
+        await firstValueFrom(this.subsService.delete(topic));
+      } else {
+        await firstValueFrom(this.subsService.create(topic));
+      }
+      this.toast.success(prev ? 'Unsubscribed' : 'Subscribed', this.artist!.name);
+    } catch (err: any) {
+      this.artist!.isSubscribed = prev;
+      const msg = this.extractError(err);
+      this.toast.error(prev ? 'Unsubscribe error' : 'Subscribe error', msg);
+    }
   }
 }

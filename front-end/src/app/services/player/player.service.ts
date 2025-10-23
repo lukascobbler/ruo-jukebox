@@ -76,4 +76,14 @@ export class PlayerService {
   getDuration(): number {
     return this.audio.duration || 0;
   }
+
+  destroy() {
+    this.pause();
+    this.audio = new Audio();
+    this.playlist = [];
+    this.index = 0;
+
+    this.currentSongSubject = new BehaviorSubject<Song | SingleItem | null>(null);
+    this.currentSong$ = this.currentSongSubject.asObservable();
+  }
 }

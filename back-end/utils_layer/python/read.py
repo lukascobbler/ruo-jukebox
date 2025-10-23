@@ -100,7 +100,7 @@ def search(query: str):
     res = {"singles": [], "albums": [], "artists": []}
     for item in items:
         if item["SK"].startswith("CONTENT~SONG~"):
-            res["songs"].append(item)
+            res["singles"].append(item)
         elif item["SK"].startswith("CONTENT~ALBUM~"):
             res["albums"].append(item)
         elif item["SK"].startswith("CONTENT~ARTIST~"):

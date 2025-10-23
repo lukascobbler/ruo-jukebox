@@ -13,6 +13,7 @@ import {Artist} from '../../../models/Artist';
 import {Router} from '@angular/router';
 import {SearchComponent} from '../search/search.component';
 import {AuthService} from '../../../services/auth/auth.service';
+import {Song} from '../../../models/Song';
 
 @Component({
   selector: 'app-home',
@@ -34,27 +35,9 @@ export class HomeComponent implements OnInit {
   router = inject(Router);
   auth = inject(AuthService);
 
-  albums: Album[] = [
-    { id: '1', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '1', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '2', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '2', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '3', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '3', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '4', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '4', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '5', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '5', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '6', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '6', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '7', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '7', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-    { id: '8', name: 'Awesome album', artist: 'Awesome Artist 1 Albert Einstein', artistId: '8', genres: [{genre_id: '1', name: 'jazz'}, {genre_id: '2', name: 'country'}, {genre_id: '3', name: 'rock'}], released: false },
-  ];
+  albums: Album[] = [];
 
-  artists: Artist[] = [
-    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-    // { id: '', name: 'Awesome artist', biography: '', genres: [], isSubscribed: false },
-  ];
+  artists: Artist[] = [];
 
   ngOnInit() {
     const containers = document.querySelectorAll('.horizontal-scroller');
@@ -69,5 +52,9 @@ export class HomeComponent implements OnInit {
         { passive: false }
       );
     });
+  }
+
+  getArtists(item: Album | Song) {
+    return item.artists.map(a => a.name).join(" ")
   }
 }

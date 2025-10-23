@@ -19,31 +19,17 @@
 
 .new-and-subscriptions {
   display: flex;
-  gap: 96px;
   justify-content: space-evenly;
 }
 
-.new-releases {
-  flex: 0 0 70%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-.song-table {
-  width: 100%;
-}
-
 .subscriptions {
-  flex: 0 0 30%;
+  flex: 0 0 100%;
   background-color: $background2;
   padding: 24px 24px 24px 24px;
   border-radius: 24px;
   margin-top: 102px;
   height: min-content;
-  max-width: 275px;
+  max-width: 500px;
 }
 
 .actions {

@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {ReactiveFormsModule} from "@angular/forms";
 import {SongTableComponent} from "../song-table/song-table.component";
 import {
@@ -15,6 +15,8 @@ import {AuthService} from '../../../services/auth/auth.service';
 import { SubscriptionsService } from '../../../services/subscriptions/subscriptions.service';
 import { ToastrService } from '../../../services/toastr/toastr.service';
 import { firstValueFrom } from 'rxjs';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {NgIf} from '@angular/common';
 
 type Row = {
   topic: string;
@@ -27,7 +29,6 @@ type Row = {
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    SongTableComponent,
     MatCell,
     MatCellDef,
     MatColumnDef,
@@ -38,12 +39,14 @@ type Row = {
     MatRow,
     MatRowDef,
     MatTable,
-    MatHeaderCellDef
+    MatHeaderCellDef,
+    MatProgressSpinner,
+    NgIf
   ],
   templateUrl: './subscriptions.component.html',
   styleUrl: './subscriptions.component.scss'
 })
-export class SubscriptionsComponent {
+export class SubscriptionsComponent implements OnInit {
   auth = inject(AuthService);
   private subsService = inject(SubscriptionsService);
   private toast = inject(ToastrService);
@@ -51,13 +54,15 @@ export class SubscriptionsComponent {
   busyTopics = new Set<string>();
   displayedColumns = ['subscriptionName', 'actions'];
 
+  loading = true;
+
   ngOnInit(): void {
     this.fetchMine();
   }
+
   private fetchMine(): void {
     this.subsService.listMine().subscribe({
       next: (payload) => {
-        console.log(payload)
         const rows: Row[] = [];
 
         for (const a of payload.artists || []) {
@@ -82,6 +87,7 @@ export class SubscriptionsComponent {
         );
 
         this.subscribedToDataSource = rows;
+        this.loading = false;
       },
       error: (err) => {
         const msg = this.extractError(err);
@@ -93,8 +99,6 @@ export class SubscriptionsComponent {
   async onUnsubscribe(row: Row) {
     if (this.busyTopics.has(row.topic)) return;
     this.busyTopics.add(row.topic);
-    console.log('nigga')
-    console.log(row)
     try {
       await firstValueFrom(this.subsService.delete(row.topic));
       this.subscribedToDataSource = this.subscribedToDataSource.filter(r => r.topic !== row.topic);
