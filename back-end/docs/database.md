@@ -55,6 +55,26 @@ song_id      =  SONG~{UUID}
 rating       =  1 | 2 | 3
 ```
 
+### GSI ratingByAlbum {PK} - {SK} (used for feed)
+
+```
+{album_id} - {rating_user}
+
+rating_user  =  {rating}~USER~{UUID}
+album_id      =  ALBUM~{UUID}
+rating       =  1 | 2 | 3
+```
+
+### GSI ratingByArtist {PK} - {SK} (used for feed)
+
+```
+{artist_id} - {rating_user}
+
+rating_user  =  {rating}~USER~{UUID}
+artist_id      =  ARTIST~{UUID}
+rating       =  1 | 2 | 3
+```
+
 ### GSI getSubscribed {PK} - {SK}
 
 ```
@@ -63,7 +83,7 @@ rating       =  1 | 2 | 3
 sub_id  =  SUB~GENRE~{UUID} | SUB~ARTIST~{UUID}
 ```
 
-## InteractionsTable
+## InteractionsTable {PK} - {SK}
 
 ```
 USER~{UUID} - {ts}
@@ -72,13 +92,10 @@ user_id  =  {PK}
 ts       =  {SK}
 ```
 
-## FeedTable
+## FeedTable {PK} - {SK}
 
 ```
-USER~{UUID} - ARTIST~{UUID}
-              ALBUM~{UUID}
-              SONG~{UUID}
+USER~{UUID} - <NO_SK>
 
 user_id     =  {PK}
-content_id  =  {SK}
 ```

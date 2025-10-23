@@ -252,6 +252,7 @@ interactions_table = {
     "user_id": "USER~{UUID}",
     "ts": 78971379,
     "ttl": 345345673,
+    "value": 1 | 10 | 20 | 30 | 50,
     "artist_ids": [
         "ARTIST~{UUID}",
         "ARTIST~{UUID}",
@@ -263,7 +264,7 @@ interactions_table = {
         "GENRE~{UUID}"
     ],
     "album_id": "ALBUM~{UUID}",
-    "song_id": ""
+    "song_id": "SONG~{UUID}"
 }
 ```
 
@@ -272,6 +273,10 @@ interactions_table = {
 ```python
 feed_table = {
     "user_id": "USER~{UUID}",
-    "content_id": "ARTIST~{UUID}" | "ALBUM~{UUID}" | "SONG~{UUID}"
+    "feed": {
+        "artists": [artist_ids],
+        "albums": [album_ids],
+        "songs": [song_ids],
+    }
 }
 ```
