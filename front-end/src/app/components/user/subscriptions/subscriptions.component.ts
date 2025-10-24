@@ -68,7 +68,7 @@ export class SubscriptionsComponent implements OnInit {
 
         for (const a of payload.artists || []) {
           rows.push({
-            topic: a.id,
+            topic: a.artist_id,
             subscriptionName: a.name,
             type: 'artist'
           });
@@ -76,7 +76,7 @@ export class SubscriptionsComponent implements OnInit {
 
         for (const g of payload.genres || []) {
           rows.push({
-            topic: g.id,
+            topic: g.genre_id,
             subscriptionName: g.name,
             type: 'genre'
           });
@@ -106,7 +106,7 @@ export class SubscriptionsComponent implements OnInit {
       }else{
         await firstValueFrom(this.subsService.delete(row.topic, null,[],[row.topic],null));
       }
-      
+
       this.subscribedToDataSource = this.subscribedToDataSource.filter(r => r.topic !== row.topic);
       this.toast.success('Unsubscribed', row.subscriptionName);
     } catch (err: any) {

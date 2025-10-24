@@ -1,4 +1,4 @@
 export interface Subscription {
-  artists: { id: string; name: string; pictureKey?: string; pictureUrl?: string }[];
-  genres:  { id: string; name: string }[];
+  artists: { artist_id: string; name: string; pictureKey?: string; pictureUrl?: string }[];
+  genres:  { genre_id: string; name: string }[];
 }

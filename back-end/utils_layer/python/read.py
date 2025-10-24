@@ -169,6 +169,21 @@ def get_subscriptions_for_user(user_id: str):  # e.g. 'USER~{UUID}'
     return res
 
 
+# all genres and artists a user is subscribed to
+def get_subscriptions_for_user_sub_page(user_id: str):  # e.g. 'USER~{UUID}'
+    items = query_all(userdata_table, KeyConditionExpression=Key("user_id").eq(user_id) & Key("SK").begins_with("SUB~"))
+    res = {"genres": [], "artists": []}
+    for item in items:
+        item_id = item["SK"].lstrip("SUB~")
+        if item["SK"].startswith("SUB~GENRE~"):
+            res["genres"].append(item_id)
+        elif item["SK"].startswith("SUB~ARTIST~"):
+            res["artists"].append(item_id)
+    res["genres"] = get_contents(res["genres"])
+    res["artists"] = get_contents(res["artists"])
+    return res
+
+
 # all users subscribed to a genre or artist
 def get_users_for_subscription(topic_id: str):  # e.g. 'GENRE~{UUID}' or 'ARTIST~{UUID}'
     return query_all(userdata_table, IndexName="getSubscribed", KeyConditionExpression=Key("sub_id").eq(f"SUB~{topic_id}"))
