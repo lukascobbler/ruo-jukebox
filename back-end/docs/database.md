@@ -63,7 +63,7 @@ rating       =  1 | 2 | 3
 sub_id  =  SUB~GENRE~{UUID} | SUB~ARTIST~{UUID}
 ```
 
-## InteractionsTable
+## InteractionsTable {PK} - {SK}
 
 ```
 USER~{UUID} - {ts}
@@ -72,13 +72,10 @@ user_id  =  {PK}
 ts       =  {SK}
 ```
 
-## FeedTable
+## FeedTable {PK} - {SK}
 
 ```
-USER~{UUID} - ARTIST~{UUID}
-              ALBUM~{UUID}
-              SONG~{UUID}
+USER~{UUID} - <NO_SK>
 
 user_id     =  {PK}
-content_id  =  {SK}
 ```

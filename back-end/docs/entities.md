@@ -6,6 +6,9 @@ core_song = {
     "content_type": "SONG",
     "name": "Super song",
     "name_lc": "super song",
+    "pos": 0,
+    "album_id": "ALBUM~{UUID}",
+    "single_id": "SINGLE~{UUID}",
     "audio_key": "songs/SONG~{UUID}.mp3",
     "cover_key": "singles/SINGLE~{UUID}.jpg" | "albums/ALBUM~{UUID}.jpg",
     "artists": [{
@@ -252,18 +255,19 @@ interactions_table = {
     "user_id": "USER~{UUID}",
     "ts": 78971379,
     "ttl": 345345673,
-    "artists": [
+    "value": 1 | 10 | 20 | 30 | 50, # 1 - play, (10, 20, 30) - rating, 50 - sub
+    "artist_ids": [
         "ARTIST~{UUID}",
         "ARTIST~{UUID}",
         "ARTIST~{UUID}"
     ],
-    "genres": [
+    "genre_ids": [
         "GENRE~{UUID}",
         "GENRE~{UUID}",
         "GENRE~{UUID}"
     ],
     "album_id": "ALBUM~{UUID}",
-    "song_id": ""
+    "song_id": "SONG~{UUID}"
 }
 ```
 
@@ -272,6 +276,24 @@ interactions_table = {
 ```python
 feed_table = {
     "user_id": "USER~{UUID}",
-    "content_id": "ARTIST~{UUID}" | "ALBUM~{UUID}" | "SONG~{UUID}"
+    "feed": [
+        {
+            "artists": [artist_ids],
+            "albums": [album_ids],
+            "singles": [singles_ids],
+        }, {
+            "artists": [artist_ids],
+            "albums": [album_ids],
+            "singles": [singles_ids],
+        }, {
+            "artists": [artist_ids],
+            "albums": [album_ids],
+            "singles": [singles_ids],
+        }, {
+            "artists": [artist_ids],
+            "albums": [album_ids],
+            "singles": [singles_ids],
+        }
+    ]
 }
 ```

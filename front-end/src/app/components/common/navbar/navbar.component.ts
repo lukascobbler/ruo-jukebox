@@ -6,6 +6,7 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {CreatePlaylistDialogComponent} from '../../user/dialogs/create-playlist/create-playlist-dialog.component';
 import {Playlist} from '../../../models/Playlist';
 import {AuthService} from '../../../services/auth/auth.service';
+import {PlayerService} from '../../../services/player/player.service';
 
 interface NavItem {
   label: string;
@@ -35,6 +36,7 @@ export class NavbarComponent implements OnInit {
   private router = inject(Router);
   auth = inject(AuthService);
   currentUserRole: Role | null = null;
+  playerService = inject(PlayerService);
 
   constructor(private dialog: MatDialog) {
   }
@@ -73,6 +75,7 @@ export class NavbarComponent implements OnInit {
 
   logout() {
     this.auth.logout();
+    this.playerService.destroy();
   }
 
   createPlaylist() {

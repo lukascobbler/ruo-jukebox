@@ -14,6 +14,7 @@ import {Router} from '@angular/router';
 import {SearchComponent} from '../search/search.component';
 import {AuthService} from '../../../services/auth/auth.service';
 import {Song} from '../../../models/Song';
+import {PlayerService} from '../../../services/player/player.service';
 
 @Component({
   selector: 'app-home',
@@ -34,6 +35,7 @@ import {Song} from '../../../models/Song';
 export class HomeComponent implements OnInit {
   router = inject(Router);
   auth = inject(AuthService);
+  playerService = inject(PlayerService);
 
   albums: Album[] = [];
 

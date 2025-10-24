@@ -18,6 +18,7 @@ import { ToastrService } from '../../../../services/toastr/toastr.service';
 import { ArtistsService } from '../../../../services/artists/artists.service';
 import {GenresService} from '../../../../services/genres/genres.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {PlayerService} from '../../../../services/player/player.service';
 
 @Component({
   selector: 'app-music-content',
@@ -41,6 +42,7 @@ export class MusicContentComponent implements OnInit {
   auth = inject(AuthService);
   toast = inject(ToastrService);
   genresService = inject(GenresService);
+  playerService = inject(PlayerService);
   loading = true;
 
   genre: Genre | null  = null;

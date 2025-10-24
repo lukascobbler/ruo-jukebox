@@ -11,6 +11,7 @@ import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {NgIf} from '@angular/common';
+import {PlayerService} from '../../../../services/player/player.service';
 
 @Component({
   selector: 'app-album',
@@ -29,6 +30,7 @@ export class AlbumComponent implements OnInit {
   route = inject(ActivatedRoute);
   albumsService = inject(AlbumsService);
   toast = inject(ToastrService)
+  playerService = inject(PlayerService);
 
   loading = true;
   album: Album | null = null;

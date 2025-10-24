@@ -17,6 +17,7 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {filter, Subscription} from 'rxjs';
 import {Album} from '../../../models/Album';
 import {Song} from '../../../models/Song';
+import {PlayerService} from '../../../services/player/player.service';
 
 @Component({
   selector: 'app-search-results-page',
@@ -41,6 +42,7 @@ export class SearchResultsComponent implements OnInit {
   auth = inject(AuthService);
   searchService = inject(SearchService);
   routeSubscription: Subscription | undefined;
+  playerService = inject(PlayerService);
 
   loading = true;
   searchResult: SearchResult = {albums: [], singles: [], artists: []};
