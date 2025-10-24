@@ -11,11 +11,10 @@ import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {NgIf} from '@angular/common';
-import {SongsService} from '../../../../services/singles/singles.service';
-import {Single} from '../../../../models/Single';
+import {PlayerService} from '../../../../services/player/player.service';
 
 @Component({
-  selector: 'app-single',
+  selector: 'app-musical-content',
   standalone: true,
   imports: [
     SongTableComponent,
@@ -23,34 +22,31 @@ import {Single} from '../../../../models/Single';
     MatProgressSpinner,
     NgIf
   ],
-  templateUrl: './single.component.html',
-  styleUrl: './single.component.scss'
+  templateUrl: './musical-content.component.html',
+  styleUrl: './musical-content.component.scss'
 })
-export class SingleComponent implements OnInit {
+export class MusicalContentComponent implements OnInit {
   auth = inject(AuthService);
   route = inject(ActivatedRoute);
-  singlesService = inject(SongsService);
+  albumsService = inject(AlbumsService);
   toast = inject(ToastrService)
+  playerService = inject(PlayerService);
 
   loading = true;
-  single: Single | null = null;
+  album: Album | null = null;
 
   ngOnInit() {
-    let singleId = this.route.snapshot.params['id'];
+    let albumId = this.route.snapshot.params['id'];
 
-    this.singlesService.get(singleId).subscribe({
+    this.albumsService.get(albumId).subscribe({
       next: value => {
-        this.single = value;
+        this.album = value;
         this.loading = false;
       },
       error: err => {
-        this.toast.error("Error", "Error loading single: " + err);
+        this.toast.error("Error", "Error loading album: " + err);
         this.loading = false;
       }
     })
-  }
-
-  transformForSongsTable(): Song[] {
-    return [this.single as Song];
   }
 }

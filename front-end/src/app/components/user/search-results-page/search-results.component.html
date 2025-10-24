@@ -20,15 +20,9 @@
       <p class="big-text">Matching songs</p>
       <div class="found-songs horizontal-scroller">
         <div *ngFor="let song of searchResult!.songs" class="single-song">
-          <button *ngIf="song.album_id" class="icon-button" (click)="router.navigate(['album', song.album_id])">
+          <button class="icon-button" (click)="router.navigate(['musical-content', song.single_id])">
             <img *ngIf="song.cover_url; else missingCoverSong1" [src]="song.cover_url" alt="cover" class="cover-picture-medium"/>
             <ng-template #missingCoverSong1>
-              <app-box-missing-icon-small [icon_name]="'music_note'" class="cover-no-picture"></app-box-missing-icon-small>
-            </ng-template>
-          </button>
-          <button *ngIf="song.single_id" class="icon-button" (click)="router.navigate(['single', song.single_id])">
-            <img *ngIf="song.cover_url; else missingCoverSong2" [src]="song.cover_url" alt="cover" class="cover-picture-medium"/>
-            <ng-template #missingCoverSong2>
               <app-box-missing-icon-small [icon_name]="'music_note'" class="cover-no-picture"></app-box-missing-icon-small>
             </ng-template>
           </button>
@@ -41,7 +35,7 @@
       <p class="big-text">Matching albums</p>
       <div class="found-albums horizontal-scroller">
         <div *ngFor="let album of searchResult!.albums" class="single-album">
-          <button class="icon-button" (click)="router.navigate(['album', album.content_id])">
+          <button class="icon-button" (click)="router.navigate(['musical-content', album.content_id])">
             <img *ngIf="album.cover_url; else missingCoverAlbum" [src]="album.cover_url" alt="cover" class="cover-picture-medium"/>
             <ng-template #missingCoverAlbum>
               <app-box-missing-icon-large [icon_name]="'album'" class="cover-no-picture"></app-box-missing-icon-large>

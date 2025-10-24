@@ -11,7 +11,7 @@
       <p class="big-text">Recommended albums</p>
       <div class="recommended-albums horizontal-scroller">
         <div *ngFor="let album of albums" class="single-album">
-          <button class="icon-button" (click)="router.navigate(['album', album.content_id])">
+          <button class="icon-button" (click)="router.navigate(['musical-content', album.content_id])">
             <app-box-missing-icon-x-large [icon_name]="'album'" />
           </button>
           <p class="album-name">{{ album.name }}</p>
