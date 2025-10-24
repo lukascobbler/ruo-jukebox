@@ -67,4 +67,8 @@ export class AlbumsService {
   get(album_id: string): Observable<Album> {
     return this.http.get<Album>(`${env.API_URL}/album/${album_id}`);
   }
+
+  deleteAlbum(album_id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${env.API_URL}/album/${album_id}`);
+  }
 }

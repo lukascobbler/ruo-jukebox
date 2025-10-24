@@ -24,10 +24,9 @@ def lambda_handler(event, context):
         transcription_key = single.get("transcription_key")
         delete_single(single_id)
 
-        # Delete S3 files
         for bucket, key in [
             (AUDIO_BUCKET, audio_key),
-            (IMAGES_BUCKET, f"single/{single_id}.jpg"),
+            (IMAGES_BUCKET, f"singles/{single_id}.jpg"),
             (TRANSCRIPTS_BUCKET, transcription_key if TRANSCRIPTS_BUCKET else None),
         ]:
             if key and file_exists_on_s3(bucket, key):

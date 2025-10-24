@@ -24,6 +24,7 @@ import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {NgIf} from '@angular/common';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {CreateSingleDialogComponent} from '../../dialogs/single/create-single-dialog.component';
+import {lastValueFrom} from 'rxjs';
 
 @Component({
   selector: 'app-all-albums',
@@ -95,5 +96,17 @@ export class AllAlbumsComponent implements OnInit {
 
   editAlbum(album: Album) {
     this.router.navigate(['album-details'], {state: {data: {result: null, album_id: album.content_id, cover_url: album.cover_url}}})
+  }
+
+  async deleteAlbum(album: Album): Promise<void> {
+    try {
+      this.loading = true;
+      await lastValueFrom(this.albumsService.deleteAlbum(album.content_id));
+      this.toast.success('Deleted', 'Album deleted successfully');
+      this.loadAlbums();
+    } catch {
+      this.loading = false;
+      this.toast.error('Error', 'Failed to delete album');
+    }
   }
 }
