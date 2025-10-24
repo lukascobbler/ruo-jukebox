@@ -78,5 +78,5 @@ ts       =  {SK}
 ```
 USER~{UUID} - <NO_SK>
 
-user_id     =  {PK}
+user_id  =  {PK}
 ```
