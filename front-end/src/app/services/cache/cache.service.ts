@@ -39,17 +39,10 @@ export class CacheService {
             const req = store.put(data, key);
 
             tx.oncomplete = () => {
-              db.close();
               observer.next();
               observer.complete();
             };
-            tx.onerror = () => {
-              const err = (tx.error ?? req.error) as any;
-              db.close();
-              observer.error(err);
-            };
-
-            req.onerror = () => {};
+            tx.onerror = () => observer.error(tx.error);
           })
       )
     );
@@ -64,17 +57,8 @@ export class CacheService {
             const store = tx.objectStore(this.storeName);
             const req = store.get(key);
 
-            tx.oncomplete = () => {
-              db.close();
-              observer.complete();
-            };
-            tx.onerror = () => {
-              const err = (tx.error ?? req.error) as any;
-              db.close();
-              observer.error(err);
-            };
-
             req.onsuccess = () => observer.next(req.result ?? null);
+            req.onerror = () => observer.next(null);
           })
       )
     );
@@ -82,8 +66,7 @@ export class CacheService {
 
   has(key: string): Observable<boolean> {
     return this.get(key).pipe(
-      map((blob) => blob !== null),
-      catchError(() => of(false))
+      map(blob => blob !== null)
     );
   }
 
@@ -94,18 +77,13 @@ export class CacheService {
           new Observable<void>((observer) => {
             const tx = db.transaction([this.storeName], 'readwrite');
             const store = tx.objectStore(this.storeName);
-            store.delete(key);
+            const req = store.delete(key);
 
             tx.oncomplete = () => {
-              db.close();
               observer.next();
               observer.complete();
             };
-            tx.onerror = () => {
-              const err = tx.error as any;
-              db.close();
-              observer.error(err);
-            };
+            tx.onerror = () => observer.error(tx.error);
           })
       )
     );
