@@ -123,6 +123,10 @@ export class AlbumDetailsComponent implements OnInit {
   }
 
   async release() {
+    if (this.editMode) {
+      return;
+    }
+
     this.loading = true;
 
     try {
