@@ -280,19 +280,19 @@ feed_table = {
         {
             "artists": [artist_ids],
             "albums": [album_ids],
-            "singles": [singles_ids],
+            "songs": [singles_ids],
         }, {
             "artists": [artist_ids],
             "albums": [album_ids],
-            "singles": [singles_ids],
+            "songs": [singles_ids],
         }, {
             "artists": [artist_ids],
             "albums": [album_ids],
-            "singles": [singles_ids],
+            "songs": [singles_ids],
         }, {
             "artists": [artist_ids],
             "albums": [album_ids],
-            "singles": [singles_ids],
+            "songs": [song_ids],
         }
     ]
 }

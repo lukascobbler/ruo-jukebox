@@ -1,6 +1,7 @@
 ## ContentTable {PK} - {SK}
 
 ```
+SONG~{UUID}   - META
 ALBUM~{UUID}  - META
 SINGLE~{UUID} - META
 ALBUM~{UUID}  - POS~{POS}~SONG~{UUID}
