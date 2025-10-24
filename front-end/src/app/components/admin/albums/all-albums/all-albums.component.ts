@@ -12,7 +12,7 @@ import {MatIconButton} from '@angular/material/button';
 import {
   BoxMissingIconSmallComponent
 } from '../../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component';
-import {Album} from '../../../../models/album/Album';
+import {Album} from '../../../../models/Album';
 import {Router} from '@angular/router';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AlbumDialogData, CreateAlbumDialogComponent} from '../../dialogs/album/create-album-dialog.component';

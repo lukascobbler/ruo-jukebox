@@ -1,8 +1,12 @@
-from general_utils import response, file_exists_on_s3, get_genre_objects, get_artist_objects
+from general_utils import response, file_exists_on_s3, get_genre_objects, get_artist_objects, generate_s3_download_url
 from create import create_single, create_songs
 from read import get_users_for_subscription
 from pre_authorize import pre_authorize
+from read import get_contents
+from mutagen.mp3 import MP3
+from io import BytesIO
 import json, os, boto3
+import requests
 
 AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
 IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
@@ -57,14 +61,20 @@ def lambda_handler(event, context):
     artists, message = get_artist_objects(artist_ids)
     if artists is None: return response(400, error=message)
 
+    audio_url = generate_s3_download_url(AUDIO_BUCKET, audio_key)
+    mp3_response = requests.get(audio_url)
+    audio = MP3(BytesIO(mp3_response.content))
+    duration_seconds = int(audio.info.length)
+
     core_song = {
         "content_id": song_id,
-        "content_type": "SONG",
         "name": name,
+        "single_id": single_id,
         "name_lc": name.lower(),
         "audio_key": audio_key,
         "artists": artists,
-        "genres": genres
+        "genres": genres,
+        "duration": duration_seconds
     }
 
     if cover_key:

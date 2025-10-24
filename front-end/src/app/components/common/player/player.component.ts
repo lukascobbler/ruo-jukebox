@@ -8,8 +8,8 @@ import {Subscription, interval} from 'rxjs';
 import {Song} from '../../../models/Song';
 import {Artist} from '../../../models/Artist';
 import {Role} from '../../../models/Role';
-import {SingleItem} from '../../../models/Single';
-import { RatingsService } from '../../../services/ratings.service.ts/ratings.service';
+import {Single} from '../../../models/Single';
+import {RatingsService} from '../../../services/ratings/ratings.service';
 
 @Component({
   selector: 'app-player',
@@ -23,17 +23,17 @@ export class PlayerComponent implements OnInit, OnDestroy {
   protected readonly player = inject(PlayerService);
   private readonly ratingsService = inject(RatingsService);
 
-  currentlyPlayingSong: Song | SingleItem = {
+  currentlyPlayingSong: Song = {
     cover_url: '',
     audio_url: '',
     song_id: '',
-    no: 0,
+    pos: 0,
     name: '',
     album: '',
-    albumId: '',
+    album_id: '',
+    single_id: '',
     duration: 0,
     artists: [{name: ''} as Artist],
-    artistId: '',
     lyrics: 'No lyrics found',
     genres: []
   };
@@ -125,7 +125,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     const artistIds: string[] = (item.artists ?? []).map(a => a.artist_id);
     const genreIds: string[] = (item.genres ?? []).map((g: any) => g.genre_id ?? g.id ?? g.name).filter(Boolean);
       const albumId: string | null =
-    ('albumId' in item && item.albumId) ? item.albumId : null;
+    ('album_id' in item && item.album_id) ? item.album_id : null;
     this.subs.push(
       this.ratingsService.set(songId, starRating, artistIds, genreIds, albumId).subscribe({
         next: () => {},
@@ -142,7 +142,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.hoverRating = 0;
   }
 
-  getArtistNames(song: Song | SingleItem): string {
+  getArtistNames(song: Song): string {
     return song.artists.map((a: Artist) => a.name).join(', ') || '';
   }
   deleteRating() {

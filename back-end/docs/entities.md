@@ -7,6 +7,8 @@ core_song = {
     "name": "Super song",
     "name_lc": "super song",
     "pos": 0,
+    "album_id": "ALBUM~{UUID}",
+    "single_id": "SINGLE~{UUID}",
     "audio_key": "songs/SONG~{UUID}.mp3",
     "cover_key": "singles/SINGLE~{UUID}.jpg" | "albums/ALBUM~{UUID}.jpg",
     "artists": [{

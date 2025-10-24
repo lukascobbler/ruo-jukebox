@@ -1,27 +1,26 @@
 import {inject, Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {Song} from '../../models/Song';
-import {SingleItem} from '../../models/Single';
 import { SongCacheService } from '../song-cache/song-cache.service';
 
 @Injectable({providedIn: 'root'})
 export class PlayerService {
   private audio = new Audio();
-  private playlist: Song[] | SingleItem[] = [];
+  private playlist: Song[] = [];
   private index = 0;
   private readonly songCache = inject(SongCacheService);
-  private currentSongSubject = new BehaviorSubject<Song | SingleItem | null>(null);
+  private currentSongSubject = new BehaviorSubject<Song | null>(null);
   currentSong$ = this.currentSongSubject.asObservable();
 
   constructor() {
     this.audio.addEventListener('ended', () => this.next());
   }
 
-  loadPlaylist(songs: Song[] | SingleItem[]) {
+  loadPlaylist(songs: Song[]) {
     this.playlist = songs;
   }
 
-  play(song?: Song | SingleItem) {
+  play(song?: Song) {
     if (song) {
       this.index = this.playlist.findIndex(s => s.song_id === song.song_id);
       this.songCache.getSongUrl(song.song_id, song.audio_url).subscribe({
@@ -96,7 +95,7 @@ export class PlayerService {
     this.playlist = [];
     this.index = 0;
 
-    this.currentSongSubject = new BehaviorSubject<Song | SingleItem | null>(null);
+    this.currentSongSubject = new BehaviorSubject<Song | null>(null);
     this.currentSong$ = this.currentSongSubject.asObservable();
   }
 }

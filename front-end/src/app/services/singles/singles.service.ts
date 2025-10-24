@@ -1,7 +1,7 @@
 import {env} from '../../../environments/environment';
 import {Injectable, inject} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {SingleItem} from '../../models/Single';
+import {Single} from '../../models/Single';
 import {Observable} from 'rxjs';
 
 export interface UploadInitPayload {
@@ -48,8 +48,12 @@ export class SongsService {
     return this.http.delete<{ message: string }>(`${env.API_URL}/single/${content_id}`);
   }
 
-  listSingles(): Observable<SingleItem[]> {
-    return this.http.get<SingleItem[]>(`${env.API_URL}/single`);
+  listSingles(): Observable<Single[]> {
+    return this.http.get<Single[]>(`${env.API_URL}/single`);
+  }
+
+  get(content_id: string): Observable<Single> {
+    return this.http.get<Single>(`${env.API_URL}/single/${content_id}`);
   }
 
   updateSingle(content_id: string, payload: Partial<UploadCompletePayload>): Observable<{ message: string; cover_upload_url?: string; audio_upload_url?: string }> {

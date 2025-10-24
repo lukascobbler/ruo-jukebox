@@ -3,15 +3,15 @@ import {Artist} from './Artist';
 
 export interface Song {
   song_id: string;
-  no?: number;
+  pos?: number;
   name: string;
   album: string;
-  albumId: string;
-  artistId: string;
+  album_id?: string;
+  single_id?: string;
   duration: number;
   lyrics: string;
   genres: Genre[];
   artists: Artist[];
-  cover_url: string;
+  cover_url?: string;
   audio_url: string;
 }

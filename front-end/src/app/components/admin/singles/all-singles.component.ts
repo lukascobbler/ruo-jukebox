@@ -10,7 +10,7 @@ import {Component, inject, OnInit} from '@angular/core';
 import {MatIconButton} from '@angular/material/button';
 import {NgIf} from '@angular/common';
 import {lastValueFrom} from 'rxjs';
-import {SingleItem} from '../../../models/Single';
+import {Single} from '../../../models/Single';
 
 @Component({
   selector: 'app-all-singles',
@@ -32,7 +32,7 @@ export class AllSinglesComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
 
   displayedColumns = ['cover', 'name', 'artists', 'genres', 'actions'];
-  singlesDataSource: SingleItem[] = [];
+  singlesDataSource: Single[] = [];
   loading = false;
 
   ngOnInit() {
@@ -64,7 +64,7 @@ export class AllSinglesComponent implements OnInit {
     });
   }
 
-  async deleteSong(single: SingleItem): Promise<void> {
+  async deleteSong(single: Single): Promise<void> {
     try {
       this.loading = true;
       await lastValueFrom(this.songsService.deleteSingle(single.content_id));
@@ -76,7 +76,7 @@ export class AllSinglesComponent implements OnInit {
     }
   }
 
-  updateSong(single: SingleItem): void {
+  updateSong(single: Single): void {
     const dialogRef = this.dialog.open(CreateSingleDialogComponent, {
       minWidth: '900px',
       data: {
@@ -96,15 +96,15 @@ export class AllSinglesComponent implements OnInit {
     });
   }
 
-  getGenreNames(single: SingleItem): string {
+  getGenreNames(single: Single): string {
     return single.genres?.map(g => g.name).join(', ') || '';
   }
 
-  getArtistNames(single: SingleItem): string {
+  getArtistNames(single: Single): string {
     return single.artists?.map(a => a.name).join(', ') || '';
   }
 
-  playSong(single: SingleItem): void {
+  playSong(single: Single): void {
     this.player.play(single);
   }
 }

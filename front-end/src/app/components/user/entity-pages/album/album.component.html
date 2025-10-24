@@ -1,11 +1,22 @@
-<div class="container">
+<div *ngIf="loading" class="loading">
+  <mat-spinner></mat-spinner>
+</div>
+<div *ngIf="!loading" class="container">
   <button (click)="auth.logout(); playerService.destroy();" class="logout-button orange-button">Logout</button>
 
   <div class="album">
     <div class="text-and-image">
-      <app-box-missing-icon-small [icon_name]="'album'" />
-<!--      <p class="big-text">{{ album.name }}</p>-->
+      <img *ngIf="this.album!.cover_url; else missingCover" [src]="this.album!.cover_url" alt="cover" class="cover-picture"/>
+      <ng-template #missingCover>
+        <app-box-missing-icon-small [icon_name]="'album'" class="cover-no-picture"></app-box-missing-icon-small>
+      </ng-template>
+      <p class="big-text">{{ album!.name }}</p>
     </div>
-    <app-song-table class="song-table" [recommendedSongsDataSource]="[]" [showAlbum]="false" />
+    <div class="song-table" *ngIf="album!.songs">
+      <app-song-table [songs]="album!.songs" [showAlbum]="false" />
+    </div>
+    <div class="no-content" *ngIf="!album!.songs">
+      <p>No content</p>
+    </div>
   </div>
 </div>

@@ -4,7 +4,7 @@ import {
 } from "../../../common/missing-icons/box/missing-icon-x-large/box-missing-icon-x-large.component";
 import {NgClass, NgForOf, NgIf} from "@angular/common";
 import {ReactiveFormsModule} from "@angular/forms";
-import {Album} from '../../../../models/album/Album';
+import {Album} from '../../../../models/Album';
 import {Artist} from '../../../../models/Artist';
 import {
   RoundMissingIconSmallComponent

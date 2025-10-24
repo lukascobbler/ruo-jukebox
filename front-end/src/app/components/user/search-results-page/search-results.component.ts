@@ -15,7 +15,7 @@ import {SearchService} from '../../../services/search/search.service';
 import {SearchResult} from '../../../models/SearchResult';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {filter, Subscription} from 'rxjs';
-import {Album} from '../../../models/album/Album';
+import {Album} from '../../../models/Album';
 import {Song} from '../../../models/Song';
 import {PlayerService} from '../../../services/player/player.service';
 
@@ -49,19 +49,6 @@ export class SearchResultsComponent implements OnInit {
   searchTerm: string = "";
 
   ngOnInit() {
-    const containers = document.querySelectorAll('.horizontal-scroller');
-
-    containers.forEach(container => {
-      container.addEventListener(
-        'wheel',
-        e => {
-          e.preventDefault();
-          (container as HTMLElement).scrollLeft += (e as WheelEvent).deltaY;
-        },
-        { passive: false }
-      );
-    });
-
     this.searchTerm = this.route.snapshot.params['query'];
     this.routeSubscription = this.route.paramMap.subscribe(params => {
       if (params.get('query')) {
@@ -77,6 +64,7 @@ export class SearchResultsComponent implements OnInit {
       next: value => {
         this.searchResult = value;
         this.loading = false;
+        setTimeout(() => this.applyHorizontalScrollBar(), 100);
       },
       error: err => {
         this.loading = false;
@@ -87,5 +75,20 @@ export class SearchResultsComponent implements OnInit {
 
   getArtists(item: Album | Song) {
     return item.artists.map(a => a.name).join(" ")
+  }
+
+  applyHorizontalScrollBar() {
+    const containers = document.querySelectorAll('.horizontal-scroller');
+
+    containers.forEach(container => {
+      container.addEventListener(
+        'wheel',
+        e => {
+          e.preventDefault();
+          (container as HTMLElement).scrollLeft += (e as WheelEvent).deltaY;
+        },
+        { passive: false }
+      );
+    });
   }
 }

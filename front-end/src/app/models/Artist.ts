@@ -1,6 +1,6 @@
 import {Genre} from './Genre';
 import {Song} from './Song';
-import {Album} from './album/Album';
+import {Album} from './Album';
 
 export interface Artist {
   artist_id: string;

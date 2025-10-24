@@ -1,8 +1,8 @@
 <div class="container">
-  <mat-table [dataSource]="recommendedSongsDataSource">
+  <mat-table [dataSource]="songs">
     <ng-container *ngIf="showNumber" matColumnDef="no">
       <mat-header-cell class="no" *matHeaderCellDef>#</mat-header-cell>
-      <mat-cell class="no" *matCellDef="let song">{{ song.no }}</mat-cell>
+      <mat-cell class="no" *matCellDef="let song">{{ parseInt(song.pos, 10) + 1 }}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="title">
@@ -23,7 +23,7 @@
       }"
         *matCellDef="let song">
         <div class="title-and-artist">
-          <p class="song-title">{{ song.title }}</p>
+          <p class="song-title">{{ song.name }}</p>
           <p class="clickable-text song-artist" (click)="router.navigate(['artist', song.artistId])"><u>{{ song.artist }}</u></p>
         </div>
       </mat-cell>
@@ -53,7 +53,7 @@
         'only-title': !showNumber && !showAlbum
       }"
         *matCellDef="let song">
-        {{ song.duration }}
+        {{ formatDuration(song.duration) }}
       </mat-cell>
     </ng-container>
 
@@ -82,7 +82,7 @@
         <button (click)="addToPlaylist(song)" mat-icon-button>
           <span class="material-symbols-rounded">playlist_add</span>
         </button>
-        <button mat-icon-button>
+        <button (click)="playSong(song)" mat-icon-button>
           <span class="material-symbols-rounded play">play_arrow</span>
         </button>
       </mat-cell>
