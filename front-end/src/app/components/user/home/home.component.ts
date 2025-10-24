@@ -15,6 +15,8 @@ import {SearchComponent} from '../search/search.component';
 import {AuthService} from '../../../services/auth/auth.service';
 import {Song} from '../../../models/Song';
 import {PlayerService} from '../../../services/player/player.service';
+import { FeedService } from '../../../services/feed/feed.service';
+import { ToastrService } from '../../../services/toastr/toastr.service';
 
 @Component({
   selector: 'app-home',
@@ -36,12 +38,22 @@ export class HomeComponent implements OnInit {
   router = inject(Router);
   auth = inject(AuthService);
   playerService = inject(PlayerService);
-
+  feedService = inject(FeedService);
   albums: Album[] = [];
-
+  songs: Song[] = []
   artists: Artist[] = [];
-
+  toast = inject(ToastrService)
   ngOnInit() {
+    this.feedService.get().subscribe({
+      next: value => {
+        this.songs = value.songs;
+        this.artists = value.artists
+        this.albums = value.albums
+      },
+      error: err => {
+        this.toast.error("Error", "Error loading feed: " + err);
+      }
+    })
     const containers = document.querySelectorAll('.horizontal-scroller');
 
     containers.forEach(container => {

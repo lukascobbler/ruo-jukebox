@@ -26,8 +26,9 @@ def create_songs(album_or_single_id: str, songs: list[dict]):
                 batch.put_item(Item={**song, "PK": a["artist_id"], "SK": f"CONTENT~{song_id}"})
             for g in song["genres"]:
                 batch.put_item(Item={**song, "PK": g["genre_id"], "SK": f"CONTENT~{song_id}"})
-            song["content_type"] = "SONG"
             batch.put_item(Item={**song, "PK": album_or_single_id, "SK": f"POS~{pos}~{song_id}"})
+            song["content_type"] = "SONG"
+            batch.put_item(Item={**song, "PK": song_id, "SK": f"META"})
 
 
 def create_album(album_id, name, artists, genres, cover_key):

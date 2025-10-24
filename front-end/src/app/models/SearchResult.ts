@@ -4,7 +4,7 @@ import {Artist} from './Artist';
 import {Single} from './Single';
 
 export interface SearchResult {
-  singles: Song[];
+  songs: Song[];
   albums: Album[];
   artists: Artist[];
 }

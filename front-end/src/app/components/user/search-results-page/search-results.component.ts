@@ -45,7 +45,7 @@ export class SearchResultsComponent implements OnInit {
   playerService = inject(PlayerService);
 
   loading = true;
-  searchResult: SearchResult = {albums: [], singles: [], artists: []};
+  searchResult: SearchResult = {albums: [], songs: [], artists: []};
   searchTerm: string = "";
 
   ngOnInit() {
