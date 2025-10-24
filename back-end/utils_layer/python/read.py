@@ -44,7 +44,6 @@ def get_contents(content_ids: list[str]):
     keys = [{"PK": cid, "SK": "META"} for cid in content_ids]
     return batch_get_items(content_table, keys)
 
-
 # all genres
 def list_genres():
     return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("GENRE") & Key("SK").eq("META"))
@@ -133,3 +132,16 @@ def get_rating(user_id: str, song_id: str):
 # rating for a song
 def get_rating_by_song(song_id: str):
     return query_all(userdata_table, IndexName="ratingBySong", KeyConditionExpression=Key("song_id").eq(song_id))
+
+# read from feed
+def get_feed(user_id: str):
+    items = query_all(
+        feed_table,
+        KeyConditionExpression=Key("user_id").eq(user_id)
+    )
+    if not items:
+        return []
+    for it in items:
+        if "feed" in it and isinstance(it["feed"], list):
+            return it["feed"]
+    return []
