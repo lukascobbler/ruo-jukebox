@@ -11,7 +11,8 @@ PERIODS_OF_DAY = 4
 
 
 def _get_period_from_timestamp(timestamp: int, splits: int, tz: str = "Europe/Belgrade") -> int:
-    if splits <= 0: return 0
+    if splits <= 0:
+        return 0
     hour = datetime.fromtimestamp(timestamp, ZoneInfo(tz)).hour
     period = int(hour * splits / 24)
     return min(period, splits - 1)
@@ -21,7 +22,7 @@ def _preprocess_user_interactions(user_id: str, interactions: list):
     ts_values, result, seen = [], {}, set()
     for item in interactions:
         if "ts" in item:
-            ts_values.append(item["ts"])
+            ts_values.append(int(item["ts"]))
         song_id = item.get("song_id")
         if song_id and song_id not in seen:
             seen.add(song_id)
@@ -50,11 +51,11 @@ def lambda_handler(event, context):
 
             for period in range(PERIODS_OF_DAY):
                 for inter in interactions:
-                    ts = inter.get("ts", 0)
+                    ts = int(inter.get("ts", "0"))
                     time_of_day = 1.5 if _get_period_from_timestamp(ts, PERIODS_OF_DAY) == period else 1
                     freshness = 1 + (ts - min_ts) / ts_diff
                     liking = 1 + ratings[inter["song_id"]] if ("song_id" in inter) and inter["song_id"] in ratings else 1
-                    value = inter["value"] * time_of_day * freshness * liking
+                    value = float(inter["value"]) * time_of_day * freshness * liking
 
                     if "artist_id" in inter:
                         seen["artists"][inter["artist_id"]] = seen["artists"].get(inter["artist_id"], 0) + value
@@ -109,10 +110,9 @@ def lambda_handler(event, context):
                 if songs_missing > 0:
                     myb_seen["songs"] += list_songs_n(songs_missing)
 
-                feeds += myb_seen
+                feeds.append(myb_seen)
 
             create_feeds(user_id, feeds)
-
 
         except Exception as e:
             print(e)

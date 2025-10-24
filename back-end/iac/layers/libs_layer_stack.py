@@ -9,7 +9,7 @@ class LibsLayerStack(NestedStack):
         self.libs_layer = aws_lambda.LayerVersion(
             self, "LibsLayer",
             layer_version_name="libs_layer",
-            code=aws_lambda.Code.from_asset("libs_layer", asset_hash="libs_layer_v2"),
+            code=aws_lambda.Code.from_asset("libs_layer", asset_hash="libs_layer_v3"),
             compatible_runtimes=[aws_lambda.Runtime.PYTHON_3_11],
             description="Libs dependencies shared for all lambdas"
         )

@@ -12,7 +12,7 @@
         <mat-cell class="cover" *matCellDef="let artist">
           <img *ngIf="artist.cover_url; else missingCover" [src]="artist.cover_url" alt="cover" class="cover-picture"/>
           <ng-template #missingCover>
-            <app-round-missing-icon-small [icon_name]="'music_note'" class="cover-no-picture"></app-round-missing-icon-small>
+            <app-round-missing-icon-small [icon_name]="'artist'" class="cover-no-picture"></app-round-missing-icon-small>
           </ng-template>
         </mat-cell>
       </ng-container>

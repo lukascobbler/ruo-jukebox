@@ -95,7 +95,7 @@ def lambda_handler(event, context):
     sqs.send_message(QueueUrl=SUB_SQS_QUEUE_URL, MessageBody=json.dumps(msg))
 
     user_ids = _gather_subscriber_user_ids(artist_ids, genre_ids)
-    entries = [{"Id": i, "MessageBody": user_id} for i, user_id in enumerate(user_ids)]
+    entries = [{"Id": str(i), "MessageBody": user_id} for i, user_id in enumerate(user_ids)]
     if entries:
         sqs.send_message_batch(QueueUrl=FEED_SQS_QUEUE_URL, Entries=entries)
 

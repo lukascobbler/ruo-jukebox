@@ -40,14 +40,21 @@ def lambda_handler(event, context):
     artist_ids = body.get("artists")
     genre_ids = body.get("genres")
 
-    if not album_id: return response(400, error="Field 'album_id' is required")
-    if not name: return response(400, error="Field 'name' is required")
+    artist_ids = list(set(artist_ids))
+    genre_ids = list(set(genre_ids))
+
+    if not album_id:
+        return response(400, error="Field 'album_id' is required")
+    if not name:
+        return response(400, error="Field 'name' is required")
 
     artists, message = get_artist_objects(artist_ids)
-    if artists is None: return response(400, error=message)
+    if artists is None:
+        return response(400, error=message)
 
     genres, message = get_genre_objects(genre_ids)
-    if genres is None: return response(400, error=message)
+    if genres is None:
+        return response(400, error=message)
 
     cover_key = f"albums/{album_id}.jpg"
     if not file_exists_on_s3(IMAGES_BUCKET, cover_key):
@@ -60,17 +67,25 @@ def lambda_handler(event, context):
         song_id = song["song_id"]
         audio_key = f"songs/{song_id}.mp3"
         name = song["name"]
-        artists = song["artists"]
-        genres = song["genres"]
+        song_artist_ids = song["artists"]
+        song_genre_ids = song["genres"]
+
+        artist_ids.extend(song_artist_ids)
+        genre_ids.extend(song_genre_ids)
+
+        artist_ids = list(set(artist_ids))
+        genre_ids = list(set(genre_ids))
 
         if not file_exists_on_s3(AUDIO_BUCKET, audio_key):
             return response(400, error=f"Song audio for {song_id} not found")
 
-        artists, message = get_artist_objects(artists)
-        if not artists: return response(400, error=message)
+        artists, message = get_artist_objects(song_artist_ids)
+        if not artists:
+            return response(400, error=message)
 
-        genres, message = get_genre_objects(genres)
-        if genres is None: return response(400, error=message)
+        genres, message = get_genre_objects(song_genre_ids)
+        if genres is None:
+            return response(400, error=message)
 
         audio_url = generate_s3_download_url(AUDIO_BUCKET, audio_key)
         mp3_response = requests.get(audio_url)
@@ -107,7 +122,7 @@ def lambda_handler(event, context):
     sqs.send_message(QueueUrl=SUB_SQS_QUEUE_URL, MessageBody=json.dumps(msg))
 
     user_ids = _gather_subscriber_user_ids(artist_ids, genre_ids)
-    entries = [{"Id": i, "MessageBody": user_id} for i, user_id in enumerate(user_ids)]
+    entries = [{"Id": str(i), "MessageBody": user_id} for i, user_id in enumerate(user_ids)]
     if entries:
         sqs.send_message_batch(QueueUrl=FEED_SQS_QUEUE_URL, Entries=entries)
 
