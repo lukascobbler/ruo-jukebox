@@ -121,9 +121,13 @@ export class PlayerComponent implements OnInit, OnDestroy {
     if (!songId) return;
     const prev = this.starRating;
     this.starRating = starRating;
-
+    const item = this.currentlyPlayingSong;
+    const artistIds: string[] = (item.artists ?? []).map(a => a.artist_id);
+    const genreIds: string[] = (item.genres ?? []).map((g: any) => g.genre_id ?? g.id ?? g.name).filter(Boolean);
+      const albumId: string | null =
+    ('albumId' in item && item.albumId) ? item.albumId : null;
     this.subs.push(
-      this.ratingsService.set(songId, starRating).subscribe({
+      this.ratingsService.set(songId, starRating, artistIds, genreIds, albumId).subscribe({
         next: () => {},
         error: (err) => { this.starRating = prev; console.error('Failed to set rating', err); }
       })

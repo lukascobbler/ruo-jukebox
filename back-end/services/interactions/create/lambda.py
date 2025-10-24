@@ -11,5 +11,6 @@ def lambda_handler(event, context):
     artist_ids = body.get('artist_ids')
     genre_ids = body.get('genre_ids')
     album_id = body.get('album_id', None)
-    result = create_interaction(user_id, song_id, artist_ids, genre_ids, album_id)
+    value = body.get('value')
+    result = create_interaction(user_id, song_id, artist_ids, genre_ids,value, album_id)
     return response(201, result)

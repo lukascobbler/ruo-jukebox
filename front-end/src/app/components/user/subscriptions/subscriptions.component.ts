@@ -101,7 +101,12 @@ export class SubscriptionsComponent implements OnInit {
     if (this.busyTopics.has(row.topic)) return;
     this.busyTopics.add(row.topic);
     try {
-      await firstValueFrom(this.subsService.delete(row.topic));
+      if(row.type === 'artist'){
+        await firstValueFrom(this.subsService.delete(row.topic, null,[row.topic],[],null));
+      }else{
+        await firstValueFrom(this.subsService.delete(row.topic, null,[],[row.topic],null));
+      }
+      
       this.subscribedToDataSource = this.subscribedToDataSource.filter(r => r.topic !== row.topic);
       this.toast.success('Unsubscribed', row.subscriptionName);
     } catch (err: any) {

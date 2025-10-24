@@ -168,7 +168,7 @@ def create_subscription(user_id, target_id):
     return item
 
 
-def create_interaction(user_id, song_id, artist_ids, genre_ids, album_id=None, ttl_hours=24):
+def create_interaction(user_id, song_id, artist_ids, genre_ids, value, album_id=None, ttl_hours=24):
     ts = int(time.time())
     ttl = ts + ttl_hours * 3600
     item = {"user_id": user_id, "ts": str(ts), "ttl": ttl}
@@ -176,6 +176,7 @@ def create_interaction(user_id, song_id, artist_ids, genre_ids, album_id=None, t
     item["song_id"] = song_id
     if album_id: item["album_id"] = album_id
     item["genre_ids"] = genre_ids
+    item["value"] = int(value)
     interactions_table.put_item(Item=item)
     return item
 

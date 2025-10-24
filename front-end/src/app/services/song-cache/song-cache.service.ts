@@ -5,6 +5,7 @@ import {map, switchMap, catchError, tap} from 'rxjs/operators';
 import {CacheService} from '../cache/cache.service';
 import {AuthService} from '../auth/auth.service';
 import {env} from '../../../environments/environment';
+import { InteractionsService } from '../interactions/interactions.service';
 
 type CreateInteractionRequest = {
   songId: string;
@@ -19,27 +20,7 @@ export class SongCacheService {
   private readonly http = inject(HttpClient);
   private readonly INTERACTIONS_URL = `${env.API_URL}/interactions`;
   private readonly auth = inject(AuthService);
-
-  private createInteraction(
-    songId: string,
-    artistIds: string[] = [],
-    genreIds: string[] = [],
-    albumId: string | null = null
-  ): Observable<void> {
-    const body: CreateInteractionRequest = {
-      songId,
-      artist_ids: artistIds ?? [],
-      genre_ids: genreIds ?? [],
-      album_id: albumId ?? null,
-    };
-
-    return this.http.post<void>(this.INTERACTIONS_URL, body).pipe(
-      catchError((err) => {
-        console.warn('Failed to create interaction:', err);
-        return of(void 0);
-      })
-    );
-  }
+  private readonly interaction = inject(InteractionsService)
 
   cacheSong(songId: string, audioUrl: string): Observable<void> {
     return this.http.get(audioUrl, {responseType: 'blob'}).pipe(
@@ -83,14 +64,10 @@ export class SongCacheService {
   ): Observable<{ url: string; fromCache: boolean }> {
     return this.cache.get(songId).pipe(
       tap(() => {
-        if (!this.auth.isAdmin()) {
-          console.log('New interaction')
-          this.createInteraction(
-            songId,
-            artistIds,
-            genreIds,
-            albumId
-          ).subscribe();
+        if (this.auth.isAdmin()) {
+          this.interaction
+          .create(songId,artistIds,genreIds,albumId,1)
+          .subscribe();
         }
       }),
       map((blob) => {

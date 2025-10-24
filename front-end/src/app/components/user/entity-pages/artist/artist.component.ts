@@ -98,9 +98,9 @@ export class ArtistComponent implements OnInit {
 
     try {
       if (prev) {
-        await firstValueFrom(this.subsService.delete(topic));
+        await firstValueFrom(this.subsService.delete(topic, null,[topic],[],null));
       } else {
-        await firstValueFrom(this.subsService.create(topic));
+        await firstValueFrom(this.subsService.create(topic, null,[topic],[],null));
       }
       this.toast.success(prev ? 'Unsubscribed' : 'Subscribed', this.artist!.name);
     } catch (err: any) {
