@@ -54,4 +54,8 @@ export class ArtistsService {
   get(artistId: string): Observable<Artist> {
     return this.http.get<Artist>(`${env.API_URL}/artists/${artistId}`)
   }
+
+  deleteArtist(artist_id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${env.API_URL}/artists/${artist_id}`);
+  }
 }

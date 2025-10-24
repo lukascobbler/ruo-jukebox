@@ -31,6 +31,8 @@ import {
 import {
   RoundMissingIconSmallComponent
 } from '../../common/missing-icons/round/round-missing-icon-small/round-missing-icon-small.component';
+import {Single} from '../../../models/Single';
+import {lastValueFrom} from 'rxjs';
 
 @Component({
   selector: 'app-all-artists',
@@ -96,6 +98,18 @@ export class AllArtistsComponent implements OnInit {
         this.toast.error('Genres error', msg);
       },
     });
+  }
+
+  async deleteArtist(artist: Artist): Promise<void> {
+    try {
+      this.loading = true;
+      await lastValueFrom(this.artistsService.deleteArtist(artist.artist_id));
+      this.toast.success('Deleted', 'Artist deleted successfully');
+      this.fetchArtists();
+    } catch {
+      this.loading = false;
+      this.toast.error('Error', 'Failed to delete artist');
+    }
   }
 
   getArtistGenres(artist: Artist) {
