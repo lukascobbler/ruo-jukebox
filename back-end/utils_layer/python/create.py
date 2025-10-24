@@ -47,7 +47,7 @@ def create_album(album_id, name, artists, genres, cover_key):
             batch.put_item(Item={**core_album, "PK": a["artist_id"], "SK": f"CONTENT~{album_id}"})
         for g in genres:
             batch.put_item(Item={**core_album, "PK": g["genre_id"], "SK": f"CONTENT~{album_id}"})
-        core_album["content_type"] = "ALBUM",
+        core_album["content_type"] = "ALBUM"
         batch.put_item(Item={**core_album, "PK": album_id, "SK": "META"})
 
     return core_album
@@ -72,7 +72,7 @@ def create_single(single_id, name, artists, genres, audio_key, cover_key, song_i
             batch.put_item(Item={**core_single, "PK": a["artist_id"], "SK": f"CONTENT~{single_id}"})
         for g in genres:
             batch.put_item(Item={**core_single, "PK": g["genre_id"], "SK": f"CONTENT~{single_id}"})
-        core_single["content_type"] = "SINGLE",
+        core_single["content_type"] = "SINGLE"
         batch.put_item(Item={**core_single, "PK": single_id, "SK": "META"})
 
     return core_single
