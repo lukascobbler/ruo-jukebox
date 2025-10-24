@@ -4,6 +4,7 @@ from pre_authorize import pre_authorize
 import os
 
 IMAGES_BUCKET = os.environ["IMAGES_BUCKET"]
+AUDIO_BUCKET = os.environ["AUDIO_BUCKET"]
 
 
 @pre_authorize(['Admin', 'User'])
@@ -19,7 +20,7 @@ def lambda_handler(event, context):
 
     all_songs_for_album = songs_for_album(album_id.strip())
     for song in all_songs_for_album:
-        song["audio_url"] = generate_s3_download_url(IMAGES_BUCKET, song["audio_key"])
+        song["audio_url"] = generate_s3_download_url(AUDIO_BUCKET, song["audio_key"])
 
     album["songs"] = all_songs_for_album
 
