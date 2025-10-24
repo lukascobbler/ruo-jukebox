@@ -1,12 +1,14 @@
 from pre_authorize import pre_authorize
 from read import search
 from general_utils import response
+from urllib.parse import unquote
 
 
 @pre_authorize(["Admin", "User"])
 def lambda_handler(event, context):
     path_params = event.get("pathParameters") or {}
     query = path_params.get("query")
+    query = unquote(query)
 
     if not query:
         return response(400, error="Missing query")
