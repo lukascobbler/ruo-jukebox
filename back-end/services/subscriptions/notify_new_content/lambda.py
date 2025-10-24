@@ -57,7 +57,7 @@ def _send_email_jobs(to_emails, payload):
 
 
 def lambda_handler(event, context):
-    for record in event.get("Reco..rds", []):
+    for record in event.get("Records", []):
         try:
             body = json.loads(record["body"])
         except Exception:
