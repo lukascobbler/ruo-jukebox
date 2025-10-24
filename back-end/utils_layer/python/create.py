@@ -183,7 +183,7 @@ def create_interaction(user_id, song_id, artist_ids, genre_ids, value, album_id=
     return item
 
 
-def create_feed_item(user_id, content_id):
-    item = {"user_id": user_id, "content_id": content_id}
+def create_feeds(user_id, feeds):
+    item = {"user_id": user_id, "feeds": feeds}
     feed_table.put_item(Item=item)
     return item

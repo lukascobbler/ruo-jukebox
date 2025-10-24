@@ -22,6 +22,19 @@ def query_all(table, **kwargs):
     return items
 
 
+def query_n(table, limit, **kwargs):
+    items, start_key = [], None
+    while len(items) < limit:
+        if start_key:
+            kwargs["ExclusiveStartKey"] = start_key
+        resp = table.query(**kwargs)
+        items.extend(resp.get("Items", []))
+        if len(items) >= limit or "LastEvaluatedKey" not in resp:
+            break
+        start_key = resp["LastEvaluatedKey"]
+    return items[:limit]
+
+
 def batch_get_items(table, keys):
     client = table.meta.client
     results = []
@@ -35,7 +48,7 @@ def batch_get_items(table, keys):
 
 
 # get content with id
-def get_content(content_id):
+def get_content(content_id: str):
     return query_all(content_table, KeyConditionExpression=Key("PK").eq(content_id) & Key("SK").eq("META"))[0]
 
 
@@ -43,6 +56,7 @@ def get_content(content_id):
 def get_contents(content_ids: list[str]):
     keys = [{"PK": cid, "SK": "META"} for cid in content_ids]
     return batch_get_items(content_table, keys)
+
 
 # all genres
 def list_genres():
@@ -62,6 +76,18 @@ def list_singles():
 # all albums
 def list_albums():
     return query_all(content_table, IndexName="byType", KeyConditionExpression=Key("content_type").eq("ALBUM") & Key("SK").eq("META"))
+
+
+def list_artists_n(n):
+    return query_n(content_table, n, IndexName="byType", KeyConditionExpression=Key("content_type").eq("ARTIST") & Key("SK").eq("META"))
+
+
+def list_albums_n(n):
+    return query_n(content_table, n, IndexName="byType", KeyConditionExpression=Key("content_type").eq("ALBUM") & Key("SK").eq("META"))
+
+
+def list_songs_n(n):
+    return query_n(content_table, n, IndexName="byType", KeyConditionExpression=Key("content_type").eq("SONG") & Key("SK").eq("META"))
 
 
 # all albums and artists for a given genre (discovery page)
@@ -85,6 +111,30 @@ def artist_releases(artist_id: str):  # e.g. 'ARTIST~{UUID}'
             res["singles"].append(item)
         elif item["SK"].startswith("CONTENT~ALBUM~"):
             res["albums"].append(item)
+    return res
+
+
+def artists_all_content_feed(artist_id: str):  # e.g. 'ARTIST~{UUID}'
+    items = query_all(content_table, KeyConditionExpression=Key("PK").eq(artist_id) & Key("SK").begins_with("CONTENT~"))
+    res = {"songs": [], "albums": []}
+    for item in items:
+        if item["SK"].startswith("CONTENT~SONG~"):
+            res["songs"].append(item)
+        elif item["SK"].startswith("CONTENT~ALBUM~"):
+            res["albums"].append(item)
+    return res
+
+
+def genre_all_content_feed(genre_id: str):  # e.g. 'GENRE~{UUID}'
+    items = query_all(content_table, KeyConditionExpression=Key("PK").eq(genre_id) & Key("SK").begins_with("CONTENT~"))
+    res = {"artists": [], "albums": [], "songs": []}
+    for item in items:
+        if item["SK"].startswith("CONTENT~ARTIST~"):
+            res["artists"].append(item)
+        elif item["SK"].startswith("CONTENT~ALBUM~"):
+            res["albums"].append(item)
+        elif item["SK"].startswith("CONTENT~SONG~"):
+            res["songs"].append(item)
     return res
 
 
@@ -133,15 +183,17 @@ def get_rating(user_id: str, song_id: str):
 def get_rating_by_song(song_id: str):
     return query_all(userdata_table, IndexName="ratingBySong", KeyConditionExpression=Key("song_id").eq(song_id))
 
+
 # read from feed
-def get_feed(user_id: str):
-    items = query_all(
-        feed_table,
-        KeyConditionExpression=Key("user_id").eq(user_id)
-    )
+def get_feeds(user_id: str):
+    items = query_all(feed_table, KeyConditionExpression=Key("user_id").eq(user_id))
     if not items:
         return []
     for it in items:
-        if "feed" in it and isinstance(it["feed"], list):
-            return it["feed"]
+        if "feeds" in it and isinstance(it["feeds"], list):
+            return it["feeds"]
     return []
+
+
+def get_interactions(user_id: str):
+    return query_all(interactions_table, KeyConditionExpression=Key("user_id").eq(user_id))
