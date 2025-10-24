@@ -104,11 +104,20 @@ export class SongTableComponent implements OnInit {
     this.songCache.downloadCachedSong(song.content_id, song.name).subscribe({
       next: () => console.log('Download started'),
       error: () => {
-        // Fallback to direct download if not cached
-        const a = document.createElement('a');
-        a.href = song.audio_url;
-        a.download = `${song.name}.mp3`;
-        a.click();
+        fetch(song.audio_url)
+          .then(res => res.blob())
+          .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${song.name}.mp3`;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          })
+          .catch(err => console.error('Download failed', err));
       }
     });
   }
