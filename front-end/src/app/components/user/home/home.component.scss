@@ -102,3 +102,13 @@ p {
   }
 }
 
+.cover-picture-big {
+  width: 164px;
+  height: 164px;
+  border-radius: 5px;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+  margin: 6px 0;
+}

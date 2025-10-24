@@ -1,4 +1,7 @@
-<div class="container">
+<div *ngIf="loading" class="loading">
+  <mat-spinner></mat-spinner>
+</div>
+<div *ngIf="!loading" class="container">
   <button (click)="auth.logout(); playerService.destroy();" class="logout-button orange-button">Logout</button>
   <div class="search-container">
     <div class="search">
@@ -12,7 +15,10 @@
       <div class="recommended-albums horizontal-scroller">
         <div *ngFor="let album of albums" class="single-album">
           <button class="icon-button" (click)="router.navigate(['musical-content', album.content_id])">
-            <app-box-missing-icon-x-large [icon_name]="'album'" />
+            <img *ngIf="album.cover_url; else missingCoverAlbum" [src]="album.cover_url" alt="cover" class="cover-picture-big"/>
+            <ng-template #missingCoverAlbum>
+              <app-box-missing-icon-x-large [icon_name]="'album'" class="cover-no-picture"></app-box-missing-icon-x-large>
+            </ng-template>
           </button>
           <p class="album-name">{{ album.name }}</p>
           <p class="artist-name">{{ getArtists(album) }}</p>
@@ -24,7 +30,10 @@
       <div class="recommended-artists horizontal-scroller">
         <div *ngFor="let artist of artists" class="single-artist">
           <button class="icon-button" (click)="router.navigate(['artist', artist.artist_id])">
-            <app-round-missing-icon-x-large [icon_name]="'artist'" />
+            <img *ngIf="artist.cover_url; else missingCoverArtist" [src]="artist.cover_url" alt="cover" class="cover-picture-big"/>
+            <ng-template #missingCoverArtist>
+              <app-round-missing-icon-x-large [icon_name]="'artist'" class="cover-no-picture"></app-round-missing-icon-x-large>
+            </ng-template>
           </button>
           <p class="artist-name">{{ artist.name }}</p>
         </div>

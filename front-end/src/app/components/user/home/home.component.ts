@@ -1,5 +1,5 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {NgForOf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 import {SongTableComponent} from '../song-table/song-table.component';
 import {FormsModule} from '@angular/forms';
 import {
@@ -17,6 +17,7 @@ import {Song} from '../../../models/Song';
 import {PlayerService} from '../../../services/player/player.service';
 import { FeedService } from '../../../services/feed/feed.service';
 import { ToastrService } from '../../../services/toastr/toastr.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-home',
@@ -29,7 +30,9 @@ import { ToastrService } from '../../../services/toastr/toastr.service';
     RoundMissingIconXLargeComponent,
     BoxMissingIconXLargeComponent,
     RoundMissingIconXLargeComponent,
-    SearchComponent
+    SearchComponent,
+    NgIf,
+    MatProgressSpinner
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
@@ -42,6 +45,7 @@ export class HomeComponent implements OnInit {
   albums: Album[] = [];
   songs: Song[] = []
   artists: Artist[] = [];
+  loading = true;
   toast = inject(ToastrService)
   ngOnInit() {
     this.feedService.get().subscribe({
@@ -49,11 +53,20 @@ export class HomeComponent implements OnInit {
         this.songs = value.songs;
         this.artists = value.artists
         this.albums = value.albums
+        this.loading = false;
+        setTimeout(() => this.applyHorizontalBarScrolling(), 100)
       },
       error: err => {
         this.toast.error("Error", "Error loading feed: " + err);
       }
     })
+  }
+
+  getArtists(item: Album | Song) {
+    return item.artists.map(a => a.name).join(" ")
+  }
+
+  applyHorizontalBarScrolling() {
     const containers = document.querySelectorAll('.horizontal-scroller');
 
     containers.forEach(container => {
@@ -66,9 +79,5 @@ export class HomeComponent implements OnInit {
         { passive: false }
       );
     });
-  }
-
-  getArtists(item: Album | Song) {
-    return item.artists.map(a => a.name).join(" ")
   }
 }
