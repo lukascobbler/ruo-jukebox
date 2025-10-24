@@ -274,10 +274,24 @@ interactions_table = {
 ```python
 feed_table = {
     "user_id": "USER~{UUID}",
-    "feed": {
-        "artists": [artist_ids],
-        "albums": [album_ids],
-        "songs": [song_ids],
-    }
+    "feed": [
+        {
+            "artists": [artist_ids],
+            "albums": [album_ids],
+            "singles": [singles_ids],
+        }, {
+            "artists": [artist_ids],
+            "albums": [album_ids],
+            "singles": [singles_ids],
+        }, {
+            "artists": [artist_ids],
+            "albums": [album_ids],
+            "singles": [singles_ids],
+        }, {
+            "artists": [artist_ids],
+            "albums": [album_ids],
+            "singles": [singles_ids],
+        }
+    ]
 }
 ```
