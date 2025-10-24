@@ -74,7 +74,6 @@ class DynamoDbStack(NestedStack):
             self, "FeedTable",
             table_name=f"FeedTable{suffix}",
             partition_key=Attribute(name="user_id", type=AttributeType.STRING),
-            sort_key=Attribute(name="content_id", type=AttributeType.STRING),
             billing_mode=ddb.BillingMode.PAY_PER_REQUEST,
             removal_policy=RemovalPolicy.DESTROY
         )

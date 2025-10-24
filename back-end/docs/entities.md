@@ -278,21 +278,21 @@ feed_table = {
     "user_id": "USER~{UUID}",
     "feed": [
         {
-            "artists": [artist_ids],
-            "albums": [album_ids],
-            "songs": [singles_ids],
+            "artists": {{}},
+            "albums": [{}],
+            "songs": [{}],
         }, {
-            "artists": [artist_ids],
-            "albums": [album_ids],
-            "songs": [singles_ids],
+            "artists": [{}],
+            "albums": [{}],
+            "songs": [{}],
         }, {
-            "artists": [artist_ids],
-            "albums": [album_ids],
-            "songs": [singles_ids],
+            "artists": [{}],
+            "albums": [{}],
+            "songs": [{}],
         }, {
-            "artists": [artist_ids],
-            "albums": [album_ids],
-            "songs": [song_ids],
+            "artists": [{}],
+            "albums": [{}],
+            "songs": [{}],
         }
     ]
 }

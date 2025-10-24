@@ -1,5 +1,5 @@
 import {Component, inject, Input, OnInit} from '@angular/core';
-import {NgClass, NgIf} from '@angular/common';
+import {AsyncPipe, NgClass, NgIf} from '@angular/common';
 import {
   MatCell, MatCellDef,
   MatColumnDef,
@@ -17,6 +17,7 @@ import {Router} from '@angular/router';
 import {Artist} from '../../../models/Artist';
 import {PlayerService} from '../../../services/player/player.service';
 import { SongCacheService } from '../../../services/song-cache/song-cache.service';
+import { async, BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-song-table',
@@ -34,7 +35,8 @@ import { SongCacheService } from '../../../services/song-cache/song-cache.servic
     MatCellDef,
     MatIconButton,
     NgIf,
-    NgClass
+    NgClass,
+    AsyncPipe
   ],
   templateUrl: './song-table.component.html',
   styleUrl: './song-table.component.scss'
@@ -49,6 +51,7 @@ export class SongTableComponent implements OnInit {
   @Input() showAlbum = true;
 
   displayedColumns: string[] = [];
+  cachedSongs = new BehaviorSubject<Set<string>>(new Set());
 
   constructor(private dialog: MatDialog) {
   }
@@ -65,6 +68,19 @@ export class SongTableComponent implements OnInit {
 
     this.displayedColumns.push('duration');
     this.displayedColumns.push('actions');
+    this.checkCachedStatus();
+
+  }
+  private checkCachedStatus(): void {
+    this.songs.forEach(song => {
+      this.songCache.isCached(song.content_id).subscribe(isCached => {
+        if (isCached) {
+          const current = this.cachedSongs.value;
+          current.add(song.content_id);
+          this.cachedSongs.next(current);
+        }
+      });
+    });
   }
 
   addToPlaylist(song: Song) {
@@ -84,22 +100,33 @@ export class SongTableComponent implements OnInit {
     this.player.loadPlaylist(this.songs)
     this.player.play(song);
   }
-  downloadSongFile(song: Song){
-    this.songCache.smartDownload(song.content_id, song.name, song.audio_url).subscribe({
+  downloadSongFile(song: Song) {
+    this.songCache.downloadCachedSong(song.content_id, song.name).subscribe({
       next: () => console.log('Download started'),
-      error: (e) => console.error('Download failed', e),
+      error: () => {
+        // Fallback to direct download if not cached
+        const a = document.createElement('a');
+        a.href = song.audio_url;
+        a.download = `${song.name}.mp3`;
+        a.click();
+      }
     });
   }
-
-  cacheForOffline(song: Song){
-    console.log(song)
-      this.songCache.cacheSong(song.content_id, song.audio_url).subscribe({
-        next: () => console.log('Cached for offline:', song.content_id),
-        error: (e) => console.error('Failed to cache song', e),
-      });
+  cacheForOffline(song: Song) {
+    console.log('Caching song:', song);
+    this.songCache.cacheSong(song.content_id, song.audio_url).subscribe({
+      next: () => {
+        console.log('Cached for offline:', song.content_id);
+        // Update cached status
+        const current = this.cachedSongs.value;
+        current.add(song.content_id);
+        this.cachedSongs.next(current);
+      },
+      error: (e) => console.error('Failed to cache song', e),
+    });
   }
   protected readonly parseInt = parseInt;
-  isCached(song: Song){
-    return this.songCache.isCached(song.content_id);
+  isCached(song: Song): boolean {
+    return this.cachedSongs.value.has(song.content_id);
   }
 }

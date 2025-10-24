@@ -24,7 +24,7 @@ export class PlayerService {
     if (song) {
       this.index = this.playlist.findIndex(s => s.content_id === song.content_id);
       this.songCache.getSongUrl(song.content_id, song.audio_url).subscribe({
-        next: ({ url, fromCache}) => {
+        next: ({ url, fromCache }) => {
           this.audio.src = url;
           this.audio.load();
           this.audio.play();
@@ -32,7 +32,8 @@ export class PlayerService {
           console.log(`Playing song ${song.content_id} from ${fromCache ? 'cache' : 'S3'}`);
         },
         error: (err) => {
-          console.error('Failed to get song using cache service:', err);
+          console.error('Failed to get song URL:', err);
+          // Fallback to direct URL
           this.audio.src = song.audio_url;
           this.audio.load();
           this.audio.play();
