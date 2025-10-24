@@ -96,10 +96,10 @@ def songs_for_album(album_id: str):
 # search
 def search(query: str):
     items = query_all(content_table, IndexName="byName", KeyConditionExpression=Key("name_lc").eq(query.lower()))
-    res = {"singles": [], "albums": [], "artists": []}
+    res = {"songs": [], "albums": [], "artists": []}
     for item in items:
         if item["content_type"].startswith("SONG"):
-            res["singles"].append(item)
+            res["songs"].append(item)
         elif item["content_type"].startswith("ALBUM"):
             res["albums"].append(item)
         elif item["content_type"].startswith("ARTIST"):

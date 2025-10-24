@@ -22,9 +22,11 @@
     <div *ngIf="artist!.singles.length !== 0">
       <p class="big-text">Singles</p>
       <div class="singles horizontal-scroller">
-        <div *ngFor="let song of artist!.singles" class="single-song">
-          <app-box-missing-icon-x-large [icon_name]="'music_note'" />
-          <p class="song-name">{{ song.name }}</p>
+        <div *ngFor="let single of artist!.singles" class="single-song">
+          <button class="icon-button" (click)="router.navigate(['album', single.content_id])">
+            <app-box-missing-icon-x-large [icon_name]="'music_note'" />
+          </button>
+          <p class="song-name">{{ single.name }}</p>
         </div>
       </div>
     </div>

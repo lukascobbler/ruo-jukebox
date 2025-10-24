@@ -25,6 +25,7 @@ class SinglesStack(NestedStack):
     def _create_lambdas(self, dynamo_db, s3, libs_layer_stack, auth_layer_stack, utils_layer_stack, env, branch):
         lambda_defs = {
             "SingleInitUpload": "services/singles/init_upload",
+            "SingleGet": "services/singles/get",
             "SingleCompleteUpload": "services/singles/complete_upload",
             "SingleList": "services/singles/list",
             "SingleUpdate": "services/singles/update",
@@ -41,5 +42,6 @@ class SinglesStack(NestedStack):
         single.add_resource("complete-upload").add_method("POST", apigw.LambdaIntegration(self.lambdas["SingleCompleteUpload"]), **api.auth_kwargs)
         single.add_method("GET", apigw.LambdaIntegration(self.lambdas["SingleList"]), **api.auth_kwargs)
 
+        single_id.add_method("GET", apigw.LambdaIntegration(self.lambdas["SingleGet"]), **api.auth_kwargs)
         single_id.add_method("PATCH", apigw.LambdaIntegration(self.lambdas["SingleUpdate"]), **api.auth_kwargs)
         single_id.add_method("DELETE", apigw.LambdaIntegration(self.lambdas["SingleDelete"]), **api.auth_kwargs)
