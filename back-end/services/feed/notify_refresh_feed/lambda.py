@@ -34,86 +34,81 @@ def _preprocess_user_interactions(user_id: str, interactions: list):
 
 def lambda_handler(event, context):
     for record in event.get("Records", []):
-        try:
-            user_id = record["body"]
-            interactions = get_interactions(user_id)
-            min_ts, max_ts, ratings = _preprocess_user_interactions(user_id, interactions)
-            ts_diff = max_ts - min_ts
+        user_id = record["body"]
+        interactions = get_interactions(user_id)
+        min_ts, max_ts, ratings = _preprocess_user_interactions(user_id, interactions)
+        ts_diff = max_ts - min_ts
 
-            seen = {
-                "genres": {},
-                "artists": {},
-                "albums": {},
-                "songs": {}
+        seen = {
+            "genres": {},
+            "artists": {},
+            "albums": {},
+            "songs": {}
+        }
+
+        feeds = []
+
+        for period in range(PERIODS_OF_DAY):
+            for inter in interactions:
+                ts = int(inter.get("ts", "0"))
+                time_of_day = 1.5 if _get_period_from_timestamp(ts, PERIODS_OF_DAY) == period else 1
+                freshness = 1 + (ts - min_ts) / ts_diff
+                liking = 1 + int(ratings[inter["song_id"]]) if ("song_id" in inter) and inter["song_id"] in ratings else 1
+                value = float(inter["value"]) * time_of_day * freshness * liking
+
+                if "artist_id" in inter:
+                    seen["artists"][inter["artist_id"]] = seen["artists"].get(inter["artist_id"], 0) + value
+                if "album_id" in inter:
+                    seen["albums"][inter["album_id"]] = seen["albums"].get(inter["album_id"], 0) + value
+                if "genre_id" in inter:
+                    seen["genres"][inter["genre_id"]] = seen["genres"].get(inter["genre_id"], 0) + value
+                if "song_id" in inter:
+                    seen["songs"][inter["song_id"]] = seen["songs"].get(inter["song_id"], 0) + value
+
+            seen["artists"] = dict(sorted(seen["artists"].items(), key=lambda x: x[1], reverse=True)[CONNECT_ENTITIES_MAXIMUM:])
+            seen["genres"] = dict(sorted(seen["genres"].items(), key=lambda x: x[1], reverse=True)[CONNECT_ENTITIES_MAXIMUM:])
+            seen["songs"] = dict(sorted(seen["songs"].items(), key=lambda x: x[1], reverse=True)[CONNECT_ENTITIES_MAXIMUM:])
+            seen["albums"] = dict(sorted(seen["albums"].items(), key=lambda x: x[1], reverse=True)[CONNECT_ENTITIES_MAXIMUM:])
+
+            myb_seen = {
+                "artists": [],
+                "albums": [],
+                "songs": []
             }
 
-            feeds = []
+            for artist_id in seen["artists"]:
+                content = artists_all_content_feed(artist_id)
+                myb_seen["albums"] += content["albums"]
+                myb_seen["songs"] += content["songs"]
 
-            for period in range(PERIODS_OF_DAY):
-                for inter in interactions:
-                    ts = int(inter.get("ts", "0"))
-                    time_of_day = 1.5 if _get_period_from_timestamp(ts, PERIODS_OF_DAY) == period else 1
-                    freshness = 1 + (ts - min_ts) / ts_diff
-                    liking = 1 + ratings[inter["song_id"]] if ("song_id" in inter) and inter["song_id"] in ratings else 1
-                    value = float(inter["value"]) * time_of_day * freshness * liking
+            for genre_id in seen["genres"]:
+                content = genre_all_content_feed(genre_id)
+                myb_seen["artists"] += content["artists"]
+                myb_seen["albums"] += content["albums"]
+                myb_seen["songs"] += content["songs"]
 
-                    if "artist_id" in inter:
-                        seen["artists"][inter["artist_id"]] = seen["artists"].get(inter["artist_id"], 0) + value
-                    if "album_id" in inter:
-                        seen["albums"][inter["album_id"]] = seen["albums"].get(inter["album_id"], 0) + value
-                    if "genre_id" in inter:
-                        seen["genres"][inter["genre_id"]] = seen["genres"].get(inter["genre_id"], 0) + value
-                    if "song_id" in inter:
-                        seen["songs"][inter["song_id"]] = seen["songs"].get(inter["song_id"], 0) + value
+            for song_id in seen["songs"]:
+                content = get_contents(song_id)
+                myb_seen["artists"] += content["artists"]
+                myb_seen["albums"] += content["albums"]
 
-                seen["artists"] = dict(sorted(seen["artists"].items(), key=lambda x: x[1], reverse=True)[CONNECT_ENTITIES_MAXIMUM:])
-                seen["genres"] = dict(sorted(seen["genres"].items(), key=lambda x: x[1], reverse=True)[CONNECT_ENTITIES_MAXIMUM:])
-                seen["songs"] = dict(sorted(seen["songs"].items(), key=lambda x: x[1], reverse=True)[CONNECT_ENTITIES_MAXIMUM:])
-                seen["albums"] = dict(sorted(seen["albums"].items(), key=lambda x: x[1], reverse=True)[CONNECT_ENTITIES_MAXIMUM:])
+            for album_id in seen["albums"]:
+                content = get_contents(album_id)
+                myb_seen["artists"] += content["artists"]
+                songs = songs_for_album(album_id)
+                myb_seen["songs"] += songs
 
-                myb_seen = {
-                    "artists": [],
-                    "albums": [],
-                    "songs": []
-                }
+            artists_missing = FINAL_ENTITIES_MINIMUM - len(myb_seen["artists"])
+            albums_missing = FINAL_ENTITIES_MINIMUM - len(myb_seen["albums"])
+            songs_missing = FINAL_ENTITIES_MINIMUM - len(myb_seen["songs"])
 
-                for artist_id in seen["artists"]:
-                    content = artists_all_content_feed(artist_id)
-                    myb_seen["albums"] += content["albums"]
-                    myb_seen["songs"] += content["songs"]
+            if artists_missing > 0:
+                myb_seen["artists"] += list_artists_n(artists_missing)
+            if albums_missing > 0:
+                myb_seen["albums"] += list_albums_n(albums_missing)
+            if songs_missing > 0:
+                myb_seen["songs"] += list_songs_n(songs_missing)
 
-                for genre_id in seen["genres"]:
-                    content = genre_all_content_feed(genre_id)
-                    myb_seen["artists"] += content["artists"]
-                    myb_seen["albums"] += content["albums"]
-                    myb_seen["songs"] += content["songs"]
+            feeds.append(myb_seen)
 
-                for song_id in seen["songs"]:
-                    content = get_contents(song_id)
-                    myb_seen["artists"] += content["artists"]
-                    myb_seen["albums"] += content["albums"]
-
-                for album_id in seen["albums"]:
-                    content = get_contents(album_id)
-                    myb_seen["artists"] += content["artists"]
-                    songs = songs_for_album(album_id)
-                    myb_seen["songs"] += songs
-
-                artists_missing = FINAL_ENTITIES_MINIMUM - len(myb_seen["artists"])
-                albums_missing = FINAL_ENTITIES_MINIMUM - len(myb_seen["albums"])
-                songs_missing = FINAL_ENTITIES_MINIMUM - len(myb_seen["songs"])
-
-                if artists_missing > 0:
-                    myb_seen["artists"] += list_artists_n(artists_missing)
-                if albums_missing > 0:
-                    myb_seen["albums"] += list_albums_n(albums_missing)
-                if songs_missing > 0:
-                    myb_seen["songs"] += list_songs_n(songs_missing)
-
-                feeds.append(myb_seen)
-
-            create_feeds(user_id, feeds)
-
-        except Exception as e:
-            print(e)
-            continue
+        create_feeds(user_id, feeds)
