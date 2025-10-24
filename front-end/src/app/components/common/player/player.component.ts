@@ -10,6 +10,7 @@ import {Artist} from '../../../models/Artist';
 import {Role} from '../../../models/Role';
 import {Single} from '../../../models/Single';
 import {RatingsService} from '../../../services/ratings/ratings.service';
+import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-player',
@@ -22,7 +23,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   dialog = inject(MatDialog);
   protected readonly player = inject(PlayerService);
   private readonly ratingsService = inject(RatingsService);
-
+  public authService = inject(AuthService)
   currentlyPlayingSong: Song = {
     cover_url: '',
     audio_url: '',

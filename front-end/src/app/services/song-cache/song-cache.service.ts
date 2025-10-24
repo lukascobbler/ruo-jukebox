@@ -23,6 +23,11 @@ export class SongCacheService {
   private readonly interaction = inject(InteractionsService)
 
   cacheSong(songId: string, audioUrl: string): Observable<void> {
+    console.log(songId)
+      const key = `SONG~${(songId ?? '').trim()}`;
+  if (!key || key === 'SONG~') {
+    throw new Error('[cacheSong] invalid songId');
+  }
     return this.http.get(audioUrl, {responseType: 'blob'}).pipe(
       switchMap((blob) => this.cache.set(songId, blob)),
       catchError((error) => {

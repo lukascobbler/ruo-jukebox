@@ -16,6 +16,7 @@ import {AddToPlaylistDialogComponent} from '../dialogs/add-to-playlist/add-to-pl
 import {Router} from '@angular/router';
 import {Artist} from '../../../models/Artist';
 import {PlayerService} from '../../../services/player/player.service';
+import { SongCacheService } from '../../../services/song-cache/song-cache.service';
 
 @Component({
   selector: 'app-song-table',
@@ -41,6 +42,7 @@ import {PlayerService} from '../../../services/player/player.service';
 export class SongTableComponent implements OnInit {
   router = inject(Router);
   player = inject(PlayerService);
+  songCache = inject(SongCacheService)
 
   @Input() songs: Song[] = [];
   @Input() showNumber = true;
@@ -82,6 +84,19 @@ export class SongTableComponent implements OnInit {
     this.player.loadPlaylist(this.songs)
     this.player.play(song);
   }
+  downloadSongFile(song: Song){
+    this.songCache.smartDownload(song.song_id, song.name, song.audio_url).subscribe({
+      next: () => console.log('Download started'),
+      error: (e) => console.error('Download failed', e),
+    });
+  }
 
+  cacheForOffline(song: Song){
+    console.log(song)
+      this.songCache.cacheSong(song.song_id, song.audio_url).subscribe({
+        next: () => console.log('Cached for offline:', song.song_id),
+        error: (e) => console.error('Failed to cache song', e),
+      });
+  }
   protected readonly parseInt = parseInt;
 }
