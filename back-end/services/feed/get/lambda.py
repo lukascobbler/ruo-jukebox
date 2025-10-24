@@ -1,4 +1,4 @@
-from general_utils import response, generate_s3_upload_url
+from general_utils import response, generate_s3_download_url
 from pre_authorize import pre_authorize
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -20,9 +20,9 @@ def _choose_feed_index(num_pages: int, tz: str = "Europe/Belgrade") -> int:
 def _insert_media_urls(data):
     if isinstance(data, dict):
         if "cover_key" in data:
-            data["cover_url"] = generate_s3_upload_url(IMAGES_BUCKET, data["cover_key"])
+            data["cover_url"] = generate_s3_download_url(IMAGES_BUCKET, data["cover_key"])
         if "audio_key" in data:
-            data["audio_url"] = generate_s3_upload_url(AUDIO_BUCKET, data["audio_key"])
+            data["audio_url"] = generate_s3_download_url(AUDIO_BUCKET, data["audio_key"])
         for v in data.values():
             _insert_media_urls(v)
     elif isinstance(data, list):
