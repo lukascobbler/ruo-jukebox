@@ -18,6 +18,9 @@ import {filter, Subscription} from 'rxjs';
 import {Album} from '../../../models/Album';
 import {Song} from '../../../models/Song';
 import {PlayerService} from '../../../services/player/player.service';
+import {
+  BoxMissingIconSmallComponent
+} from '../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component';
 
 @Component({
   selector: 'app-search-results-page',
@@ -30,7 +33,8 @@ import {PlayerService} from '../../../services/player/player.service';
     BoxMissingIconLargeComponent,
     RoundMissingIconLargeComponent,
     SearchComponent,
-    MatProgressSpinner
+    MatProgressSpinner,
+    BoxMissingIconSmallComponent
   ],
   templateUrl: './search-results.component.html',
   styleUrl: './search-results.component.scss'

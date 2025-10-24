@@ -25,6 +25,12 @@ import {Genre} from '../../../models/Genre';
 import {ArtistsService} from '../../../services/artists/artists.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {NgIf} from '@angular/common';
+import {
+  BoxMissingIconSmallComponent
+} from '../../common/missing-icons/box/missing-icon-small/box-missing-icon-small.component';
+import {
+  RoundMissingIconSmallComponent
+} from '../../common/missing-icons/round/round-missing-icon-small/round-missing-icon-small.component';
 
 @Component({
   selector: 'app-all-artists',
@@ -44,13 +50,14 @@ import {NgIf} from '@angular/common';
     MatDialogModule,
     MatProgressSpinner,
     NgIf,
+    RoundMissingIconSmallComponent,
   ],
   templateUrl: './all-artists.component.html',
   styleUrl: './all-artists.component.scss',
 })
 export class AllArtistsComponent implements OnInit {
   dialog = inject(MatDialog);
-  displayedColumns = ['name', 'genres', 'biography', 'actions'];
+  displayedColumns = ['cover', 'name', 'genres', 'biography', 'actions'];
   private genresService = inject(GenresService);
   private toast = inject(ToastrService);
   private artistsService = inject(ArtistsService);

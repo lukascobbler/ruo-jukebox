@@ -132,3 +132,14 @@ p {
   color: $white;
   font-size: 110px;
 }
+
+.cover-picture-medium {
+  width: 130px;
+  height: 130px;
+  border-radius: 5px;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+  margin: 6px 0;
+}

@@ -19,6 +19,9 @@ import {Genre} from '../../../../models/Genre';
 import {firstValueFrom} from 'rxjs';
 import {SubscriptionsService} from '../../../../services/subscriptions/subscriptions.service';
 import {PlayerService} from '../../../../services/player/player.service';
+import {
+  RoundMissingIconLargeComponent
+} from '../../../common/missing-icons/round/round-missing-icon-large/round-missing-icon-large.component';
 
 @Component({
   selector: 'app-artist',

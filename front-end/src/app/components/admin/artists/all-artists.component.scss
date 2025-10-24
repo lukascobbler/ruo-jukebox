@@ -28,6 +28,13 @@
   text-overflow: ellipsis;
 }
 
+mat-header-cell.cover,
+mat-cell.cover {
+  flex: 0 0 7%;
+  min-width: 80px;
+  justify-content: center !important;
+}
+
 mat-header-cell.name,
 mat-cell.name {
   flex: 0 0 20%;
@@ -49,4 +56,20 @@ mat-header-cell.actions,
 mat-cell.actions {
   flex: 0 0 10%;
   min-width: 100px;
+}
+
+.cover-no-picture {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.cover-picture {
+  width: 52.5px;
+  height: 52.5px;
+  border-radius: 5px;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+  margin: 6px 0;
 }
