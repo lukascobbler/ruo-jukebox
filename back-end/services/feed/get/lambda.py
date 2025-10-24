@@ -17,15 +17,15 @@ def lambda_handler(event, context):
     user_id = event["userId"]
     feeds = get_feed(user_id) or []
     if not feeds:
-        return response(200, {"artists": [], "albums": [], "singles": []})
+        return response(200, {"artists": [], "albums": [], "songs": []})
     i = _choose_feed_index(len(feeds))
     feed = feeds[i] or {}
     albums_meta  = get_contents(feed.get("albums", []))
     artists_meta = get_contents(feed.get("artists", []))
-    singles_meta = get_contents(feed.get("singles", []))
+    singles_meta = get_contents(feed.get("songs", []))
     result = {
         "albums":  albums_meta,
         "artists": artists_meta,
-        "singles": singles_meta,
+        "songs": singles_meta,
     }
     return response(200, result)

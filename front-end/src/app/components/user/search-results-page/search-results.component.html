@@ -11,15 +11,15 @@
 
   <div *ngIf="searchResult!.albums.length === 0 &&
        searchResult!.artists.length === 0 &&
-       searchResult!.singles.length === 0" class="no-content">
+       searchResult!.songs.length === 0" class="no-content">
     <p>No Content</p>
   </div>
 
   <div class="discover-entities">
-    <div *ngIf="searchResult!.singles.length !== 0">
+    <div *ngIf="searchResult!.songs.length !== 0">
       <p class="big-text">Matching songs</p>
       <div class="found-songs horizontal-scroller">
-        <div *ngFor="let song of searchResult!.singles" class="single-song">
+        <div *ngFor="let song of searchResult!.songs" class="single-song">
           <button *ngIf="song.album_id" class="icon-button" (click)="router.navigate(['album', song.album_id])">
             <app-box-missing-icon-large [icon_name]="'music_note'" />
           </button>
