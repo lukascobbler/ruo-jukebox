@@ -85,7 +85,7 @@ export class SongTableComponent implements OnInit {
     this.player.play(song);
   }
   downloadSongFile(song: Song){
-    this.songCache.smartDownload(song.song_id, song.name, song.audio_url).subscribe({
+    this.songCache.smartDownload(song.content_id, song.name, song.audio_url).subscribe({
       next: () => console.log('Download started'),
       error: (e) => console.error('Download failed', e),
     });
@@ -93,10 +93,13 @@ export class SongTableComponent implements OnInit {
 
   cacheForOffline(song: Song){
     console.log(song)
-      this.songCache.cacheSong(song.song_id, song.audio_url).subscribe({
-        next: () => console.log('Cached for offline:', song.song_id),
+      this.songCache.cacheSong(song.content_id, song.audio_url).subscribe({
+        next: () => console.log('Cached for offline:', song.content_id),
         error: (e) => console.error('Failed to cache song', e),
       });
   }
   protected readonly parseInt = parseInt;
+  isCached(song: Song){
+    return this.songCache.isCached(song.content_id);
+  }
 }

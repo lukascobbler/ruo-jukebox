@@ -77,8 +77,10 @@
         'actions-only-title': !showNumber && !showAlbum
       }"
         *matCellDef="let song">
-        <button mat-icon-button (click)="downloadSongFile(song)"><span class="material-symbols-rounded">download</span></button>
-        <button mat-icon-button (click)="cacheForOffline(song)"><span class="material-symbols-rounded">download_for_offline</span></button>
+        <button  mat-icon-button (click)="downloadSongFile(song)"><span class="material-symbols-rounded">download</span></button>
+        <button *ngIf="!isCached(song)" mat-icon-button (click)="cacheForOffline(song)"><span class="material-symbols-rounded">download_for_offline</span></button>
+        <button *ngIf="isCached(song)" mat-icon-button [disabled]="true"><span class="material-symbols-rounded full-icon">download_for_offline</span></button>
+
         <button (click)="addToPlaylist(song)" mat-icon-button>
           <span class="material-symbols-rounded">playlist_add</span>
         </button>

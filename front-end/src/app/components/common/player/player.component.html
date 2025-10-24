@@ -44,7 +44,7 @@
   </div>
 
   <div class="rating-and-lyrics">
-    <div class="rating" *ngIf="!authService.isAdmin() && currentlyPlayingSong.song_id !== ''">
+    <div class="rating" *ngIf="!authService.isAdmin() && currentlyPlayingSong.content_id !== ''">
       <span
         (click)="deleteRating()"
         class="material-symbols-rounded clear-rating"
@@ -65,7 +65,7 @@
     star
     </span>
     </div>
-    <button *ngIf="currentlyPlayingSong.song_id !== ''" class="icon-button" (click)="openLyrics()">
+    <button *ngIf="currentlyPlayingSong.content_id !== ''" class="icon-button" (click)="openLyrics()">
       <span class="material-symbols-rounded lyrics">lyrics</span>
     </button>
   </div>
