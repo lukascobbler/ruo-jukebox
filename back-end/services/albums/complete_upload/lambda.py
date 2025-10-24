@@ -35,6 +35,7 @@ def lambda_handler(event, context):
     body = json.loads(event.get("body", "{}"))
 
     album_id = body.get("album_id")
+    album_name = body.get("name")
     name = body.get("name")
 
     artist_ids = body.get("artists")
@@ -51,10 +52,12 @@ def lambda_handler(event, context):
     artists, message = get_artist_objects(artist_ids)
     if artists is None:
         return response(400, error=message)
+    album_artists = artists
 
     genres, message = get_genre_objects(genre_ids)
     if genres is None:
         return response(400, error=message)
+    album_genres = genres
 
     cover_key = f"albums/{album_id}.jpg"
     if not file_exists_on_s3(IMAGES_BUCKET, cover_key):
@@ -112,11 +115,11 @@ def lambda_handler(event, context):
 
     msg = {
         "type": "album",
-        "name": name,
-        "artist_ids": [a["artist_id"] for a in artists],
-        "genre_ids": [g["genre_id"] for g in genres],
-        "artist_names": [a["name"] for a in artists],
-        "genre_names": [g["name"] for g in genres]
+        "name": album_name,
+        "artist_ids": [a["artist_id"] for a in album_artists],
+        "genre_ids": [g["genre_id"] for g in album_genres],
+        "artist_names": [a["name"] for a in album_artists],
+        "genre_names": [g["name"] for g in album_genres]
     }
 
     sqs.send_message(QueueUrl=SUB_SQS_QUEUE_URL, MessageBody=json.dumps(msg))

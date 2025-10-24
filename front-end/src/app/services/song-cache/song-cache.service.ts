@@ -11,7 +11,7 @@ export class SongCacheService {
 
   cacheSong(songId: string, audioUrl: string): Observable<void> {
     console.log('Caching song:', songId);
-    
+
     if (!songId || !songId.startsWith('SONG~')) {
       throw new Error('Invalid songId format');
     }
