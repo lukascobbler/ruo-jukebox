@@ -99,11 +99,11 @@ def search(query: str):
     items = query_all(content_table, IndexName="byName", KeyConditionExpression=Key("name_lc").eq(query.lower()))
     res = {"singles": [], "albums": [], "artists": []}
     for item in items:
-        if item["SK"].startswith("CONTENT~SONG~"):
+        if item["content_type"].startswith("SONG"):
             res["singles"].append(item)
-        elif item["SK"].startswith("CONTENT~ALBUM~"):
+        elif item["content_type"].startswith("ALBUM"):
             res["albums"].append(item)
-        elif item["SK"].startswith("CONTENT~ARTIST~"):
+        elif item["content_type"].startswith("ARTIST"):
             res["artists"].append(item)
     return res
 

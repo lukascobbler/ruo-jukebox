@@ -1,4 +1,4 @@
-import {Album} from './album/Album';
+import {Album} from './Album';
 import {Artist} from './Artist';
 
 export interface Genre {

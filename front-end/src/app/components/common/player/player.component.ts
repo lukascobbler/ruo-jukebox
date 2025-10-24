@@ -8,8 +8,8 @@ import {Subscription, interval} from 'rxjs';
 import {Song} from '../../../models/Song';
 import {Artist} from '../../../models/Artist';
 import {Role} from '../../../models/Role';
-import {SingleItem} from '../../../models/Single';
-import { RatingsService } from '../../../services/ratings.service.ts/ratings.service';
+import {Single} from '../../../models/Single';
+import {RatingsService} from '../../../services/ratings/ratings.service';
 
 @Component({
   selector: 'app-player',
@@ -23,17 +23,17 @@ export class PlayerComponent implements OnInit, OnDestroy {
   protected readonly player = inject(PlayerService);
   private readonly ratingsService = inject(RatingsService);
 
-  currentlyPlayingSong: Song | SingleItem = {
+  currentlyPlayingSong: Song = {
     cover_url: '',
     audio_url: '',
     song_id: '',
-    no: 0,
+    pos: 0,
     name: '',
     album: '',
-    albumId: '',
+    album_id: '',
+    single_id: '',
     duration: 0,
     artists: [{name: ''} as Artist],
-    artistId: '',
     lyrics: 'No lyrics found',
     genres: []
   };
@@ -138,7 +138,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.hoverRating = 0;
   }
 
-  getArtistNames(song: Song | SingleItem): string {
+  getArtistNames(song: Song): string {
     return song.artists.map((a: Artist) => a.name).join(', ') || '';
   }
   deleteRating() {

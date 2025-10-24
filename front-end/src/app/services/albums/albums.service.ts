@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Album} from '../../models/album/Album';
+import {Album} from '../../models/Album';
 import {env} from '../../../environments/environment';
 import {Artist} from '../../models/Artist';
 import {Genre} from '../../models/Genre';
@@ -20,6 +20,7 @@ export interface OfflineSongRequest {
   selectedArtists: string[];
   selectedGenres: string[];
   song_id?: string;
+  audio_url?: string; // will be used when the admin is editing an album
   artists: Artist[];
   genres: Genre[];
 }
@@ -63,7 +64,7 @@ export class AlbumsService {
     return this.http.get<Album[]>(`${env.API_URL}/album`);
   }
 
-  getSongs(album_id: string): Observable<Song> {
-    return this.http.get<Song>(`${env.API_URL}/album/${album_id}`);
+  get(album_id: string): Observable<Album> {
+    return this.http.get<Album>(`${env.API_URL}/album/${album_id}`);
   }
 }

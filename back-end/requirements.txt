@@ -1,1 +1,3 @@
 passlib[bcrypt]
+mutagen
+requests

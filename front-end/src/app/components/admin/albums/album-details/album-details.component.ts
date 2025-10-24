@@ -21,7 +21,10 @@ import {Router} from '@angular/router';
 import {lastValueFrom} from 'rxjs';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {BoxMissingIconMediumComponent} from '../../../common/missing-icons/box/missing-icon-medium/box-missing-icon-medium.component';
-import {Album} from '../../../../models/album/Album';
+import {Album} from '../../../../models/Album';
+import {Single} from '../../../../models/Single';
+import {PlayerService} from '../../../../services/player/player.service';
+import {Song} from '../../../../models/Song';
 
 @Component({
   selector: 'app-album-details',
@@ -50,6 +53,7 @@ export class AlbumDetailsComponent implements OnInit {
   router = inject(Router);
   albumsService = inject(AlbumsService);
   toastrService = inject(ToastrService);
+  player = inject(PlayerService);
 
   loading = true;
   offlineAlbumRequest: OfflineAlbumRequest | undefined;
@@ -71,14 +75,15 @@ export class AlbumDetailsComponent implements OnInit {
       if (this.offlineAlbumRequest) {
         this.albumName = this.offlineAlbumRequest.name;
         this.editMode = false;
+        this.loading = false;
       } else if (this.album_id) {
         this.editMode = true;
-        this.albumsService.getSongs(this.album_id).subscribe(songs => {
-          this.songs = songs as unknown as OfflineSongRequest[];
+        this.albumsService.get(this.album_id).subscribe(album => {
+          this.loading = false
+          this.albumName = album.name;
+          this.songs = album.songs as unknown as OfflineSongRequest[];
         });
       }
-
-      this.loading = false;
     } else {
       this.router.navigate(['all-albums']);
     }
@@ -157,5 +162,10 @@ export class AlbumDetailsComponent implements OnInit {
       this.loading = false;
       this.toastrService.error('Error', 'Unable to upload the album');
     }
+  }
+
+  playSong(song: Song): void {
+    console.log(song);
+    this.player.play(song);
   }
 }

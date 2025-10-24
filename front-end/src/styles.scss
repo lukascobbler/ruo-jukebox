@@ -152,13 +152,13 @@ body {
   background-color: transparent !important;
 }
 
-.mat-mdc-notch-piece {
-  border: none !important;
-}
-
 .search {
   .mat-mdc-form-field-icon-suffix {
     margin-right: 4px;
+  }
+
+  .mat-mdc-notch-piece {
+    border: none !important;
   }
 
   input {

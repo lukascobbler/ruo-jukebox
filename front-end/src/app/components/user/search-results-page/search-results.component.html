@@ -20,7 +20,12 @@
       <p class="big-text">Matching songs</p>
       <div class="found-songs horizontal-scroller">
         <div *ngFor="let song of searchResult!.singles" class="single-song">
-          <app-box-missing-icon-large [icon_name]="'music_note'" />
+          <button *ngIf="song.album_id" class="icon-button" (click)="router.navigate(['album', song.album_id])">
+            <app-box-missing-icon-large [icon_name]="'music_note'" />
+          </button>
+          <button *ngIf="song.single_id" class="icon-button" (click)="router.navigate(['single', song.single_id])">
+            <app-box-missing-icon-large [icon_name]="'music_note'" />
+          </button>
           <p class="song-name">{{ song.name }}</p>
           <p class="artist-name">{{ getArtists(song) }}</p>
         </div>

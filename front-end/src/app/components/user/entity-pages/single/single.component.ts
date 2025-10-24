@@ -11,9 +11,11 @@ import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from '../../../../services/toastr/toastr.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {NgIf} from '@angular/common';
+import {SongsService} from '../../../../services/singles/singles.service';
+import {Single} from '../../../../models/Single';
 
 @Component({
-  selector: 'app-album',
+  selector: 'app-single',
   standalone: true,
   imports: [
     SongTableComponent,
@@ -21,30 +23,34 @@ import {NgIf} from '@angular/common';
     MatProgressSpinner,
     NgIf
   ],
-  templateUrl: './album.component.html',
-  styleUrl: './album.component.scss'
+  templateUrl: './single.component.html',
+  styleUrl: './single.component.scss'
 })
-export class AlbumComponent implements OnInit {
+export class SingleComponent implements OnInit {
   auth = inject(AuthService);
   route = inject(ActivatedRoute);
-  albumsService = inject(AlbumsService);
+  singlesService = inject(SongsService);
   toast = inject(ToastrService)
 
   loading = true;
-  album: Album | null = null;
+  single: Single | null = null;
 
   ngOnInit() {
-    let albumId = this.route.snapshot.params['id'];
+    let singleId = this.route.snapshot.params['id'];
 
-    this.albumsService.get(albumId).subscribe({
+    this.singlesService.get(singleId).subscribe({
       next: value => {
-        this.album = value;
+        this.single = value;
         this.loading = false;
       },
       error: err => {
-        this.toast.error("Error", "Error loading album: " + err);
+        this.toast.error("Error", "Error loading single: " + err);
         this.loading = false;
       }
     })
+  }
+
+  transformForSongsTable(): Song[] {
+    return [this.single as Song];
   }
 }

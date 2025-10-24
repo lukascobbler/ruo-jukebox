@@ -7,7 +7,7 @@ import {
 import {
   RoundMissingIconXLargeComponent
 } from '../../../common/missing-icons/round/round-missing-icon-x-large/round-missing-icon-x-large.component';
-import {Album} from '../../../../models/album/Album';
+import {Album} from '../../../../models/Album';
 import {Artist} from '../../../../models/Artist';
 import {ActivatedRoute, Router} from '@angular/router';
 import {SearchComponent} from '../../search/search.component';
