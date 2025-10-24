@@ -1,4 +1,5 @@
 from iac.domains.content.lyrics_stack import LyricsStack
+from iac.domains.users.feed_stack import FeedStack
 from iac.domains.users.subscriptions_stack import SubscriptionsStack
 from iac.domains.users.interactions_stack import InteractionsStack
 from iac.shared.shared_resources_stack import SharedResourcesStack
@@ -58,6 +59,18 @@ class DomainGroupStack(NestedStack):
             branch
         )
 
+        feed_stack = FeedStack(
+            self, "FeedStack",
+            shared.dynamo_db_stack,
+            shared.s3_stack,
+            shared.libs_layer_stack,
+            shared.auth_layer_stack,
+            shared.utils_layer_stack,
+            api_gateway,
+            env_vars,
+            branch
+        )
+
         AlbumsStack(
             self, "AlbumsStack",
             shared.dynamo_db_stack,
@@ -68,7 +81,8 @@ class DomainGroupStack(NestedStack):
             api_gateway,
             env_vars,
             branch,
-            notify_queue=subs_stack.new_content_queue
+            subs_stack.new_content_queue,
+            feed_stack.refresh_feed_queue
         )
 
         ArtistsStack(
@@ -104,7 +118,8 @@ class DomainGroupStack(NestedStack):
             shared.utils_layer_stack,
             api_gateway,
             env_vars,
-            branch
+            branch,
+            feed_stack.refresh_feed_queue
         )
 
         PlaylistsStack(
@@ -129,7 +144,8 @@ class DomainGroupStack(NestedStack):
             api_gateway,
             env_vars,
             branch,
-            notify_queue=subs_stack.new_content_queue
+            subs_stack.new_content_queue,
+            feed_stack.refresh_feed_queue
         )
 
         RatingsStack(

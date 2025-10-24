@@ -1,5 +1,4 @@
 from iac.custom_constructs.lambda_with_permissions import LambdaWithPermissions
-from aws_cdk import NestedStack, aws_apigateway as apigw
 from iac.shared.api_gateway_stack import ApiGatewayStack
 from iac.layers.utils_layer_stack import UtilsLayerStack
 from iac.layers.libs_layer_stack import LibsLayerStack
@@ -22,15 +21,19 @@ class SubscriptionsStack(NestedStack):
         super().__init__(scope, stack_id, **kwargs)
         self.lambdas = {}
 
+        suffix = f"-{branch}" if branch != "main" else ""
+
         # sqs setup
 
         # singles and albums sends messages here
         self.new_content_dlq = sqs.Queue(
             self, "NewContentDLQ",
+            queue_name=f"NewContentDLQ{suffix}",
             retention_period=Duration.days(14),
         )
         self.new_content_queue = sqs.Queue(
             self, "NewContentQueue",
+            queue_name=f"NewContentQueue{suffix}",
             visibility_timeout=Duration.seconds(60),
             dead_letter_queue=sqs.DeadLetterQueue(
                 max_receive_count=5, queue=self.new_content_dlq
@@ -40,10 +43,12 @@ class SubscriptionsStack(NestedStack):
         # just sends emails
         self.email_send_dlq = sqs.Queue(
             self, "EmailSendDLQ",
+            queue_name=f"EmailSendDLQ{suffix}",
             retention_period=Duration.days(14),
         )
         self.email_send_queue = sqs.Queue(
             self, "EmailSendQueue",
+            queue_name=f"EmailSendQueue{suffix}",
             visibility_timeout=Duration.seconds(60),
             dead_letter_queue=sqs.DeadLetterQueue(max_receive_count=5, queue=self.email_send_dlq),
         )

@@ -1,4 +1,4 @@
-import boto3, uuid, time, os
+import boto3, time, os
 
 dynamodb = boto3.resource("dynamodb")
 interactions_table = dynamodb.Table(os.environ["INTERACTIONS_TABLE"])
@@ -22,6 +22,7 @@ def create_songs(album_or_single_id: str, songs: list[dict]):
     with content_table.batch_writer() as batch:
         for pos, song in enumerate(songs):
             song_id = song["content_id"]
+            song["pos"] = pos
             batch.put_item(Item={**song, "PK": album_or_single_id, "SK": f"POS~{pos}~{song_id}"})
             for a in song["artists"]:
                 batch.put_item(Item={**song, "PK": a["artist_id"], "SK": f"CONTENT~{song_id}"})
