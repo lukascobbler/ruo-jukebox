@@ -26,7 +26,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   currentlyPlayingSong: Song = {
     cover_url: '',
     audio_url: '',
-    song_id: '',
+    content_id: '',
     pos: 0,
     name: '',
     album: '',
@@ -56,9 +56,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
           this.duration = song.duration || 0;
           this.starRating = 0;
           this.hoverRating = 0;
-          if(song.song_id) {
+          if(song.content_id) {
             this.subs.push(
-              this.ratingsService.get(song.song_id).subscribe({
+              this.ratingsService.get(song.content_id).subscribe({
                 next: (r) => { this.starRating = r},
                 error: (err) => { console.error('Failed to get rating', err); }
               }
@@ -108,16 +108,25 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   openLyrics() {
+    function extractCorrectSongId(song: Song): string {
+      if ('song_id' in song) {
+        return (song as Single).song_id
+      }
+      return song.content_id;
+    }
+
+    let correct_song_id = extractCorrectSongId(this.currentlyPlayingSong);
+
     this.dialog.open(LyricsDialogComponent, {
       width: '800px',
       maxWidth: '70vw',
-      data: {song_id: this.currentlyPlayingSong.song_id}
+      data: {song_id: correct_song_id}
     });
   }
 
   setStarRating(starRating: number) {
     if (this.starRating === starRating) return;
-    const songId = this.currentlyPlayingSong.song_id;
+    const songId = this.currentlyPlayingSong.content_id;
     if (!songId) return;
     const prev = this.starRating;
     this.starRating = starRating;
@@ -148,7 +157,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   deleteRating() {
     if (this.starRating === 0) return;
     this.starRating = 0;
-    const songId = this.currentlyPlayingSong.song_id;
+    const songId = this.currentlyPlayingSong.content_id;
     if (!songId) return;
     const prev = this.starRating;
     this.starRating = 0;

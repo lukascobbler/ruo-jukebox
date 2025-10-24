@@ -22,14 +22,14 @@ export class PlayerService {
 
   play(song?: Song) {
     if (song) {
-      this.index = this.playlist.findIndex(s => s.song_id === song.song_id);
-      this.songCache.getSongUrl(song.song_id, song.audio_url).subscribe({
+      this.index = this.playlist.findIndex(s => s.content_id === song.content_id);
+      this.songCache.getSongUrl(song.content_id, song.audio_url).subscribe({
         next: ({ url, fromCache}) => {
           this.audio.src = url;
           this.audio.load();
           this.audio.play();
           this.currentSongSubject.next(song);
-          console.log(`Playing song ${song.song_id} from ${fromCache ? 'cache' : 'S3'}`);
+          console.log(`Playing song ${song.content_id} from ${fromCache ? 'cache' : 'S3'}`);
         },
         error: (err) => {
           console.error('Failed to get song using cache service:', err);

@@ -2,7 +2,7 @@ import {Genre} from './Genre';
 import {Artist} from './Artist';
 
 export interface Song {
-  song_id: string;
+  content_id: string;
   pos?: number;
   name: string;
   album: string;
